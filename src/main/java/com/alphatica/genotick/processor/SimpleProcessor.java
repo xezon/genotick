@@ -266,9 +266,10 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
     @Override
     public void execute(MoveDataToRegister ins) {
         int reg = ins.getRegister();
-        int offset = Math.abs(ins.getDataOffsetIndex() % dataMaximumOffset);
+        int offset = fixOffset(ins.getDataOffsetIndex());
         registers[reg] = data.getData(ins.getDataTableIndex(), offset);
     }
+
 
     @Override
     public void execute(MoveDataToVariable ins) {
@@ -288,7 +289,7 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
     public void execute(MoveRelativeDataToVariable ins) {
         int varOffset = getRelativeOffset(ins);
         double value = data.getData(ins.getDataTableIndex(), varOffset);
-        instructionList.setVariable(ins.getVariableArgument(),value);
+        instructionList.setVariable(ins.getVariableArgument(), value);
     }
 
     @Override
@@ -559,8 +560,32 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
 
     @Override
     public void execute(SqRootOfVariable ins) {
-        double value = Math.pow(instructionList.getVariable(ins.getVariable2Argument()),0.5);
+        double value = Math.pow(instructionList.getVariable(ins.getVariable2Argument()), 0.5);
         instructionList.setVariable(ins.getVariable1Argument(),value);
+    }
+
+    @Override
+    public void execute(SumOfColumn ins) {
+        int column = ins.getRegister1();
+        int length = fixOffset(registers[ins.getRegister2()]);
+        registers[0] = getSum(column,length);
+    }
+
+    @Override
+    public void execute(AverageOfColumn ins) {
+        int column = ins.getRegister1();
+        int length = Math.abs(ins.getRegister2());
+        double sum = getSum(column, length);
+        registers[0] = sum / length;
+    }
+
+
+    private double getSum(int column, int length) {
+        double sum = 0;
+        for(int i = 0; i < length; i++) {
+            sum += data.getData(column,i);
+        }
+        return sum;
     }
 
     @Override
@@ -674,10 +699,42 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
         instructionList.setVariable(ins.getVariable1Argument(),var);
     }
 
-    private int getRelativeOffset(DataInstruction ins) {
-        int variable = (int)Math.round(instructionList.getVariable(ins.getDataOffsetIndex()));
-        //noinspection UnnecessaryLocalVariable
-        int offset = Math.abs(variable % dataMaximumOffset);
-        return offset;
+    @Override
+    public void execute(HighestOfColumn ins) {
+        int column = ins.getRegister1();
+        int length = fixOffset(registers[ins.getRegister2()]);
+        double highest = data.getData(column,0);
+        for(int i = 1; i < length; i++) {
+            double check = data.getData(column,i);
+            if(check > highest) {
+                highest = check;
+            }
+        }
+        registers[0] = highest;
     }
+
+    @Override
+    public void execute(LowestOfColumn ins) {
+        int column = ins.getRegister1();
+        int length = fixOffset(registers[ins.getRegister2()]);
+        double lowest = data.getData(column,0);
+        for(int i = 1; i < length; i++) {
+            double check = data.getData(column,i);
+            if(check < lowest) {
+                lowest = check;
+            }
+        }
+        registers[0] = lowest;
+    }
+
+    private int getRelativeOffset(DataInstruction ins) {
+        double value = instructionList.getVariable(ins.getDataOffsetIndex());
+        return fixOffset(value);
+    }
+
+    private int fixOffset(double value) {
+        return (int)Math.abs(value % dataMaximumOffset);
+    }
+
+
 }
