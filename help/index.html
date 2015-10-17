@@ -2,13 +2,30 @@
 <h1>Genotick's help page</h1>
 <a href="#data">Preparing data</a><br>
 <a href="#settings">Settings and what they mean</a><br>
-
+<a href="#contact">Contact the author</a><br>
 
 <a name="data">
-<h2>Preparing data</h2><br><br>
+<h2>Preparing data</h2>
+Genotick accepts data in csv format, one market in one file. There are some basic requirements:<br>
+First column needs to be a time point parsable to an integer number. They must be in ascending order, no duplicate values. It could be a date written in format YYYYMMDD. It could be time written as YYYYMMDDhhmmss and so on. Has to be one number, no dashes, colons etc. If you have  historical quotes like this (1st Jan 2010, time 3.45 pm, open/high/low/close):<br><br>
+20100101,1545,100,102,99,102<br><br>
+It needs to be changed to<br><br>
+201001011545,100,102,99,102<br><br>
+Second and the rest of the columns need to be numbers parsable to a double. Second column is the one that's used to gauge predictions. In case of financial markets - make sure it's something you can trade on, like open price. Genotick checks prediction as if transaction was opened on next row and closed one after that. For example with data:<br><br>
+20100102,100,101,100,101<br>
+20100104,101,103,100,102<br>
+20100105,102,104,102,103<br><br>
 
+Let's say on 2nd Jan prediction was UP. Genotick assumes transaction was opened on 4th Jan at 101 and closed on 5th Jan at 102. 
+Genotick doesn't care nor understands what data it gets. First column must be time, second – price used to trading and the rest can be anything. You can put Bangladesh butter production if you think it's useful. Minimum of two columns is required: time and trade price.<br>
+
+<h3>Reversing data</h3>
+Genotick uses a trick to remove useless systems: prediction must to mirrored on mirrored data. So for example prediction on GbpUsd must opposite to the one on UsdGbp (well, implementation is simpler than that, but this explaination is good enough for a high level overview). This also helps to remove programs (systems) that are always long or always short. 
+The problem with reversing data is that doing it by hand (or even Excel/LibreOffice) is painful. You can use Genotick to reverse data for you. Let's say that directory 'mydata' contains files 'spx.csv' and 'gold.csv'. Command:<br>
+java -jar Genotick-<i>version</i>.jar reverse=mydata<br>
+will produce files 'reverse_spx.csv' and 'reverse_gold.csv' with open/high/low/close mirrored and other columns unchanged. These files are ready to be used with Genotick. Then, while training, you can request 'Require symmetrical programs' to remove programs that don't yield mirrored predictions. 
 <a name="settings">
-<h2>Settings</h2><br><br>
+<h2>Settings</h2>
 Quick reference for settings:<br><br>
 
 StartTimePoint – Time at which Genotick should start its simulation / training<br><br>
@@ -61,6 +78,8 @@ ProtectBestPrograms 0.01 – Elitism. Number of best programs to protect  (as a 
 
 RequireSymmetricalPrograms true – Should be used only if every data file has its reversed equivalent. If set to true and a number of UP and DOWN predictions is not the same – it gets removed immediately. Even if it's protected.<br><br>
 
-
+<a name="contact">
+<h2>Contact</h2>
+You can contact me at 'lukasz dot wojtow dot me'<br>
 
 </html>
