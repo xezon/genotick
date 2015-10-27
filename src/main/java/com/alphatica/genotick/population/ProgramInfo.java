@@ -60,7 +60,7 @@ public class ProgramInfo {
         return bias;
     }
 
-    public static double getTotalWeight(List<ProgramInfo> list) {
+    private static double getTotalWeight(List<ProgramInfo> list) {
         double weight = 0;
         for(ProgramInfo programInfo: list) {
             weight += Math.abs(programInfo.getWeight());

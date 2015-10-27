@@ -8,10 +8,9 @@ import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.Program;
 import com.alphatica.genotick.population.ProgramName;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class SimpleEngine implements Engine {
@@ -38,8 +37,14 @@ public class SimpleEngine implements Engine {
             Debug.d("Time:",timePoint,"Percent earned so far:",(result - 1) * 100);
             timePoint.increment();
         }
-        timePointExecutor.savePopulation("savedPopulation");
+        timePointExecutor.savePopulation(getSavedPopulationDirName());
         return timePointStats;
+    }
+
+    private String getSavedPopulationDirName() {
+        String prefix = "savedPopulation_";
+        DateFormat format = new SimpleDateFormat("yyyy_MM_dd_kk_mm");
+        return prefix + format.format(Calendar.getInstance().getTime());
     }
 
     private void initPopulation() {
@@ -140,4 +145,6 @@ public class SimpleEngine implements Engine {
     public static Engine getEngine() {
         return new SimpleEngine();
     }
+
+
 }
