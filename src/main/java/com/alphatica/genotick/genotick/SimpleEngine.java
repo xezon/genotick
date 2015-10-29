@@ -85,8 +85,27 @@ public class SimpleEngine implements Engine {
         }
         if(!engineSettings.executionOnly && !programDataList.isEmpty() && !timePointStats.isEmpty())
             updatePopulation(timePointResult);
+        printParentsVsRandomStats();
         Debug.d("Finished TimePoint:",timePoint);
         return timePointStats;
+    }
+
+    private void printParentsVsRandomStats() {
+        int fromParents = 0;
+        int random = 0;
+        for(Program program: population.listPrograms()) {
+            if(program.isFromParents())
+                fromParents++;
+            else
+                random++;
+        }
+        double ratio;
+        if(random != 0) {
+            ratio = (double) fromParents / (double) random;
+        } else {
+            ratio = -1;
+        }
+        Debug.d("Ratio of programs from parents vs random:",ratio);
     }
 
     private void printPercentEarned(DataSetName name, Prediction prediction, Double actualChange) {
