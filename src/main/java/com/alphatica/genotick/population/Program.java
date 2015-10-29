@@ -21,7 +21,7 @@ public class Program implements Serializable {
 
     private int correctPredictions;
     private double inheritedWeight;
-    private final DecimalFormat weightFormat = new DecimalFormat("0.00");
+    private static final DecimalFormat weightFormat = new DecimalFormat("0.00");
     private int totalOutcomes;
     private long outcomesAtLastChild;
     private int bias;
