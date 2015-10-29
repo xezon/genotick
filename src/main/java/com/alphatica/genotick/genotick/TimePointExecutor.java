@@ -8,6 +8,4 @@ public interface TimePointExecutor {
     TimePointResult execute(TimePoint timePoint, List<ProgramData> programDataList);
 
     void setSettings(Population population, DataSetExecutor dataSetExecutor);
-
-    void savePopulation(@SuppressWarnings("SameParameterValue") String savedPopulation);
 }

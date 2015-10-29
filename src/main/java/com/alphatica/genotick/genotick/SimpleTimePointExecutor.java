@@ -28,11 +28,6 @@ class SimpleTimePointExecutor implements TimePointExecutor {
     }
 
     @Override
-    public void savePopulation(String path) {
-        population.savePopulation(path);
-    }
-
-    @Override
     public void setSettings(Population population, DataSetExecutor dataSetExecutor) {
         this.population = population;
         this.dataSetExecutor = dataSetExecutor;

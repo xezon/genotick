@@ -37,8 +37,9 @@ public class SimpleEngine implements Engine {
             Debug.d("Time:",timePoint,"Percent earned so far:",(result - 1) * 100);
             timePoint.increment();
         }
-        if(!engineSettings.executionOnly)
-            timePointExecutor.savePopulation(getSavedPopulationDirName());
+        if(!engineSettings.executionOnly) {
+            population.savePopulation(getSavedPopulationDirName());
+        }
         return timePointStats;
     }
 
