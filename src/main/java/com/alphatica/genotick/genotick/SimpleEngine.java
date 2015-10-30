@@ -92,21 +92,31 @@ public class SimpleEngine implements Engine {
     }
 
     private void printParentsVsRandomStats() {
-        int fromParents = 0;
-        int random = 0;
+        int fromParentsCount = 0;
+        int randomCount = 0;
+        double fromParentsWeight = 0.0;
+        double randomWeight = 0.0;
+
         for(Program program: population.listPrograms()) {
-            if(program.isFromParents())
-                fromParents++;
-            else
-                random++;
+            if(program.isFromParents()) {
+                fromParentsCount++;
+                fromParentsWeight += Math.abs(program.getWeight());
+            } else {
+                randomCount++;
+                randomWeight += Math.abs(program.getWeight());
+            }
         }
         double ratio;
-        if(random != 0) {
-            ratio = (double) fromParents / (double) random;
+        if(randomCount != 0) {
+            ratio = (double) fromParentsCount / (double) randomCount;
         } else {
             ratio = -1;
         }
         Debug.d("Ratio of programs from parents vs random:",ratio);
+        if(fromParentsCount > 0)
+            Debug.d("Average program-from-parents weight:",fromParentsWeight / fromParentsCount);
+        if(randomCount > 0)
+            Debug.d("Average random-program weight:",randomWeight / randomCount);
     }
 
     private void printPercentEarned(DataSetName name, Prediction prediction, Double actualChange) {
