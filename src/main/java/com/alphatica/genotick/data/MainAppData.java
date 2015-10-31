@@ -3,7 +3,6 @@ package com.alphatica.genotick.data;
 import com.alphatica.genotick.genotick.ProgramData;
 import com.alphatica.genotick.genotick.TimePoint;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
