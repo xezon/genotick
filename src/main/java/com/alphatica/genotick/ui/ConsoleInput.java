@@ -1,5 +1,6 @@
 package com.alphatica.genotick.ui;
 
+import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.Application;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.genotick.TimePoint;
@@ -18,11 +19,13 @@ class ConsoleInput implements UserInput {
 
     @Override
     public void show(Application application) {
-        MainSettings settings = new MainSettings();
+        String dataDirectory = getString("Data directory", MainSettings.DEFAULT_DATA_DIR);
+        MainAppData data = application.createData(dataDirectory);
+        MainSettings settings = MainSettings.getSettings(data.getFirstTimePoint(), data.getLastTimePoint());
         settings.startTimePoint = new TimePoint(getLong("Start time point",settings.startTimePoint.toString()));
         TimePoint nextTimePoint = new TimePoint(settings.startTimePoint.getValue() + 1);
         settings.endTimePoint = new TimePoint(getLong("End time point", nextTimePoint.toString()));
-        settings.dataLoader = getString("Data directory", settings.dataLoader);
+
         settings.populationDAO = getString("Population storage", settings.populationDAO);
         settings.executionOnly = getBoolean("Prediction only", settings.executionOnly);
         settings.processorInstructionLimit = getInteger("Processor instruction limit", settings.processorInstructionLimit);
@@ -48,7 +51,7 @@ class ConsoleInput implements UserInput {
             settings.protectBestPrograms = getDouble("Protect best programs", settings.protectBestPrograms);
             settings.requireSymmetricalPrograms = getBoolean("Require symmetrical programs", settings.requireSymmetricalPrograms);
         }
-        application.start(settings);
+        application.start(settings,data);
     }
 
     private double getDouble(String s, double value) {

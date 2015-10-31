@@ -3,6 +3,7 @@ package com.alphatica.genotick.data;
 import com.alphatica.genotick.genotick.ProgramData;
 import com.alphatica.genotick.genotick.TimePoint;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,32 @@ public class MainAppData {
             return set.calculateFutureChange(timePoint);
         }
         return Double.NaN;
+    }
+
+    public TimePoint getFirstTimePoint() {
+        if(sets.isEmpty())
+            return null;
+        TimePoint firstTimePoint = sets.get(0).getFirstTimePoint();
+        for(int i = 1; i < sets.size(); i++) {
+            TimePoint first = sets.get(i).getFirstTimePoint();
+            if(first.compareTo(firstTimePoint) < 0) {
+                firstTimePoint = first;
+            }
+        }
+        return firstTimePoint;
+    }
+
+    public TimePoint getLastTimePoint() {
+        if(sets.isEmpty())
+            return null;
+        TimePoint lastTimePoint = sets.get(0).getLastTimePoint();
+        for(int i = 1; i < sets.size(); i++) {
+            TimePoint last = sets.get(i).getLastTimePoint();
+            if(last.compareTo(lastTimePoint) > 0) {
+                lastTimePoint = last;
+            }
+        }
+        return lastTimePoint;
     }
 
     public DataSet[] listSets() {

@@ -25,7 +25,7 @@ public class Application {
         this.output = output;
     }
 
-    public void start(MainSettings settings) {
+    public void start(MainSettings settings, MainAppData data) {
         setupLogger();
         if(!validateSettings(settings))
             return;
@@ -34,9 +34,14 @@ public class Application {
         Mutator mutator = getMutator(settings);
         ProgramBreeder breeder = wireProgramBreeder(settings, mutator);
         Population population = wirePopulation(settings);
-        Engine engine = wireEngine(settings, killer, breeder, population);
+        Engine engine = wireEngine(settings, data, killer, breeder, population);
         List<TimePointStats> results = engine.start();
         showSummary(results);
+    }
+
+    public MainAppData createData(String dataSettings) {
+        DataLoader dataLoader = DataFactory.getDefaultLoader(dataSettings);
+        return dataLoader.createProgramData();
     }
 
     private boolean validateSettings(MainSettings settings) {
@@ -50,12 +55,11 @@ public class Application {
     }
 
 
-    private Engine wireEngine(MainSettings settings, ProgramKiller killer,
+    private Engine wireEngine(MainSettings settings, MainAppData data, ProgramKiller killer,
                               ProgramBreeder breeder, Population population) {
         EngineSettings engineSettings = getEngineSettings(settings);
-        MainAppData data = createData(settings);
         TimePointExecutor timePointExecutor = wireTimePointExecutor(settings, population);
-        return EngineFactory.getDefaultEngine(engineSettings, timePointExecutor, data, killer, breeder, population);
+        return EngineFactory.getDefaultEngine(engineSettings, data, timePointExecutor, killer, breeder, population);
     }
 
     private TimePointExecutor wireTimePointExecutor(MainSettings settings, Population population) {
@@ -108,10 +112,6 @@ public class Application {
         return MutatorFactory.getDefaultMutator(mutatorSettings);
     }
 
-    private MainAppData createData(MainSettings settings) {
-        DataLoader dataLoader = DataFactory.getDefaultLoader(settings.dataLoader);
-        return dataLoader.createProgramData();
-    }
 
     private EngineSettings getEngineSettings(MainSettings settings) {
         EngineSettings engineSettings = new EngineSettings();

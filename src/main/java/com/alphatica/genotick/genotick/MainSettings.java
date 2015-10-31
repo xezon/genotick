@@ -3,9 +3,10 @@ package com.alphatica.genotick.genotick;
 import java.lang.reflect.Field;
 
 public class MainSettings {
+    public static final String DEFAULT_DATA_DIR = "data";
 
-    public TimePoint startTimePoint = new TimePoint(20000101);
-    public TimePoint endTimePoint = new TimePoint(20150101);
+    public TimePoint startTimePoint;
+    public TimePoint endTimePoint;
     public String dataLoader = "data";
     public String populationDAO = "RAM";
     public boolean executionOnly = false;
@@ -29,8 +30,15 @@ public class MainSettings {
     public double protectBestPrograms = 0.02;
     public boolean requireSymmetricalPrograms = true;
 
-
-
+    private MainSettings() {
+        /* Empty */
+    }
+    public static MainSettings getSettings(TimePoint startTimePoint, TimePoint endTimePoint) {
+        MainSettings settings = new MainSettings();
+        settings.startTimePoint = startTimePoint;
+        settings.endTimePoint = endTimePoint;
+        return settings;
+    }
     public String getString() {
         StringBuilder sb = new StringBuilder();
         Field [] fields = this.getClass().getDeclaredFields();
@@ -45,8 +53,8 @@ public class MainSettings {
     }
 
     public void validate() {
-        ensure(startTimePoint.getValue() < endTimePoint.getValue(),
-                "Starting TimePoint must be lower than ending TimePoint");
+        ensure(startTimePoint.compareTo(endTimePoint) < 0,
+                "Start TimePoint must be lower than End TimePoint");
         ensure(populationDesiredSize > 0, gt0("Population desired size"));
         ensure(dataMaximumOffset > 0, gt0("Data Maximum Offset"));
         ensure(processorInstructionLimit > 0,gt0("Processor Instruction Limit"));

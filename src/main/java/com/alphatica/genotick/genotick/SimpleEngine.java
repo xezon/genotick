@@ -63,10 +63,10 @@ public class SimpleEngine implements Engine {
                             Population population) {
         this.engineSettings = engineSettings;
         this.timePointExecutor = timePointExecutor;
-        this.data = data;
         this.killer = killer;
         this.breeder = breeder;
         this.population = population;
+        this.data = data;
     }
 
     private TimePointStats executeTimePoint(TimePoint timePoint) {
