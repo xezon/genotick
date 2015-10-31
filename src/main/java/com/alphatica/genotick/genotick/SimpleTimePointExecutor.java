@@ -7,12 +7,11 @@ import java.util.List;
 
 class SimpleTimePointExecutor implements TimePointExecutor {
 
-    private Population population;
     private DataSetExecutor dataSetExecutor;
 
 
     @Override
-    public TimePointResult execute(TimePoint timePoint, List<ProgramData> programDataList) {
+    public TimePointResult execute(TimePoint timePoint, List<ProgramData> programDataList, Population population) {
         TimePointResult timePointResult = new TimePointResult(timePoint);
         if(programDataList.isEmpty())
             return timePointResult;
@@ -28,8 +27,7 @@ class SimpleTimePointExecutor implements TimePointExecutor {
     }
 
     @Override
-    public void setSettings(Population population, DataSetExecutor dataSetExecutor) {
-        this.population = population;
+    public void setSettings(DataSetExecutor dataSetExecutor) {
         this.dataSetExecutor = dataSetExecutor;
     }
 

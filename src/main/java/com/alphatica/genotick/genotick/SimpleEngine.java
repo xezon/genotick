@@ -72,7 +72,7 @@ public class SimpleEngine implements Engine {
     private TimePointStats executeTimePoint(TimePoint timePoint) {
         Debug.d("Starting TimePoint:", timePoint);
         List<ProgramData> programDataList = data.prepareProgramDataList(timePoint);
-        TimePointResult timePointResult = timePointExecutor.execute(timePoint,programDataList);
+        TimePointResult timePointResult = timePointExecutor.execute(timePoint,programDataList, population);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction();
@@ -107,12 +107,10 @@ public class SimpleEngine implements Engine {
             }
         }
         double ratio;
-        if(randomCount != 0) {
+        if(randomCount > 0) {
             ratio = (double) fromParentsCount / (double) randomCount;
-        } else {
-            ratio = -1;
+            Debug.d("Ratio of programs from parents vs random:",ratio);
         }
-        Debug.d("Ratio of programs from parents vs random:",ratio);
         if(fromParentsCount > 0)
             Debug.d("Average program-from-parents weight:",fromParentsWeight / fromParentsCount);
         if(randomCount > 0)

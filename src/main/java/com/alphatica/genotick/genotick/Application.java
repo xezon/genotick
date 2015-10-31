@@ -60,7 +60,7 @@ public class Application {
 
     private TimePointExecutor wireTimePointExecutor(MainSettings settings, Population population) {
         DataSetExecutor dataSetExecutor = wireDataSetExecutor(settings);
-        return TimePointExecutorFactory.getDefaultExecutor(population, dataSetExecutor);
+        return TimePointExecutorFactory.getDefaultExecutor(dataSetExecutor);
     }
 
     private Population wirePopulation(MainSettings settings) {

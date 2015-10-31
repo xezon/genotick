@@ -5,7 +5,7 @@ import com.alphatica.genotick.population.Population;
 import java.util.List;
 
 public interface TimePointExecutor {
-    TimePointResult execute(TimePoint timePoint, List<ProgramData> programDataList);
+    TimePointResult execute(TimePoint timePoint, List<ProgramData> programDataList, Population population);
 
-    void setSettings(Population population, DataSetExecutor dataSetExecutor);
+    void setSettings(DataSetExecutor dataSetExecutor);
 }
