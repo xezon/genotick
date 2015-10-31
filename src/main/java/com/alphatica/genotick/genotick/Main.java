@@ -11,10 +11,16 @@ class Main {
     private static UserOutput output;
 
     public static void main(String... args) {
+        setupDebug();
         Parameters parameters = new Parameters(args);
         getUserIO(parameters);
         checkReverse(parameters);
         checkSimulation(parameters);
+    }
+
+    private static void setupDebug() {
+        Debug.setShowTime(true);
+        Debug.toFile("genotick.out");
     }
 
     private static void getUserIO(Parameters parameters) {

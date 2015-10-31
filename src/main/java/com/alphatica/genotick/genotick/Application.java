@@ -18,7 +18,6 @@ import com.alphatica.genotick.ui.UserOutput;
 import java.util.List;
 
 public class Application {
-    public static final Debug Logger = new Debug();
     private final UserOutput output;
 
     public Application(UserOutput output) {
@@ -26,7 +25,6 @@ public class Application {
     }
 
     public void start(MainSettings settings, MainAppData data) {
-        setupLogger();
         if(!validateSettings(settings))
             return;
         logSettings(settings);
@@ -118,12 +116,6 @@ public class Application {
         engineSettings.endTimePoint = settings.endTimePoint;
         engineSettings.executionOnly = settings.executionOnly;
         return engineSettings;
-    }
-
-    @SuppressWarnings("AccessStaticViaInstance")
-    private void setupLogger() {
-        Logger.setShowTime(true);
-        Logger.toFile("genotick.out");
     }
 
     private void logSettings(MainSettings settings) {

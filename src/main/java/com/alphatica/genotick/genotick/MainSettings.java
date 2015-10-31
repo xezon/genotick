@@ -22,8 +22,8 @@ public class MainSettings {
     public double newInstructionProbability = 0.01;
     public double instructionMutationProbability = 0.01;
     public double skipInstructionProbability = 0.01;
-    public int minimumOutcomesToAllowBreeding = 50;
-    public int minimumOutcomesBetweenBreeding = 50;
+    public long minimumOutcomesToAllowBreeding = 50;
+    public long minimumOutcomesBetweenBreeding = 50;
     public boolean killNonPredictingPrograms = true;
     public double randomProgramsAtEachUpdate = 0.02;
     public double protectBestPrograms = 0.02;

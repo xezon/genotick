@@ -22,9 +22,9 @@ class ConsoleInput implements UserInput {
         String dataDirectory = getString("Data directory", MainSettings.DEFAULT_DATA_DIR);
         MainAppData data = application.createData(dataDirectory);
         MainSettings settings = MainSettings.getSettings(data.getFirstTimePoint(), data.getLastTimePoint());
-        settings.startTimePoint = new TimePoint(getLong("Start time point",settings.startTimePoint.toString()));
+        settings.startTimePoint = new TimePoint(getLong("Start time point",settings.startTimePoint.getValue()));
         TimePoint nextTimePoint = new TimePoint(settings.startTimePoint.getValue() + 1);
-        settings.endTimePoint = new TimePoint(getLong("End time point", nextTimePoint.toString()));
+        settings.endTimePoint = new TimePoint(getLong("End time point", nextTimePoint.getValue()));
 
         settings.populationDAO = getString("Population storage", settings.populationDAO);
         settings.executionOnly = getBoolean("Prediction only", settings.executionOnly);
@@ -44,8 +44,8 @@ class ConsoleInput implements UserInput {
             // to keep programs more or less constant size.
             settings.skipInstructionProbability = getDouble("Probability of skipping instruction", settings.newInstructionProbability);
             settings.instructionMutationProbability = getDouble("Instruction mutation probability", settings.instructionMutationProbability);
-            settings.minimumOutcomesToAllowBreeding = getInteger("Minimum outcomes to allow breeding", settings.minimumOutcomesToAllowBreeding);
-            settings.minimumOutcomesBetweenBreeding = getInteger("Minimum outcomes between breeding", settings.minimumOutcomesBetweenBreeding);
+            settings.minimumOutcomesToAllowBreeding = getLong("Minimum outcomes to allow breeding", settings.minimumOutcomesToAllowBreeding);
+            settings.minimumOutcomesBetweenBreeding = getLong("Minimum outcomes between breeding", settings.minimumOutcomesBetweenBreeding);
             settings.killNonPredictingPrograms = getBoolean("Kill non-predicting programs", settings.killNonPredictingPrograms);
             settings.randomProgramsAtEachUpdate = getDouble("Random programs at each update", settings.randomProgramsAtEachUpdate);
             settings.protectBestPrograms = getDouble("Protect best programs", settings.protectBestPrograms);
@@ -55,21 +55,31 @@ class ConsoleInput implements UserInput {
     }
 
     private double getDouble(String s, double value) {
-        displayMessage(s,String.valueOf(value));
-        String response = getString(null,String.valueOf(value));
+        String str = String.valueOf(value);
+        displayMessage(s,str);
+        String response = getString(null,str);
         return Double.parseDouble(response);
     }
 
     private int getInteger(String message, int def) {
-        displayMessage(message,String.valueOf(def));
-        String response = getString(null,String.valueOf(def));
+        String str = String.valueOf(def);
+        displayMessage(message,str);
+        String response = getString(null,str);
         return Integer.parseInt(response);
     }
 
     private boolean getBoolean(String message, boolean def) {
-        displayMessage(message, String.valueOf(def));
-        String response = getString(null,String.valueOf(def));
+        String str = String.valueOf(def);
+        displayMessage(message, str);
+        String response = getString(null,str);
         return Boolean.valueOf(response);
+    }
+
+    private long getLong(String message, long def) {
+        String str = String.valueOf(def);
+        displayMessage(message,str);
+        String response = getString(null,str);
+        return Long.parseLong(response);
     }
 
     private String getString(String message, String def) {
@@ -84,11 +94,5 @@ class ConsoleInput implements UserInput {
     private void displayMessage(String message, String def) {
         if(message != null)
             System.out.print(String.format("%s [%s]: ",message,def));
-    }
-
-    private long getLong(String message, String value) {
-        displayMessage(message,value);
-        String response = getString(null,value);
-        return Long.parseLong(response);
     }
 }
