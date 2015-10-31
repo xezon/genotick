@@ -7,7 +7,6 @@ public class MainSettings {
 
     public TimePoint startTimePoint;
     public TimePoint endTimePoint;
-    public String dataLoader = "data";
     public String populationDAO = "RAM";
     public boolean executionOnly = false;
 

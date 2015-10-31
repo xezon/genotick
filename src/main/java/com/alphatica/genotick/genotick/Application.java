@@ -58,11 +58,11 @@ public class Application {
     private Engine wireEngine(MainSettings settings, MainAppData data, ProgramKiller killer,
                               ProgramBreeder breeder, Population population) {
         EngineSettings engineSettings = getEngineSettings(settings);
-        TimePointExecutor timePointExecutor = wireTimePointExecutor(settings, population);
+        TimePointExecutor timePointExecutor = wireTimePointExecutor(settings);
         return EngineFactory.getDefaultEngine(engineSettings, data, timePointExecutor, killer, breeder, population);
     }
 
-    private TimePointExecutor wireTimePointExecutor(MainSettings settings, Population population) {
+    private TimePointExecutor wireTimePointExecutor(MainSettings settings) {
         DataSetExecutor dataSetExecutor = wireDataSetExecutor(settings);
         return TimePointExecutorFactory.getDefaultExecutor(dataSetExecutor);
     }
@@ -77,8 +77,7 @@ public class Application {
     private DataSetExecutor wireDataSetExecutor(MainSettings settings) {
         ProgramExecutorSettings programExecutorSettings = new ProgramExecutorSettings();
         programExecutorSettings.instructionLimit = settings.processorInstructionLimit;
-        ProgramExecutor programExecutor = ProgramExecutorFactory.getDefaultProgramExecutor(programExecutorSettings);
-        return DataSetExecutorFactory.getDefaultSetExecutor(programExecutor);
+        return DataSetExecutorFactory.getDefaultSetExecutor(programExecutorSettings);
     }
 
     private ProgramBreeder wireProgramBreeder(MainSettings settings, Mutator mutator) {
