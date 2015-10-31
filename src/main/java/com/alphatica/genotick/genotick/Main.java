@@ -1,6 +1,6 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.genotick.reversal.Reversal;
+import com.alphatica.genotick.reversal.Reversal;
 import com.alphatica.genotick.ui.Parameters;
 import com.alphatica.genotick.ui.UserInput;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
