@@ -2,6 +2,7 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.Program;
+import com.alphatica.genotick.population.ProgramName;
 
 import java.util.List;
 
@@ -25,6 +26,19 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         }
         return timePointResult;
     }
+
+
+   /*
+    private TimePointResult executeParallel(TimePoint timePoint, List<ProgramData> programDataList, Population population) {
+        TimePointResult timePointResult = new TimePointResult(timePoint);
+        if(programDataList.isEmpty())
+            return timePointResult;
+        for(ProgramName programName: population.listProgramNames()) {
+
+        }
+
+    }
+    */
 
     @Override
     public void setSettings(DataSetExecutor dataSetExecutor) {

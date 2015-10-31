@@ -124,6 +124,16 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         this.programsPath = pathToDir;
     }
 
+    @Override
+    public ProgramName[] listProgramNames() {
+        String [] files = listFiles(programsPath);
+        ProgramName[] names = new ProgramName[files.length];
+        for(int i = 0; i < files.length; i++) {
+            names[i] = new ProgramName(Long.valueOf(files[i]));
+        }
+        return names;
+    }
+
 
     @Override
     public Program getProgramByName(ProgramName name) {
