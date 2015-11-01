@@ -23,36 +23,44 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         TimePointResult timePointResult = new TimePointResult(timePoint);
         if(programDataList.isEmpty())
             return timePointResult;
-        List<Future<ProgramResult>> tasks = submitTasks(programDataList,population);
+        List<Future<List<ProgramResult>>> tasks = submitTasks(programDataList,population);
         getResults(timePointResult,tasks);
         return timePointResult;
     }
 
-    private class Task implements Callable<ProgramResult> {
+    private class Task implements Callable<List<ProgramResult>> {
 
         private final ProgramName programName;
-        private final ProgramData programData;
+        private final List<ProgramData> programDataList;
         private final Population population;
 
-        public Task(ProgramName programName, ProgramData programData, Population population) {
+        public Task(ProgramName programName, List<ProgramData> programDataList, Population population) {
             this.programName = programName;
-            this.programData = programData;
+            this.programDataList = programDataList;
             this.population = population;
         }
 
         @Override
-        public ProgramResult call() throws Exception {
-            return dataSetExecutor.execute(programData,programName,population);
+        public List<ProgramResult> call() throws Exception {
+            List<ProgramResult> list = new ArrayList<>();
+            for(ProgramData programData: programDataList) {
+                ProgramResult result = dataSetExecutor.execute(programData,programName,population);
+                list.add(result);
+            }
+            return list;
         }
     }
 
-    private void getResults(TimePointResult timePointResult, List<Future<ProgramResult>> tasks) {
+    private void getResults(TimePointResult timePointResult, List<Future<List<ProgramResult>>> tasks) {
         while(!tasks.isEmpty()) {
             try {
-                Future<ProgramResult> future = tasks.get(tasks.size()-1);
-                ProgramResult result = future.get();
-                tasks.remove(tasks.size()-1);
-                timePointResult.addProgramResult(result,result.getData().getName());
+                int lastIndex = tasks.size() - 1;
+                Future<List<ProgramResult>> future = tasks.get(lastIndex);
+                List<ProgramResult> results = future.get();
+                tasks.remove(lastIndex);
+                for(ProgramResult result: results) {
+                    timePointResult.addProgramResult(result, result.getData().getName());
+                }
             } catch (InterruptedException ignore) {
                 /* Do nothing, try again */
             } catch (ExecutionException e) {
@@ -61,14 +69,15 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         }
     }
 
-    private List<Future<ProgramResult>> submitTasks(List<ProgramData> programDataList, Population population) {
-        List<Future<ProgramResult>> tasks = new ArrayList<>();
+    /*
+     Return type here is as ugly as it gets and I'm not proud. However, it seems to be the quickest.
+     */
+    private List<Future<List<ProgramResult>>> submitTasks(List<ProgramData> programDataList, Population population) {
+        List<Future<List<ProgramResult>>> tasks = new ArrayList<>();
         for(ProgramName programName: population.listProgramNames()) {
-            for(ProgramData programData: programDataList) {
-                Task task = new Task(programName,programData,population);
-                Future<ProgramResult> future = executorService.submit(task);
-                tasks.add(future);
-            }
+            Task task = new Task(programName, programDataList, population);
+            Future<List<ProgramResult>> future = executorService.submit(task);
+            tasks.add(future);
         }
         return tasks;
     }
