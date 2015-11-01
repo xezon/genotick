@@ -54,36 +54,34 @@ public class MainSettings {
     public void validate() {
         ensure(startTimePoint.compareTo(endTimePoint) < 0,
                 "Start TimePoint must be lower than End TimePoint");
-        ensure(populationDesiredSize > 0, gt0("Population desired size"));
-        ensure(dataMaximumOffset > 0, gt0("Data Maximum Offset"));
-        ensure(processorInstructionLimit > 0,gt0("Processor Instruction Limit"));
-        ensure(check0to1(maximumDeathByAge), zto1("Maximum Death by Age"));
-        ensure(check0to1(maximumDeathByWeight),zto1("Maximum Death by Weight"));
-        ensure(check0to1(probabilityOfDeathByAge),zto1("Probability Death by Age"));
-        ensure(check0to1(inheritedChildWeight),zto1("Inherited Child's Weight"));
-        ensure(protectProgramUntilOutcomes >= 0, al0("Protect Programs until Outcomes"));
-        ensure(check0to1(newInstructionProbability),zto1("New Instruction Probability"));
-        ensure(check0to1(instructionMutationProbability),zto1("Instruction Mutation Probability"));
-        ensure(check0to1(skipInstructionProbability),zto1("Skip Instruction Probability"));
-        ensure(minimumOutcomesToAllowBreeding >= 0,al0("Minimum outcomes to allow breeding"));
-        ensure(minimumOutcomesBetweenBreeding >= 0, al0("Minimum outcomes between breeding"));
-        ensure(randomProgramsAtEachUpdate >=0, zto1("Random Programs at Each Update"));
-        ensure(protectBestPrograms >= 0, zto1("Protect Best Programs"));
+        ensure(populationDesiredSize > 0, greaterThanZeroString("Population desired size"));
+        ensure(dataMaximumOffset > 0, greaterThanZeroString("Data Maximum Offset"));
+        ensure(processorInstructionLimit > 0, greaterThanZeroString("Processor Instruction Limit"));
+        ensure(checkZeroToOne(maximumDeathByAge), zeroToOneString("Maximum Death by Age"));
+        ensure(checkZeroToOne(maximumDeathByWeight), zeroToOneString("Maximum Death by Weight"));
+        ensure(checkZeroToOne(probabilityOfDeathByAge), zeroToOneString("Probability Death by Age"));
+        ensure(checkZeroToOne(inheritedChildWeight), zeroToOneString("Inherited Child's Weight"));
+        ensure(protectProgramUntilOutcomes >= 0, atLeastZeroString("Protect Programs until Outcomes"));
+        ensure(checkZeroToOne(newInstructionProbability), zeroToOneString("New Instruction Probability"));
+        ensure(checkZeroToOne(instructionMutationProbability), zeroToOneString("Instruction Mutation Probability"));
+        ensure(checkZeroToOne(skipInstructionProbability), zeroToOneString("Skip Instruction Probability"));
+        ensure(minimumOutcomesToAllowBreeding >= 0, atLeastZeroString("Minimum outcomes to allow breeding"));
+        ensure(minimumOutcomesBetweenBreeding >= 0, atLeastZeroString("Minimum outcomes between breeding"));
+        ensure(randomProgramsAtEachUpdate >=0, zeroToOneString("Random Programs at Each Update"));
+        ensure(protectBestPrograms >= 0, zeroToOneString("Protect Best Programs"));
 
     }
-    private String al0(String s) {
+    private String atLeastZeroString(String s) {
         return s + " must be at least 0";
     }
-    private String zto1(String s) {
+    private String zeroToOneString(String s) {
         return s + " must be between 0.0 and 1.0";
     }
-
-    private boolean check0to1(double value) {
-        return value >= 0 && value <= 1;
-    }
-
-    private String gt0(String s) {
+    private String greaterThanZeroString(String s) {
         return s + " must be greater than 0";
+    }
+    private boolean checkZeroToOne(double value) {
+        return value >= 0 && value <= 1;
     }
 
     private void ensure(boolean condition, String message) {

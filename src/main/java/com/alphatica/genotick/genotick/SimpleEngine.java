@@ -23,6 +23,9 @@ public class SimpleEngine implements Engine {
 
     private SimpleEngine() {
     }
+    public static Engine getEngine() {
+        return new SimpleEngine();
+    }
 
     @Override
     public List<TimePointStats> start() {
@@ -43,17 +46,6 @@ public class SimpleEngine implements Engine {
         return timePointStats;
     }
 
-    private String getSavedPopulationDirName() {
-        String prefix = "savedPopulation_";
-        DateFormat format = new SimpleDateFormat("yyyy_MM_dd_kk_mm");
-        return prefix + format.format(Calendar.getInstance().getTime());
-    }
-
-    private void initPopulation() {
-        if(population.getSize() == 0 && !engineSettings.executionOnly)
-            breeder.breedPopulation(population);
-    }
-
     @Override
     public void setSettings(EngineSettings engineSettings,
                             TimePointExecutor timePointExecutor,
@@ -67,6 +59,17 @@ public class SimpleEngine implements Engine {
         this.breeder = breeder;
         this.population = population;
         this.data = data;
+    }
+
+    private String getSavedPopulationDirName() {
+        String prefix = "savedPopulation_";
+        DateFormat format = new SimpleDateFormat("yyyy_MM_dd_kk_mm");
+        return prefix + format.format(Calendar.getInstance().getTime());
+    }
+
+    private void initPopulation() {
+        if(population.getSize() == 0 && !engineSettings.executionOnly)
+            breeder.breedPopulation(population);
     }
 
     private TimePointStats executeTimePoint(TimePoint timePoint) {
@@ -144,13 +147,11 @@ public class SimpleEngine implements Engine {
     private void updateProgramResults(Map<ProgramName, List<Outcome>> programResults) {
         if(programResults.isEmpty())
             return;
-        Debug.d("updateProgramResults");
         for(Map.Entry<ProgramName, List<Outcome>> entry: programResults.entrySet()) {
             Program program = population.getProgram(entry.getKey());
             program.recordOutcomes(entry.getValue());
             population.saveProgram(program);
         }
-        Debug.d("Finished updateProgramResults");
     }
 
     private void updateProgramPredictions(HashMap<ProgramName, List<Outcome>> programPredictions, DataSetResult dataSetResult,double actualChange) {
@@ -169,11 +170,5 @@ public class SimpleEngine implements Engine {
         }
         return list;
     }
-
-
-    public static Engine getEngine() {
-        return new SimpleEngine();
-    }
-
 
 }
