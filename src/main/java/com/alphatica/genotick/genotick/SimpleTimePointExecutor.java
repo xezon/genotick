@@ -15,7 +15,7 @@ class SimpleTimePointExecutor implements TimePointExecutor {
 
     public SimpleTimePointExecutor() {
         int cores = Runtime.getRuntime().availableProcessors();
-        executorService = Executors.newFixedThreadPool(cores * 2, new DemonThreadFactory());
+        executorService = Executors.newFixedThreadPool(cores * 2, new DaemonThreadFactory());
     }
 
     @Override
@@ -64,7 +64,7 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         this.dataSetExecutor = dataSetExecutor;
     }
 
-    private class DemonThreadFactory implements ThreadFactory {
+    private class DaemonThreadFactory implements ThreadFactory {
         @Override
         public Thread newThread(Runnable runnable) {
             Thread thread = new Thread(runnable);
