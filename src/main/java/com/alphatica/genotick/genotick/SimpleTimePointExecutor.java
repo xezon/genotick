@@ -15,7 +15,7 @@ class SimpleTimePointExecutor implements TimePointExecutor {
 
     public SimpleTimePointExecutor() {
         int cores = Runtime.getRuntime().availableProcessors();
-        executorService = Executors.newFixedThreadPool(cores * 2);
+        executorService = Executors.newFixedThreadPool(cores * 2, new DemonThreadFactory());
     }
 
     @Override
@@ -26,29 +26,6 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         List<Future<List<ProgramResult>>> tasks = submitTasks(programDataList,population);
         getResults(timePointResult,tasks);
         return timePointResult;
-    }
-
-    private class Task implements Callable<List<ProgramResult>> {
-
-        private final ProgramName programName;
-        private final List<ProgramData> programDataList;
-        private final Population population;
-
-        public Task(ProgramName programName, List<ProgramData> programDataList, Population population) {
-            this.programName = programName;
-            this.programDataList = programDataList;
-            this.population = population;
-        }
-
-        @Override
-        public List<ProgramResult> call() throws Exception {
-            List<ProgramResult> list = new ArrayList<>();
-            for(ProgramData programData: programDataList) {
-                ProgramResult result = dataSetExecutor.execute(programData,programName,population);
-                list.add(result);
-            }
-            return list;
-        }
     }
 
     private void getResults(TimePointResult timePointResult, List<Future<List<ProgramResult>>> tasks) {
@@ -85,5 +62,37 @@ class SimpleTimePointExecutor implements TimePointExecutor {
     @Override
     public void setSettings(DataSetExecutor dataSetExecutor) {
         this.dataSetExecutor = dataSetExecutor;
+    }
+
+    private class DemonThreadFactory implements ThreadFactory {
+        @Override
+        public Thread newThread(Runnable runnable) {
+            Thread thread = new Thread(runnable);
+            thread.setDaemon(true);
+            return thread;
+        }
+    }
+
+    private class Task implements Callable<List<ProgramResult>> {
+
+        private final ProgramName programName;
+        private final List<ProgramData> programDataList;
+        private final Population population;
+
+        public Task(ProgramName programName, List<ProgramData> programDataList, Population population) {
+            this.programName = programName;
+            this.programDataList = programDataList;
+            this.population = population;
+        }
+
+        @Override
+        public List<ProgramResult> call() throws Exception {
+            List<ProgramResult> list = new ArrayList<>();
+            for(ProgramData programData: programDataList) {
+                ProgramResult result = dataSetExecutor.execute(programData,programName,population);
+                list.add(result);
+            }
+            return list;
+        }
     }
 }
