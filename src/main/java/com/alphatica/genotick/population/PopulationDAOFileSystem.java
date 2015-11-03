@@ -107,7 +107,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
             l = random.nextLong();
             if(l < 0)
                 l = -l;
-            file = new File(programsPath + String.valueOf(l));
+            file = new File(programsPath + String.valueOf(l) + FILE_EXTENSION);
         } while (file.exists());
         return new ProgramName(l);
     }
@@ -129,7 +129,8 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         String [] files = listFiles(programsPath);
         ProgramName[] names = new ProgramName[files.length];
         for(int i = 0; i < files.length; i++) {
-            names[i] = new ProgramName(Long.valueOf(files[i]));
+            String longString = files[i].substring(0,files[i].indexOf('.'));
+            names[i] = new ProgramName(Long.valueOf(longString));
         }
         return names;
     }
