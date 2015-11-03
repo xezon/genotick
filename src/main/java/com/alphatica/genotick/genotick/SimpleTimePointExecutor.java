@@ -36,7 +36,7 @@ class SimpleTimePointExecutor implements TimePointExecutor {
                 List<ProgramResult> results = future.get();
                 tasks.remove(lastIndex);
                 for(ProgramResult result: results) {
-                    timePointResult.addProgramResult(result, result.getData().getName());
+                    timePointResult.addProgramResult(result);
                 }
             } catch (InterruptedException ignore) {
                 /* Do nothing, try again */
@@ -66,7 +66,7 @@ class SimpleTimePointExecutor implements TimePointExecutor {
 
     private class DaemonThreadFactory implements ThreadFactory {
         @Override
-        public Thread newThread(Runnable runnable) {
+        public Thread newThread(@SuppressWarnings("NullableProblems") Runnable runnable) {
             Thread thread = new Thread(runnable);
             thread.setDaemon(true);
             return thread;
