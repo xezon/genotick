@@ -1,5 +1,6 @@
 package com.alphatica.genotick.genotick;
 
+import com.alphatica.genotick.data.YahooFixer;
 import com.alphatica.genotick.reversal.Reversal;
 import com.alphatica.genotick.ui.Parameters;
 import com.alphatica.genotick.ui.UserInput;
@@ -15,7 +16,18 @@ class Main {
         Parameters parameters = new Parameters(args);
         getUserIO(parameters);
         checkReverse(parameters);
+        checkYahoo(parameters);
         checkSimulation(parameters);
+    }
+
+    private static void checkYahoo(Parameters parameters) {
+        String yahooValue = parameters.getValue("fixYahoo");
+        if(yahooValue == null) {
+            return;
+        }
+        YahooFixer yahooFixer = new YahooFixer(yahooValue,output);
+        yahooFixer.fixFiles();
+        System.exit(0);
     }
 
     private static void setupDebug() {
