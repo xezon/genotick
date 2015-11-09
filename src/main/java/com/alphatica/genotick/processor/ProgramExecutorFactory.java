@@ -7,12 +7,6 @@ import com.alphatica.genotick.processor.SimpleProcessor;
 public class ProgramExecutorFactory {
     private final ProgramExecutorSettings settings;
 
-    public static ProgramExecutor getDefaultProgramExecutor(ProgramExecutorSettings settings) {
-        ProgramExecutor executor = SimpleProcessor.createProcessor();
-        executor.setSettings(settings);
-        return executor;
-    }
-
     public ProgramExecutorFactory(ProgramExecutorSettings settings) {
         this.settings = settings;
     }

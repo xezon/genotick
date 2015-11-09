@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataUtils {
+@SuppressWarnings("WeakerAccess")
+class DataUtils {
 
     public static String[] listFiles(final String path, final String extension) {
         return new File(path).list(new FilenameFilter() {

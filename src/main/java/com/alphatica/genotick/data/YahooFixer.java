@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class YahooFixer {
-    private final String extension = ".csv";
     private final String path;
     private final UserOutput output;
 
@@ -20,6 +19,7 @@ public class YahooFixer {
     }
 
     public void fixFiles() {
+        String extension = ".csv";
         String [] names = DataUtils.listFiles(path, extension);
         if(names == null) {
             throw new DataException("Unable to list files in " + path);
@@ -124,8 +124,7 @@ public class YahooFixer {
     }
 
     private void ignoreFirstLine(BufferedReader br) throws IOException {
-        @SuppressWarnings("unused")
-        String ignoreFirstList = br.readLine();
+        br.readLine();
     }
 
 }

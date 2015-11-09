@@ -2,14 +2,14 @@ package com.alphatica.genotick.data;
 
 import com.alphatica.genotick.genotick.Debug;
 
-import javax.xml.crypto.Data;
-import java.io.*;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 public class FileSystemDataLoader implements DataLoader {
     private final String path;
-    private final String extension = ".csv";
 
     public FileSystemDataLoader(String args) {
         path = args;
@@ -22,7 +22,8 @@ public class FileSystemDataLoader implements DataLoader {
 
     private MainAppData loadData() {
         MainAppData data = new MainAppData();
-        String[] names = DataUtils.listFiles(path,extension);
+        String extension = ".csv";
+        String[] names = DataUtils.listFiles(path, extension);
         if(names == null) {
             throw new DataException("Unable to list files in " + path);
         }

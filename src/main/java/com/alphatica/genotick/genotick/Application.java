@@ -33,16 +33,9 @@ public class Application {
         Mutator mutator = getMutator(mainSettings);
         ProgramBreeder breeder = wireProgramBreeder(mainSettings, mutator);
         Population population = wirePopulation(mainSettings);
-        ProgramExecutorSettings programExecutorSettings = wireProgramExecutorSettings(mainSettings);
-        Engine engine = wireEngine(mainSettings, programExecutorSettings,data, killer, breeder, population);
+        Engine engine = wireEngine(mainSettings, data, killer, breeder, population);
         List<TimePointStats> results = engine.start();
         showSummary(results);
-    }
-
-    private ProgramExecutorSettings wireProgramExecutorSettings(MainSettings mainSettings) {
-        ProgramExecutorSettings programExecutorSettings = new ProgramExecutorSettings();
-        programExecutorSettings.instructionLimit = mainSettings.processorInstructionLimit;
-        return programExecutorSettings;
     }
 
     public MainAppData createData(String dataSettings) {
@@ -60,18 +53,17 @@ public class Application {
         }
     }
 
-
-    private Engine wireEngine(MainSettings mainSettings, ProgramExecutorSettings programExecutorSettings,
-                              MainAppData data, ProgramKiller killer,
+    private Engine wireEngine(MainSettings mainSettings, MainAppData data, ProgramKiller killer,
                               ProgramBreeder breeder, Population population) {
         EngineSettings engineSettings = getEngineSettings(mainSettings);
-        ProgramExecutorFactory programExecutorFactory = new ProgramExecutorFactory(programExecutorSettings);
-        TimePointExecutor timePointExecutor = wireTimePointExecutor(mainSettings,programExecutorFactory);
+        TimePointExecutor timePointExecutor = wireTimePointExecutor(mainSettings);
         return EngineFactory.getDefaultEngine(engineSettings, data, timePointExecutor, killer, breeder, population);
     }
 
-    private TimePointExecutor wireTimePointExecutor(MainSettings settings, ProgramExecutorFactory programExecutorFactory) {
-        DataSetExecutor dataSetExecutor = wireDataSetExecutor(settings);
+    private TimePointExecutor wireTimePointExecutor(MainSettings settings) {
+        DataSetExecutor dataSetExecutor = new SimpleDataSetExecutor();
+        ProgramExecutorSettings programExecutorSettings = new ProgramExecutorSettings(settings);
+        ProgramExecutorFactory programExecutorFactory = new ProgramExecutorFactory(programExecutorSettings);
         return TimePointExecutorFactory.getDefaultExecutor(dataSetExecutor,programExecutorFactory);
     }
 
@@ -80,12 +72,6 @@ public class Application {
         Population population = PopulationFactory.getDefaultPopulation(dao);
         population.setDesiredSize(settings.populationDesiredSize);
         return population;
-    }
-
-    private DataSetExecutor wireDataSetExecutor(MainSettings settings) {
-        ProgramExecutorSettings programExecutorSettings = new ProgramExecutorSettings();
-        programExecutorSettings.instructionLimit = settings.processorInstructionLimit;
-        return DataSetExecutorFactory.getDefaultSetExecutor(programExecutorSettings);
     }
 
     private ProgramBreeder wireProgramBreeder(MainSettings settings, Mutator mutator) {
