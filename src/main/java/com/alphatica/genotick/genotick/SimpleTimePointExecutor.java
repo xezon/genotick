@@ -1,6 +1,8 @@
 package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.population.Population;
+import com.alphatica.genotick.population.Program;
+import com.alphatica.genotick.population.ProgramExecutor;
 import com.alphatica.genotick.population.ProgramName;
 import com.alphatica.genotick.processor.ProgramExecutorFactory;
 
@@ -90,11 +92,10 @@ class SimpleTimePointExecutor implements TimePointExecutor {
 
         @Override
         public List<ProgramResult> call() throws Exception {
-            List<ProgramResult> list = new ArrayList<>();
-            for(ProgramData programData: programDataList) {
-                ProgramResult result = dataSetExecutor.execute(programData,programName,population);
-                list.add(result);
-            }
+            ProgramExecutor programExecutor = programExecutorFactory.getDefaultProgramExecutor();
+            Program program = population.getProgram(programName);
+            List<ProgramResult> list = dataSetExecutor.execute(programDataList,program,programExecutor);
+            population.saveProgram(program);
             return list;
         }
     }
