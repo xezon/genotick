@@ -95,8 +95,15 @@ class SimpleTimePointExecutor implements TimePointExecutor {
             ProgramExecutor programExecutor = programExecutorFactory.getDefaultProgramExecutor();
             Program program = population.getProgram(programName);
             List<ProgramResult> list = dataSetExecutor.execute(programDataList,program,programExecutor);
-            population.saveProgram(program);
+            updateProgram(program,list);
             return list;
+        }
+
+        private void updateProgram(Program program,List<ProgramResult> list) {
+            for(ProgramResult result: list) {
+                program.recordPrediction(result.getPrediction());
+            }
+            population.saveProgram(program);
         }
     }
 }
