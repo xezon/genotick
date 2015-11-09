@@ -13,6 +13,7 @@ import com.alphatica.genotick.mutator.Mutator;
 import com.alphatica.genotick.mutator.MutatorFactory;
 import com.alphatica.genotick.mutator.MutatorSettings;
 import com.alphatica.genotick.population.*;
+import com.alphatica.genotick.processor.ProgramExecutorFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.util.List;
@@ -24,17 +25,24 @@ public class Application {
         this.output = output;
     }
 
-    public void start(MainSettings settings, MainAppData data) {
-        if(!validateSettings(settings))
+    public void start(MainSettings mainSettings, MainAppData data) {
+        if(!validateSettings(mainSettings))
             return;
-        logSettings(settings);
-        ProgramKiller killer = getProgramKiller(settings);
-        Mutator mutator = getMutator(settings);
-        ProgramBreeder breeder = wireProgramBreeder(settings, mutator);
-        Population population = wirePopulation(settings);
-        Engine engine = wireEngine(settings, data, killer, breeder, population);
+        logSettings(mainSettings);
+        ProgramKiller killer = getProgramKiller(mainSettings);
+        Mutator mutator = getMutator(mainSettings);
+        ProgramBreeder breeder = wireProgramBreeder(mainSettings, mutator);
+        Population population = wirePopulation(mainSettings);
+        ProgramExecutorSettings programExecutorSettings = wireProgramExecutorSettings(mainSettings);
+        Engine engine = wireEngine(mainSettings, programExecutorSettings,data, killer, breeder, population);
         List<TimePointStats> results = engine.start();
         showSummary(results);
+    }
+
+    private ProgramExecutorSettings wireProgramExecutorSettings(MainSettings mainSettings) {
+        ProgramExecutorSettings programExecutorSettings = new ProgramExecutorSettings();
+        programExecutorSettings.instructionLimit = mainSettings.processorInstructionLimit;
+        return programExecutorSettings;
     }
 
     public MainAppData createData(String dataSettings) {
@@ -53,16 +61,18 @@ public class Application {
     }
 
 
-    private Engine wireEngine(MainSettings settings, MainAppData data, ProgramKiller killer,
+    private Engine wireEngine(MainSettings mainSettings, ProgramExecutorSettings programExecutorSettings,
+                              MainAppData data, ProgramKiller killer,
                               ProgramBreeder breeder, Population population) {
-        EngineSettings engineSettings = getEngineSettings(settings);
-        TimePointExecutor timePointExecutor = wireTimePointExecutor(settings);
+        EngineSettings engineSettings = getEngineSettings(mainSettings);
+        ProgramExecutorFactory programExecutorFactory = new ProgramExecutorFactory(programExecutorSettings);
+        TimePointExecutor timePointExecutor = wireTimePointExecutor(mainSettings,programExecutorFactory);
         return EngineFactory.getDefaultEngine(engineSettings, data, timePointExecutor, killer, breeder, population);
     }
 
-    private TimePointExecutor wireTimePointExecutor(MainSettings settings) {
+    private TimePointExecutor wireTimePointExecutor(MainSettings settings, ProgramExecutorFactory programExecutorFactory) {
         DataSetExecutor dataSetExecutor = wireDataSetExecutor(settings);
-        return TimePointExecutorFactory.getDefaultExecutor(dataSetExecutor);
+        return TimePointExecutorFactory.getDefaultExecutor(dataSetExecutor,programExecutorFactory);
     }
 
     private Population wirePopulation(MainSettings settings) {

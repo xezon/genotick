@@ -2,6 +2,7 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.ProgramName;
+import com.alphatica.genotick.processor.ProgramExecutorFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +10,9 @@ import java.util.concurrent.*;
 
 class SimpleTimePointExecutor implements TimePointExecutor {
 
-    private DataSetExecutor dataSetExecutor;
     private final ExecutorService executorService;
+    private DataSetExecutor dataSetExecutor;
+    private ProgramExecutorFactory programExecutorFactory;
 
 
     public SimpleTimePointExecutor() {
@@ -60,8 +62,9 @@ class SimpleTimePointExecutor implements TimePointExecutor {
     }
 
     @Override
-    public void setSettings(DataSetExecutor dataSetExecutor) {
+    public void setSettings(DataSetExecutor dataSetExecutor, ProgramExecutorFactory programExecutorFactory) {
         this.dataSetExecutor = dataSetExecutor;
+        this.programExecutorFactory = programExecutorFactory;
     }
 
     private class DaemonThreadFactory implements ThreadFactory {
