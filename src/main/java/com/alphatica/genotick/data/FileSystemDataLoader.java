@@ -31,6 +31,9 @@ public class FileSystemDataLoader implements DataLoader {
             Debug.d("Reading file", name);
             data.addDataSet(createDataSet(name));
         }
+        if(data.isEmpty()) {
+            throw new DataException("Directory " + path + " is empty!");
+        }
         return data;
 
     }

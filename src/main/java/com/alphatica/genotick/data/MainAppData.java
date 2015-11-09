@@ -66,4 +66,9 @@ public class MainAppData {
     public DataSet[] listSets() {
         return sets.toArray(new DataSet[sets.size()]);
     }
+
+
+    public boolean isEmpty() {
+        return sets.isEmpty();
+    }
 }
