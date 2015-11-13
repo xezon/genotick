@@ -2,6 +2,7 @@ package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.Application;
+import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.genotick.TimePoint;
 
@@ -19,7 +20,7 @@ class ConsoleInput implements UserInput {
 
     @Override
     public void show(Application application) {
-        String dataDirectory = getString("Data directory", MainSettings.DEFAULT_DATA_DIR);
+        String dataDirectory = getString("Data directory", Main.DEFAULT_DATA_DIR);
         MainAppData data = application.createData(dataDirectory);
         MainSettings settings = MainSettings.getSettings(data.getFirstTimePoint(), data.getLastTimePoint());
         settings.startTimePoint = new TimePoint(getLong("Start time point",settings.startTimePoint.getValue()));

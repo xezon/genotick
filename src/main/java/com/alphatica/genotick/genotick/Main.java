@@ -7,7 +7,8 @@ import com.alphatica.genotick.ui.UserInput;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
-class Main {
+public class Main {
+    public static final String DEFAULT_DATA_DIR = "data";
     private static UserInput input;
     private static UserOutput output;
 

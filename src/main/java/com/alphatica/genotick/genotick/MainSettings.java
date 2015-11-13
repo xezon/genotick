@@ -3,7 +3,6 @@ package com.alphatica.genotick.genotick;
 import java.lang.reflect.Field;
 
 public class MainSettings {
-    public static final String DEFAULT_DATA_DIR = "data";
 
     public TimePoint startTimePoint;
     public TimePoint endTimePoint;
@@ -42,6 +41,7 @@ public class MainSettings {
         StringBuilder sb = new StringBuilder();
         Field [] fields = this.getClass().getDeclaredFields();
         for(Field field: fields) {
+
             try {
                 sb.append(field.getName()).append(" ").append(field.get(this)).append("\n");
             } catch (IllegalAccessException e) {

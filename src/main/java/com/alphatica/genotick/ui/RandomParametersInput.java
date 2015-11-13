@@ -2,6 +2,7 @@ package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.Application;
+import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 
 import java.util.Random;
@@ -12,7 +13,7 @@ class RandomParametersInput implements UserInput {
 
     @Override
     public void show(Application application) {
-        MainAppData data = application.createData(MainSettings.DEFAULT_DATA_DIR);
+        MainAppData data = application.createData(Main.DEFAULT_DATA_DIR);
         MainSettings defaults = MainSettings.getSettings(data.getFirstTimePoint(),data.getLastTimePoint());
         MainSettings appSettings = getSettings(defaults);
         application.start(appSettings, data);
