@@ -198,6 +198,10 @@ public class Debug {
             printBytes(stream,String.valueOf(element.getLineNumber()).getBytes());
             printNewLine(stream);
         }
+        if(throwable.getCause() != null) {
+            printBytes(stream,"Caused by:\n".getBytes());
+            printThrowable(stream,throwable.getCause());
+        }
     }
 
     private static void printBytes(OutputStream stream, byte[] bytes) {
