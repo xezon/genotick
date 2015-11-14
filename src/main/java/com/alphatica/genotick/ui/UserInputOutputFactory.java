@@ -9,7 +9,7 @@ public class UserInputOutputFactory {
         String input = parameters.getValue(INPUT_STRING);
         parameters.removeKey(INPUT_STRING);
         if(input == null)
-            return new DefaultInputs();
+            return new ConsoleInput();
         switch(input) {
             case "default": return new DefaultInputs();
             case "random": return new RandomParametersInput();
