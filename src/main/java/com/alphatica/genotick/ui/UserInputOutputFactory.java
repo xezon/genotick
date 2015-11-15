@@ -9,7 +9,7 @@ public class UserInputOutputFactory {
         String input = parameters.getValue(INPUT_STRING);
         parameters.removeKey(INPUT_STRING);
         if(input == null)
-            return new ConsoleInput();
+            return tryConsoleInput();
         if(input.startsWith("file:")) {
             return new FileInput(input);
         }
