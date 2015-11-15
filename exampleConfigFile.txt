@@ -15,7 +15,7 @@ dataDirectory data_forex
 # end when data ends
 #endTimePoint	20150101
 
-# two possible options: RAM and FileSystem. Use RAM to keep population in... (guess!). 
+# Two possible options: RAM and FileSystem. Use RAM to keep population in... (guess!). 
 # Use “FileSystem” to keep population in files (they will be stored in directory “population” 
 # relative to your current directory. FileSystem is much slower but will allow for large population.
 populationDAO	RAM
@@ -34,17 +34,17 @@ populationDesiredSize	5000
 processorInstructionLimit	256
 
 # This setting is used to calculate how many programs is considered to be killed based on their age.
-maximumDeathByAge	0.1
+maximumDeathByAge	0.01
 
 # This setting is used to calculate how many programs is considered to be killed based on their weight.
-maximumDeathByWeight	0.1
+maximumDeathByWeight	0.01
 
 # Probability of killing program because it's too old.
-probabilityOfDeathByAge	0.1
+probabilityOfDeathByAge	0.5
 
 # Probability of a program getting killed because its weight is too close to 0. 
 # Currently, killing by weight happens only if there is no more space to breed in population.
-probabilityOfDeathByWeight	0.1
+probabilityOfDeathByWeight	0.5
 
 # When a child is born is weight is zero because it has no predictions. 
 # This setting enables setting child's weight as percentage (in range 0.. 1) of its parents' average weight. 
@@ -56,36 +56,37 @@ dataMaximumOffset	256
 
 # This is how long for a program is protected (i.e. cannot be killed). 
 # Number of outcomes increments by one for every data on every time point.
-protectProgramUntilOutcomes	42
+protectProgramUntilOutcomes	100
 
 # Probability of new instruction when making a child.
-newInstructionProbability	0.03
+newInstructionProbability	0.01
 
 # Probability of mutating existing instruction when making a child.
-instructionMutationProbability	0.02
+instructionMutationProbability	0.01
 
 # Probability of skipping an instruction when making a child. Better set it very close to newInstructionProbability, 
 # otherwise programs will either shrink (i.e. become useless) or grow uncontrollably (will execute forever).
-skipInstructionProbability	0.03
+skipInstructionProbability	0.01
 
 # This settings is used to decide when a program can have a child for the first time.
-minimumOutcomesToAllowBreeding	19
+minimumOutcomesToAllowBreeding	50
 
 # This setting is used to decide how soon a program can have a child after previous child.
-minimumOutcomesBetweenBreeding	7
+minimumOutcomesBetweenBreeding	50
 
 # If set to true programs that make no prediction will be removed immediately. Even if they protected by protectUntilOutcomes.
 killNonPredictingPrograms	true
 
 # Number of totally new and random programs to be added at each time point (as a fraction of PopulationDesiredSize). 
 # Even if population is full.
-randomProgramsAtEachUpdate	0.1
+randomProgramsAtEachUpdate	0.02
 
 # Elitism. Number of best programs to protect (as a fraction of PopulationDesiredSize). 
 # Even if they old and smell funny, as long as they useful.
-protectBestPrograms	0.5
+protectBestPrograms	0.02
 
 # Should be used only if every data file has its reversed equivalent. 
 # If set to true and a number of UP and DOWN predictions is not the same – it gets removed immediately. 
 # Even if it's protected.
 requireSymmetricalPrograms	true
+
