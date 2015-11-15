@@ -9,16 +9,26 @@ import com.alphatica.genotick.ui.UserOutput;
 
 public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
+    private static final String VERSION = "Genotick version 0.7 (copyleft 2015)";
     private static UserInput input;
     private static UserOutput output;
 
     public static void main(String... args) {
+
         setupDebug();
         Parameters parameters = new Parameters(args);
+        checkVersionRequest(parameters);
         getUserIO(parameters);
         checkReverse(parameters);
         checkYahoo(parameters);
         checkSimulation(parameters);
+    }
+
+    private static void checkVersionRequest(Parameters parameters) {
+        if(parameters.getValue("showVersion") != null) {
+            System.out.println(Main.VERSION);
+            System.exit(0);
+        }
     }
 
     private static void checkYahoo(Parameters parameters) {
