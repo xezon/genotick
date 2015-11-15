@@ -2,15 +2,17 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.breeder.ProgramBreeder;
 import com.alphatica.genotick.data.DataSetName;
+import com.alphatica.genotick.data.DataUtils;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.killer.ProgramKiller;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.Program;
 import com.alphatica.genotick.population.ProgramName;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class SimpleEngine implements Engine {
@@ -62,9 +64,7 @@ public class SimpleEngine implements Engine {
     }
 
     private String getSavedPopulationDirName() {
-        String prefix = "savedPopulation_";
-        DateFormat format = new SimpleDateFormat("yyyy_MM_dd_kk_mm");
-        return prefix + format.format(Calendar.getInstance().getTime());
+        return "savedPopulation_" + DataUtils.getDateTimeString();
     }
 
     private void initPopulation() {

@@ -1,5 +1,6 @@
 package com.alphatica.genotick.genotick;
 
+import com.alphatica.genotick.data.DataUtils;
 import com.alphatica.genotick.data.YahooFixer;
 import com.alphatica.genotick.reversal.Reversal;
 import com.alphatica.genotick.ui.Parameters;
@@ -43,7 +44,8 @@ public class Main {
 
     private static void setupDebug() {
         Debug.setShowTime(true);
-        Debug.toFile("genotick.out");
+        String outFileName = "genotick_" + DataUtils.getDateTimeString() + ".txt";
+        Debug.toFile(outFileName);
     }
 
     private static void getUserIO(Parameters parameters) {

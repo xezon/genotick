@@ -4,11 +4,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
-class DataUtils {
+public class DataUtils {
 
     public static String[] listFiles(final String path, final String extension) {
         return new File(path).list(new FilenameFilter() {
@@ -56,5 +59,10 @@ class DataUtils {
         else
             return field;
 
+    }
+
+    public static String getDateTimeString() {
+        DateFormat format = new SimpleDateFormat("yyyy_MM_dd_kk_mm");
+        return format.format(Calendar.getInstance().getTime());
     }
 }
