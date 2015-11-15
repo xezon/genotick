@@ -10,6 +10,9 @@ public class UserInputOutputFactory {
         parameters.removeKey(INPUT_STRING);
         if(input == null)
             return new ConsoleInput();
+        if(input.startsWith("file:")) {
+            return new FileInput(input);
+        }
         switch(input) {
             case "default": return new DefaultInputs();
             case "random": return new RandomParametersInput();
