@@ -13,14 +13,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FileInput implements UserInput {
+    public  static final String delimiter = ":";
     private static final String DATA_DIRECTORY_KEY = "dataDirectory";
     private String fileName;
 
     public FileInput(String input) {
-        String delimiter = ":";
         if(!input.contains(delimiter))
             throw new RuntimeException(String.format("Config file input format is: '%s'","input=file:/path/to/file"));
-        fileName = input.split(delimiter)[1];
+        int pos = input.indexOf(delimiter);
+        fileName = input.substring(pos+1);
     }
 
     @Override
@@ -145,8 +146,10 @@ public class FileInput implements UserInput {
         for(int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
             if(line.contains(commentDelimiter)) {
-                String correct = line.split(commentDelimiter)[0];
-                lines.set(i,correct);
+                String [] array = line.split(commentDelimiter);
+                if(array.length > 0) {
+                    lines.set(i,array[0]);
+                }
             }
         }
     }

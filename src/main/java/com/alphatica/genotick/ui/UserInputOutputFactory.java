@@ -10,7 +10,7 @@ public class UserInputOutputFactory {
         parameters.removeKey(INPUT_STRING);
         if(input == null)
             return tryConsoleInput();
-        if(input.startsWith("file:")) {
+        if(input.startsWith("file" + FileInput.delimiter)) {
             return new FileInput(input);
         }
         switch(input) {
