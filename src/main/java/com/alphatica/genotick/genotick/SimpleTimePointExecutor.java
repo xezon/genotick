@@ -50,9 +50,16 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         }
     }
 
+
+    @Override
+    public void setSettings(DataSetExecutor dataSetExecutor, ProgramExecutorFactory programExecutorFactory) {
+        this.dataSetExecutor = dataSetExecutor;
+        this.programExecutorFactory = programExecutorFactory;
+    }
+
     /*
-     Return type here is as ugly as it gets and I'm not proud. However, it seems to be the quickest.
-     */
+       Return type here is as ugly as it gets and I'm not proud. However, it seems to be the quickest.
+       */
     private List<Future<List<ProgramResult>>> submitTasks(List<ProgramData> programDataList, Population population) {
         List<Future<List<ProgramResult>>> tasks = new ArrayList<>();
         for(ProgramName programName: population.listProgramNames()) {
@@ -61,12 +68,6 @@ class SimpleTimePointExecutor implements TimePointExecutor {
             tasks.add(future);
         }
         return tasks;
-    }
-
-    @Override
-    public void setSettings(DataSetExecutor dataSetExecutor, ProgramExecutorFactory programExecutorFactory) {
-        this.dataSetExecutor = dataSetExecutor;
-        this.programExecutorFactory = programExecutorFactory;
     }
 
     private class DaemonThreadFactory implements ThreadFactory {

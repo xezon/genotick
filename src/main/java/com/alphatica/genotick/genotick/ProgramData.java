@@ -7,22 +7,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProgramData {
-    final private List<double[]> data;
+    private final List<double[]> data;
+    private final Double actualChange;
     private final DataSetName name;
 
-    public static ProgramData createData(List<double[]> newData, DataSetName name) {
-        return new ProgramData(newData,name);
+    public static ProgramData createData(List<double[]> newData, DataSetName name, Double actualChange) {
+        return new ProgramData(newData,name,actualChange);
     }
 
     public static ProgramData createEmptyData(DataSetName name) {
         List<double []> list = new ArrayList<>();
         list.add(new double[0]);
-        return createData(list,name);
+        return createData(list,name,Double.NaN);
     }
 
-    private ProgramData(List<double[]> newData, DataSetName name) {
+    private ProgramData(List<double[]> newData, DataSetName name, Double actualChange) {
         data = newData;
         this.name = name;
+        this.actualChange = actualChange;
     }
 
     /**
@@ -58,5 +60,9 @@ public class ProgramData {
 
     public boolean isEmpty() {
         return data.get(0).length == 0;
+    }
+
+    public Double getActualChange() {
+        return actualChange;
     }
 }

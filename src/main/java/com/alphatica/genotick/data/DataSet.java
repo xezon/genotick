@@ -93,7 +93,8 @@ public class DataSet {
             double [] copy = copyReverseArray(original, i);
             list.add(copy);
         }
-        return ProgramData.createData(list,name);
+        Double futureChange = calculateFutureChange(timePoints[i]);
+        return ProgramData.createData(list,name,futureChange);
     }
 
     private double[] copyReverseArray(double[] original, int i) {
