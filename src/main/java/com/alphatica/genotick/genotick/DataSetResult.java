@@ -44,7 +44,4 @@ class DataSetResult {
         return name;
     }
 
-    public ProgramResult[] listProgramResults() {
-        return list.toArray(new ProgramResult[list.size()]);
-    }
 }

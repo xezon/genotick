@@ -91,7 +91,6 @@ public class SimpleBreeder implements ProgramBreeder {
             if(parent1 == null || parent2 == null)
                 break;
             Program child = Program.createEmptyProgram(settings.dataMaximumOffset);
-            child.setFromParents();
             makeChild(parent1, parent2, child);
             population.saveProgram(child);
             parent1.increaseChildren();

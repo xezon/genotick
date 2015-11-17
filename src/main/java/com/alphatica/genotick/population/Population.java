@@ -12,8 +12,6 @@ public interface Population {
 
     void setDao(PopulationDAO dao);
 
-    Iterable<Program> listPrograms();
-
     void saveProgram(Program program);
 
     Program getProgram(ProgramName key);

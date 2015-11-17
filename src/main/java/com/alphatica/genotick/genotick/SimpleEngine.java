@@ -6,13 +6,9 @@ import com.alphatica.genotick.data.DataUtils;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.killer.ProgramKiller;
 import com.alphatica.genotick.population.Population;
-import com.alphatica.genotick.population.Program;
-import com.alphatica.genotick.population.ProgramName;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class SimpleEngine implements Engine {
@@ -75,7 +71,7 @@ public class SimpleEngine implements Engine {
     private TimePointStats executeTimePoint(TimePoint timePoint) {
         Debug.d("Starting TimePoint:", timePoint);
         List<ProgramData> programDataList = data.prepareProgramDataList(timePoint);
-        TimePointResult timePointResult = timePointExecutor.execute(timePoint,programDataList, population, !engineSettings.executionOnly);
+        TimePointResult timePointResult = timePointExecutor.execute(programDataList, population, !engineSettings.executionOnly);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction();
@@ -88,36 +84,10 @@ public class SimpleEngine implements Engine {
             }
         }
         if(!engineSettings.executionOnly && !programDataList.isEmpty() && !timePointStats.isEmpty())
-            updatePopulation(timePointResult);
-        printParentsVsRandomStats();
+            updatePopulation();
+
         Debug.d("Finished TimePoint:",timePoint);
         return timePointStats;
-    }
-
-    private void printParentsVsRandomStats() {
-        int fromParentsCount = 0;
-        int randomCount = 0;
-        double fromParentsWeight = 0.0;
-        double randomWeight = 0.0;
-
-        for(Program program: population.listPrograms()) {
-            if(program.isFromParents()) {
-                fromParentsCount++;
-                fromParentsWeight += Math.abs(program.getWeight());
-            } else {
-                randomCount++;
-                randomWeight += Math.abs(program.getWeight());
-            }
-        }
-        double ratio;
-        if(randomCount > 0) {
-            ratio = (double) fromParentsCount / (double) randomCount;
-            Debug.d("Ratio of programs from parents vs random:",ratio);
-        }
-        if(fromParentsCount > 0)
-            Debug.d("Average program-from-parents weight:",fromParentsWeight / fromParentsCount);
-        if(randomCount > 0)
-            Debug.d("Average random-program weight:",randomWeight / randomCount);
     }
 
     private void printPercentEarned(DataSetName name, Prediction prediction, Double actualChange) {
@@ -133,33 +103,8 @@ public class SimpleEngine implements Engine {
         Debug.d("Profit for",name,percent);
     }
 
-    private void updatePopulation(TimePointResult timePointResult) {
-        HashMap<ProgramName, List<Outcome>> programPredictions = new HashMap<>();
-        for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
-            Double actualChange = data.getActualChange(dataSetResult.getName(),timePointResult.getTimePoint());
-            updateProgramPredictions(programPredictions,dataSetResult,actualChange);
-        }
+    private void updatePopulation() {
         killer.killPrograms(population);
         breeder.breedPopulation(population);
     }
-
-
-
-    private void updateProgramPredictions(HashMap<ProgramName, List<Outcome>> programPredictions, DataSetResult dataSetResult,double actualChange) {
-        for(ProgramResult programResult: dataSetResult.listProgramResults()) {
-            List<Outcome> list = getListForProgram(programResult.getName(), programPredictions);
-            Outcome outcome = Outcome.getOutcome(programResult.getPrediction(), actualChange);
-            list.add(outcome);
-        }
-    }
-
-    private List<Outcome> getListForProgram(ProgramName name, HashMap<ProgramName, List<Outcome>> programPredictions) {
-        List<Outcome> list = programPredictions.get(name);
-        if(list == null) {
-            list = new ArrayList<>();
-            programPredictions.put(name,list);
-        }
-        return list;
-    }
-
 }

@@ -1,7 +1,6 @@
 package com.alphatica.genotick.data;
 
 import com.alphatica.genotick.genotick.Debug;
-import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -11,11 +10,9 @@ import java.util.List;
 
 public class YahooFixer {
     private final String path;
-    private final UserOutput output;
 
-    public YahooFixer(String yahooValue, UserOutput output) {
+    public YahooFixer(String yahooValue) {
         this.path = yahooValue;
-        this.output = output;
     }
 
     public void fixFiles() {

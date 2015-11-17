@@ -7,15 +7,9 @@ import java.util.Map;
 
 class TimePointResult {
     private final Map<DataSetName, DataSetResult> dataSetResultMap;
-    private final TimePoint timePoint;
 
-    public TimePointResult(TimePoint timePoint) {
+    public TimePointResult() {
         dataSetResultMap = new HashMap<>();
-        this.timePoint = timePoint;
-    }
-
-    public TimePoint getTimePoint() {
-        return timePoint;
     }
 
     public void addProgramResult(ProgramResult programResult) {

@@ -37,7 +37,7 @@ public class Main {
         if(yahooValue == null) {
             return;
         }
-        YahooFixer yahooFixer = new YahooFixer(yahooValue,output);
+        YahooFixer yahooFixer = new YahooFixer(yahooValue);
         yahooFixer.fixFiles();
         System.exit(0);
     }

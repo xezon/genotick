@@ -29,11 +29,6 @@ public class SimplePopulation implements Population {
     }
 
     @Override
-    public Iterable<Program> listPrograms() {
-        return dao.getProgramList();
-    }
-
-    @Override
     public void saveProgram(Program program) {
         dao.saveProgram(program);
     }

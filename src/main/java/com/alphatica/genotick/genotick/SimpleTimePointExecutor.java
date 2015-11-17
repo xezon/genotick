@@ -23,9 +23,9 @@ class SimpleTimePointExecutor implements TimePointExecutor {
     }
 
     @Override
-    public TimePointResult execute(TimePoint timePoint, List<ProgramData> programDataList,
+    public TimePointResult execute(List<ProgramData> programDataList,
                                    Population population, boolean updatePrograms) {
-        TimePointResult timePointResult = new TimePointResult(timePoint);
+        TimePointResult timePointResult = new TimePointResult();
         if(programDataList.isEmpty())
             return timePointResult;
         List<Future<List<ProgramResult>>> tasks = submitTasks(programDataList,population,updatePrograms);

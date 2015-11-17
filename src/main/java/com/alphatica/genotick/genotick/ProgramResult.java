@@ -23,10 +23,6 @@ class ProgramResult {
         return "Name: " + name.toString() + " Prediction: " + prediction.toString() + " Weight: " + String.valueOf(weight);
     }
 
-    public ProgramName getName() {
-        return name;
-    }
-
     public Prediction getPrediction() {
         return prediction;
     }
