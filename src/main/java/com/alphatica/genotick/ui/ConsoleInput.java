@@ -24,8 +24,7 @@ class ConsoleInput implements UserInput {
         MainAppData data = application.createData(dataDirectory);
         MainSettings settings = MainSettings.getSettings(data.getFirstTimePoint(), data.getLastTimePoint());
         settings.startTimePoint = new TimePoint(getLong("Start time point",settings.startTimePoint.getValue()));
-        TimePoint nextTimePoint = new TimePoint(settings.startTimePoint.getValue() + 1);
-        settings.endTimePoint = new TimePoint(getLong("End time point", nextTimePoint.getValue()));
+        settings.endTimePoint = new TimePoint(getLong("End time point", settings.endTimePoint.getValue()));
 
         settings.populationDAO = getString("Population storage", settings.populationDAO);
         settings.executionOnly = getBoolean("Prediction only", settings.executionOnly);
