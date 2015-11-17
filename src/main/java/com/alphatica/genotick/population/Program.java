@@ -63,6 +63,7 @@ public class Program implements Serializable {
         else if(prediction == Prediction.UP)
             bias++;
     }
+
     public void recordOutcomes(List<Outcome> outcomes) {
         for(Outcome outcome: outcomes) {
             totalOutcomes++;
@@ -74,6 +75,7 @@ public class Program implements Serializable {
                 correctPredictions++;
         }
     }
+
     public InstructionList getMainFunction() {
         return mainFunction;
     }

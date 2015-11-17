@@ -6,7 +6,10 @@ import com.alphatica.genotick.processor.ProgramExecutorFactory;
 import java.util.List;
 
 public interface TimePointExecutor {
-    TimePointResult execute(TimePoint timePoint, List<ProgramData> programDataList, Population population);
+    TimePointResult execute(TimePoint timePoint,
+                            List<ProgramData> programDataList,
+                            Population population,
+                            boolean updatePrograms);
 
     void setSettings(DataSetExecutor dataSetExecutor, ProgramExecutorFactory programExecutorFactory);
 }

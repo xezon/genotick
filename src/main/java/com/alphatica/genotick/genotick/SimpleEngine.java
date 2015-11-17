@@ -75,7 +75,7 @@ public class SimpleEngine implements Engine {
     private TimePointStats executeTimePoint(TimePoint timePoint) {
         Debug.d("Starting TimePoint:", timePoint);
         List<ProgramData> programDataList = data.prepareProgramDataList(timePoint);
-        TimePointResult timePointResult = timePointExecutor.execute(timePoint,programDataList, population);
+        TimePointResult timePointResult = timePointExecutor.execute(timePoint,programDataList, population, !engineSettings.executionOnly);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction();
@@ -139,20 +139,11 @@ public class SimpleEngine implements Engine {
             Double actualChange = data.getActualChange(dataSetResult.getName(),timePointResult.getTimePoint());
             updateProgramPredictions(programPredictions,dataSetResult,actualChange);
         }
-        updateProgramResults(programPredictions);
         killer.killPrograms(population);
         breeder.breedPopulation(population);
     }
 
-    private void updateProgramResults(Map<ProgramName, List<Outcome>> programResults) {
-        if(programResults.isEmpty())
-            return;
-        for(Map.Entry<ProgramName, List<Outcome>> entry: programResults.entrySet()) {
-            Program program = population.getProgram(entry.getKey());
-            program.recordOutcomes(entry.getValue());
-            population.saveProgram(program);
-        }
-    }
+
 
     private void updateProgramPredictions(HashMap<ProgramName, List<Outcome>> programPredictions, DataSetResult dataSetResult,double actualChange) {
         for(ProgramResult programResult: dataSetResult.listProgramResults()) {
