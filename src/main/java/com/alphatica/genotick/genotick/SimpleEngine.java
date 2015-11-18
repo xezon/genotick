@@ -79,18 +79,18 @@ public class SimpleEngine implements Engine {
             Double actualChange = data.getActualChange(dataSetResult.getName(),timePoint);
             if(!actualChange.isNaN()) {
                 Debug.d("Actual change:", actualChange);
-                printPercentEarned(dataSetResult.getName(), prediction, actualChange);
+                printPercentEarned(dataSetResult.getName(), actualChange, prediction);
                 timePointStats.update(dataSetResult.getName(), actualChange, prediction);
             }
         }
-        if(!engineSettings.executionOnly && !programDataList.isEmpty() && !timePointStats.isEmpty())
+        if(!engineSettings.executionOnly) {
             updatePopulation();
-
+        }
         Debug.d("Finished TimePoint:",timePoint);
         return timePointStats;
     }
 
-    private void printPercentEarned(DataSetName name, Prediction prediction, Double actualChange) {
+    private void printPercentEarned(DataSetName name, Double actualChange, Prediction prediction) {
         double percent;
         if(prediction == Prediction.OUT) {
             Debug.d("No position");
