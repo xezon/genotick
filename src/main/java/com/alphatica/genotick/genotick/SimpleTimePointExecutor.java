@@ -73,15 +73,6 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         return tasks;
     }
 
-    private class DaemonThreadFactory implements ThreadFactory {
-        @Override
-        public Thread newThread(@SuppressWarnings("NullableProblems") Runnable runnable) {
-            Thread thread = new Thread(runnable);
-            thread.setDaemon(true);
-            return thread;
-        }
-    }
-
     private class Task implements Callable<List<ProgramResult>> {
 
         private final ProgramName programName;
@@ -119,3 +110,15 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         }
     }
 }
+
+class DaemonThreadFactory implements ThreadFactory {
+    private static int counter = 1;
+    @Override
+    public Thread newThread(@SuppressWarnings("NullableProblems") Runnable runnable) {
+        Thread thread = new Thread(runnable);
+        thread.setDaemon(true);
+        thread.setName("TimePointExecutor thread: " + String.valueOf(counter++));
+        return thread;
+    }
+}
+
