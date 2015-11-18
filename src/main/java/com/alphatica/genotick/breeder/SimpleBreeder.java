@@ -21,7 +21,7 @@ public class SimpleBreeder implements ProgramBreeder {
     }
 
     @Override
-    public void breedPopulation(Population population) {
+    public void breedPopulation(Population population, List<ProgramInfo> programInfos) {
         Debug.d("Breeding population");
         Debug.d("Current population size", population.getSize());
         addRequiredRandomPrograms(population);
@@ -72,7 +72,7 @@ public class SimpleBreeder implements ProgramBreeder {
         List<ProgramInfo> programInfoList = population.getProgramInfoList();
         removeNotAllowedPrograms(programInfoList);
         Collections.sort(programInfoList, ProgramInfo.comparatorByAbsoluteWeight);
-        breedPopulation(population, programInfoList);
+        breedPopulationFromList(population, programInfoList);
     }
 
     private void removeNotAllowedPrograms(List<ProgramInfo> programInfoList) {
@@ -84,7 +84,7 @@ public class SimpleBreeder implements ProgramBreeder {
         }
     }
 
-    private void breedPopulation(Population population, List<ProgramInfo> list) {
+    private void breedPopulationFromList(Population population, List<ProgramInfo> list) {
         while(population.haveSpaceToBreed()) {
             Program parent1 = getPossibleParent(population, list);
             Program parent2 = getPossibleParent(population,list);

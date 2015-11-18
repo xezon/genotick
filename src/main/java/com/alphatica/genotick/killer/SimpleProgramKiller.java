@@ -22,7 +22,7 @@ class SimpleProgramKiller implements ProgramKiller{
     }
 
     @Override
-    public void killPrograms(Population population) {
+    public void killPrograms(Population population, List<ProgramInfo> programInfos) {
         List<ProgramInfo> list = population.getProgramInfoList();
         killNonPredictingPrograms(population, list);
         killNonSymmetricalPrograms(population, list);

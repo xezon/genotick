@@ -1,8 +1,10 @@
 package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.data.DataSetName;
+import com.alphatica.genotick.population.ProgramInfo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 class TimePointResult {

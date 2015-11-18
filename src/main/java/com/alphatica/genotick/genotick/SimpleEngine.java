@@ -34,9 +34,11 @@ public class SimpleEngine implements Engine {
         List<TimePointStats> timePointStats = new ArrayList<>();
         while(engineSettings.endTimePoint.compareTo(timePoint) >= 0) {
             TimePointStats stat = executeTimePoint(timePoint);
-            timePointStats.add(stat);
-            result *= (stat.getPercentEarned() / 100 + 1);
-            Debug.d("Time:",timePoint,"Percent earned so far:",(result - 1) * 100);
+            if(stat != null) {
+                timePointStats.add(stat);
+                result *= (stat.getPercentEarned() / 100 + 1);
+                Debug.d("Time:",timePoint,"Percent earned so far:",(result - 1) * 100);
+            }
             timePoint.increment();
         }
         if(!engineSettings.executionOnly) {
@@ -66,12 +68,14 @@ public class SimpleEngine implements Engine {
 
     private void initPopulation() {
         if(population.getSize() == 0 && !engineSettings.executionOnly)
-            breeder.breedPopulation(population);
+            breeder.breedPopulation(population, timePointExecutor.getProgramInfos());
     }
 
     private TimePointStats executeTimePoint(TimePoint timePoint) {
-        Debug.d("Starting TimePoint:", timePoint);
         List<ProgramData> programDataList = data.prepareProgramDataList(timePoint);
+        if(programDataList.isEmpty())
+            return null;
+        Debug.d("Starting TimePoint:", timePoint);
         TimePointResult timePointResult = timePointExecutor.execute(programDataList, population, !engineSettings.executionOnly);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
@@ -105,7 +109,7 @@ public class SimpleEngine implements Engine {
     }
 
     private void updatePopulation() {
-        killer.killPrograms(population);
-        breeder.breedPopulation(population);
+        killer.killPrograms(population,timePointExecutor.getProgramInfos());
+        breeder.breedPopulation(population,timePointExecutor.getProgramInfos());
     }
 }

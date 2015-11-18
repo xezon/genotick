@@ -1,9 +1,6 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.population.Population;
-import com.alphatica.genotick.population.Program;
-import com.alphatica.genotick.population.ProgramExecutor;
-import com.alphatica.genotick.population.ProgramName;
+import com.alphatica.genotick.population.*;
 import com.alphatica.genotick.processor.ProgramExecutorFactory;
 
 import java.util.ArrayList;
@@ -13,6 +10,7 @@ import java.util.concurrent.*;
 class SimpleTimePointExecutor implements TimePointExecutor {
 
     private final ExecutorService executorService;
+    private final List<ProgramInfo> programInfos;
     private DataSetExecutor dataSetExecutor;
     private ProgramExecutorFactory programExecutorFactory;
 
@@ -20,11 +18,18 @@ class SimpleTimePointExecutor implements TimePointExecutor {
     public SimpleTimePointExecutor() {
         int cores = Runtime.getRuntime().availableProcessors();
         executorService = Executors.newFixedThreadPool(cores * 2, new DaemonThreadFactory());
+        programInfos = new ArrayList<>();
+    }
+
+    @Override
+    public List<ProgramInfo> getProgramInfos() {
+        return programInfos;
     }
 
     @Override
     public TimePointResult execute(List<ProgramData> programDataList,
                                    Population population, boolean updatePrograms) {
+        programInfos.clear();
         TimePointResult timePointResult = new TimePointResult();
         if(programDataList.isEmpty())
             return timePointResult;
@@ -95,6 +100,8 @@ class SimpleTimePointExecutor implements TimePointExecutor {
             if(updatePrograms) {
                 updateProgram(program,list);
             }
+            ProgramInfo programInfo = new ProgramInfo(program);
+            programInfos.add(programInfo);
             return list;
         }
 
