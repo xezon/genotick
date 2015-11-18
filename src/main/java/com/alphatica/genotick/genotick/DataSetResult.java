@@ -5,11 +5,11 @@ import com.alphatica.genotick.data.DataSetName;
 import java.util.ArrayList;
 import java.util.List;
 
-class DataSetResult {
+public class DataSetResult {
     private final List<ProgramResult> list;
     private final DataSetName name;
 
-    DataSetResult(DataSetName name) {
+    public DataSetResult(DataSetName name) {
         list = new ArrayList<>();
         this.name = name;
     }

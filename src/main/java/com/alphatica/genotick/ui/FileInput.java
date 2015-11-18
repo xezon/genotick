@@ -4,7 +4,7 @@ import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.Application;
 import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
-import com.alphatica.genotick.genotick.TimePoint;
+import com.alphatica.genotick.timepointexecutor.TimePoint;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -62,7 +62,7 @@ public class FileInput implements UserInput {
             field.setAccessible(true);
             switch(field.getType().getName()) {
                 case "java.lang.String": setString(field,settings,value); break;
-                case "com.alphatica.genotick.genotick.TimePoint": setTimePoint(field,settings,value); break;
+                case "com.alphatica.genotick.timepointexecutor.TimePoint": setTimePoint(field,settings,value); break;
                 case "boolean": setBoolean(field, settings, value); break;
                 case "int": setInt(field, settings, value); break;
                 case "double": setDouble(field,settings,value); break;

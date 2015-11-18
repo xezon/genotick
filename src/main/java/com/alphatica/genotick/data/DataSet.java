@@ -2,7 +2,7 @@ package com.alphatica.genotick.data;
 
 
 import com.alphatica.genotick.genotick.ProgramData;
-import com.alphatica.genotick.genotick.TimePoint;
+import com.alphatica.genotick.timepointexecutor.TimePoint;
 
 import java.util.ArrayList;
 import java.util.Arrays;

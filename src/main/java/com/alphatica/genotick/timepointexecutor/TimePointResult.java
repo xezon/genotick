@@ -1,13 +1,13 @@
-package com.alphatica.genotick.genotick;
+package com.alphatica.genotick.timepointexecutor;
 
 import com.alphatica.genotick.data.DataSetName;
-import com.alphatica.genotick.population.ProgramInfo;
+import com.alphatica.genotick.genotick.DataSetResult;
+import com.alphatica.genotick.genotick.ProgramResult;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-class TimePointResult {
+public class TimePointResult {
     private final Map<DataSetName, DataSetResult> dataSetResultMap;
 
     public TimePointResult() {

@@ -1,5 +1,7 @@
 package com.alphatica.genotick.genotick;
 
+import com.alphatica.genotick.timepointexecutor.TimePoint;
+
 import java.lang.reflect.Field;
 
 public class MainSettings {

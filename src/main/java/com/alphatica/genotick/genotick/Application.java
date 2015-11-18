@@ -1,5 +1,8 @@
 package com.alphatica.genotick.genotick;
 
+import com.alphatica.genotick.timepointexecutor.TimePointExecutor;
+import com.alphatica.genotick.timepointexecutor.TimePointExecutorFactory;
+import com.alphatica.genotick.timepointexecutor.TimePointStats;
 import com.alphatica.genotick.breeder.BreederSettings;
 import com.alphatica.genotick.breeder.ProgramBreeder;
 import com.alphatica.genotick.breeder.ProgramBreederFactory;

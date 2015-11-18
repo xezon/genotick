@@ -1,8 +1,9 @@
-package com.alphatica.genotick.genotick;
+package com.alphatica.genotick.timepointexecutor;
 
+import com.alphatica.genotick.genotick.DataSetExecutor;
 import com.alphatica.genotick.processor.ProgramExecutorFactory;
 
-class TimePointExecutorFactory {
+public class TimePointExecutorFactory {
     public static TimePointExecutor getDefaultExecutor(DataSetExecutor dataSetExecutor, ProgramExecutorFactory programExecutorFactory) {
         TimePointExecutor executor = new SimpleTimePointExecutor();
         executor.setSettings(dataSetExecutor,programExecutorFactory);

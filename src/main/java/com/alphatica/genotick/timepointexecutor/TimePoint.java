@@ -1,4 +1,4 @@
-package com.alphatica.genotick.genotick;
+package com.alphatica.genotick.timepointexecutor;
 
 public class TimePoint implements Comparable<TimePoint> {
 

@@ -1,5 +1,6 @@
-package com.alphatica.genotick.genotick;
+package com.alphatica.genotick.timepointexecutor;
 
+import com.alphatica.genotick.genotick.*;
 import com.alphatica.genotick.population.*;
 import com.alphatica.genotick.processor.ProgramExecutorFactory;
 
@@ -115,17 +116,6 @@ class SimpleTimePointExecutor implements TimePointExecutor {
             }
             population.saveProgram(program);
         }
-    }
-}
-
-class DaemonThreadFactory implements ThreadFactory {
-    private static int counter = 1;
-    @Override
-    public Thread newThread(@SuppressWarnings("NullableProblems") Runnable runnable) {
-        Thread thread = new Thread(runnable);
-        thread.setDaemon(true);
-        thread.setName("TimePointExecutor thread: " + String.valueOf(counter++));
-        return thread;
     }
 }
 

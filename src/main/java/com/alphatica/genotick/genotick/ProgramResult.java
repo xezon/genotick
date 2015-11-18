@@ -3,7 +3,7 @@ package com.alphatica.genotick.genotick;
 import com.alphatica.genotick.population.Program;
 import com.alphatica.genotick.population.ProgramName;
 
-class ProgramResult {
+public class ProgramResult {
 
     private final Prediction prediction;
     private final ProgramName name;

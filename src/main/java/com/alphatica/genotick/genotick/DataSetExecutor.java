@@ -4,7 +4,7 @@ import com.alphatica.genotick.population.*;
 
 import java.util.List;
 
-interface DataSetExecutor {
+public interface DataSetExecutor {
 
     List<ProgramResult> execute(List<ProgramData> programDataList, Program program, ProgramExecutor programExecutor);
 

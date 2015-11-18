@@ -1,6 +1,8 @@
-package com.alphatica.genotick.genotick;
+package com.alphatica.genotick.timepointexecutor;
 
 import com.alphatica.genotick.data.DataSetName;
+import com.alphatica.genotick.genotick.Outcome;
+import com.alphatica.genotick.genotick.Prediction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,10 +10,6 @@ import java.util.Map;
 public class TimePointStats {
     private final HashMap<DataSetName, SetStats> stats;
     private final TimePoint timePoint;
-
-    public boolean isEmpty() {
-        return stats.isEmpty();
-    }
 
     private class SetStats {
         private double totalPercentPredicted;

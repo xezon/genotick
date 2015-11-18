@@ -1,5 +1,7 @@
-package com.alphatica.genotick.genotick;
+package com.alphatica.genotick.timepointexecutor;
 
+import com.alphatica.genotick.genotick.DataSetExecutor;
+import com.alphatica.genotick.genotick.ProgramData;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.ProgramInfo;
 import com.alphatica.genotick.processor.ProgramExecutorFactory;
