@@ -4,7 +4,7 @@ import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.Application;
 import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
-import com.alphatica.genotick.timepointexecutor.TimePoint;
+import com.alphatica.genotick.timepoint.TimePoint;
 
 import java.io.Console;
 

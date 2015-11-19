@@ -1,4 +1,4 @@
-package com.alphatica.genotick.timepointexecutor;
+package com.alphatica.genotick.timepoint;
 
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Outcome;

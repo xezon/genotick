@@ -1,4 +1,4 @@
-package com.alphatica.genotick.timepointexecutor;
+package com.alphatica.genotick.timepoint;
 
 import java.util.concurrent.ThreadFactory;
 

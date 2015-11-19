@@ -1,9 +1,9 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.timepointexecutor.TimePoint;
-import com.alphatica.genotick.timepointexecutor.TimePointExecutor;
-import com.alphatica.genotick.timepointexecutor.TimePointResult;
-import com.alphatica.genotick.timepointexecutor.TimePointStats;
+import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.timepoint.TimePointExecutor;
+import com.alphatica.genotick.timepoint.TimePointResult;
+import com.alphatica.genotick.timepoint.TimePointStats;
 import com.alphatica.genotick.breeder.ProgramBreeder;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.DataUtils;
