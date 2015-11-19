@@ -1,6 +1,8 @@
 package com.alphatica.genotick.population;
 
 
+import com.alphatica.genotick.genotick.Debug;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,7 @@ public class SimplePopulation implements Population {
 
     @Override
     public void saveProgram(Program program) {
+        //Debug.d("Population saving program:",program.getName());
         dao.saveProgram(program);
     }
 

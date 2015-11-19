@@ -9,16 +9,16 @@ dataDirectory data_forex
 
 # Time at which Genotick should start its simulation / training
 # Leave commented out to enable start when data start
-#startTimePoint	20000101
+startTimePoint	20000101
 
 # End time of simulation / training. Same as above - comment out to
 # end when data ends
-#endTimePoint	20150101
+endTimePoint	20150101
 
 # Two possible options: RAM and FileSystem. Use RAM to keep population in... (guess!). 
 # Use “FileSystem” to keep population in files (they will be stored in directory “population” 
 # relative to your current directory. FileSystem is much slower but will allow for large population.
-populationDAO	RAM
+populationDAO	FileSystem
 
 # false or true. If false Genotick will do full training. If true, only prediction is given. 
 # No training or updating population / programs' weight.
@@ -26,7 +26,7 @@ executionOnly	false
 
 # Desired size for the population. Should be in thousands at least to get satisfactory results. 
 # The more the merrier.
-populationDesiredSize	5000
+populationDesiredSize	1000
 
 # This setting prevents programs (systems) to run forever. Given number is used to calculate 
 # maximum instructions that can be executed for a program on each TimePoint for each data file. 

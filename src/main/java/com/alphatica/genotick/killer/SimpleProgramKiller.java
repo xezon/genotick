@@ -4,10 +4,7 @@ import com.alphatica.genotick.genotick.Debug;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.ProgramInfo;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 
 class SimpleProgramKiller implements ProgramKiller{
@@ -22,8 +19,7 @@ class SimpleProgramKiller implements ProgramKiller{
     }
 
     @Override
-    public void killPrograms(Population population, List<ProgramInfo> programInfos) {
-        List<ProgramInfo> list = population.getProgramInfoList();
+    public void killPrograms(Population population, List<ProgramInfo> list) {
         killNonPredictingPrograms(population, list);
         killNonSymmetricalPrograms(population, list);
         removeProtectedPrograms(population,list);
@@ -64,10 +60,10 @@ class SimpleProgramKiller implements ProgramKiller{
 
     private void removeProtectedPrograms(Population population, List<ProgramInfo> list) {
         protectUntilOutcomes(list);
-        protectBest(list,population);
+        protectBest(population, list);
     }
 
-    private void protectBest(List<ProgramInfo> list, Population population) {
+    private void protectBest(Population population, List<ProgramInfo> list) {
         if(settings.protectBestPrograms > 0) {
             Collections.sort(list, ProgramInfo.comparatorByAbsoluteWeight);
             int i = (int)Math.round(settings.protectBestPrograms * population.getDesiredSize());
@@ -117,6 +113,7 @@ class SimpleProgramKiller implements ProgramKiller{
             if(toKill == null)
                 return;
             if(random.nextDouble() < probability) {
+                //Debug.d("Killing program:",toKill.getName());
                 population.removeProgram(toKill.getName());
             }
         }

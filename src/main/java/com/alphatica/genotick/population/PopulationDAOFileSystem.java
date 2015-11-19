@@ -1,5 +1,7 @@
 package com.alphatica.genotick.population;
 
+import com.alphatica.genotick.genotick.Debug;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -81,6 +83,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         if(program.getName() == null) {
             program.setName(getAvailableName());
         }
+        //Debug.d("DAO saveProgram:",program.getName());
         File file = createFileForName(program.getName());
         saveProgramToFile(program,file);
     }
@@ -89,6 +92,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     public void removeProgram(ProgramName programName) {
         File file = createFileForName(programName);
         boolean result = file.delete();
+        //Debug.d("Deleting program:",programName.getName());
         if(!result)
             throw new DAOException("Unable to remove file " + file.getAbsolutePath());
     }

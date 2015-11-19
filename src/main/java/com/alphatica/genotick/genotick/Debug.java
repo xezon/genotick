@@ -61,7 +61,7 @@ public class Debug {
         Debug.setPrefix(params, prefix);
     }
 
-    public static void d(Object... output) {
+    public synchronized static void d(Object... output) {
         Debug.log(params, output);
     }
 

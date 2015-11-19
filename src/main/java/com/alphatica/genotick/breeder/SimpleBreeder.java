@@ -8,6 +8,7 @@ import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.Program;
 import com.alphatica.genotick.population.ProgramInfo;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +27,7 @@ public class SimpleBreeder implements ProgramBreeder {
         Debug.d("Current population size", population.getSize());
         addRequiredRandomPrograms(population);
         if(population.haveSpaceToBreed()) {
-            breedPopulationFromParents(population);
+            breedPopulationFromParents(population,programInfos);
             addOptionalRandomPrograms(population);
         }
         Debug.d("Breeder exiting");
@@ -58,18 +59,18 @@ public class SimpleBreeder implements ProgramBreeder {
         int instructionsCount = mutator.getNextInt() % 1024;
         InstructionList main = program.getMainFunction();
         while(instructionsCount-- > 0) {
-            addInstructionToMain(main, mutator);
+            addInstructionToMain(main);
         }
         population.saveProgram(program);
     }
 
-    private void addInstructionToMain(InstructionList main, Mutator mutator) {
+    private void addInstructionToMain(InstructionList main) {
         Instruction instruction = mutator.getRandomInstruction();
         instruction.mutate(mutator);
         main.addInstruction(instruction);
     }
-    private void breedPopulationFromParents(Population population) {
-        List<ProgramInfo> programInfoList = population.getProgramInfoList();
+    private void breedPopulationFromParents(Population population, List<ProgramInfo> originalList) {
+        List<ProgramInfo> programInfoList = new ArrayList<>(originalList);
         removeNotAllowedPrograms(programInfoList);
         Collections.sort(programInfoList, ProgramInfo.comparatorByAbsoluteWeight);
         breedPopulationFromList(population, programInfoList);
@@ -173,6 +174,7 @@ public class SimpleBreeder implements ProgramBreeder {
             ProgramInfo programInfo = iterator.next();
             weightSoFar += Math.abs(programInfo.getWeight());
             if(weightSoFar >= target) {
+                //Debug.d("Accessing program:",programInfo.getName());
                 parent = population.getProgram(programInfo.getName());
                 iterator.remove();
                 break;
