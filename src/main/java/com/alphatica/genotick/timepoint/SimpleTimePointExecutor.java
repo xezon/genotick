@@ -5,6 +5,7 @@ import com.alphatica.genotick.population.*;
 import com.alphatica.genotick.processor.ProgramExecutorFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -19,7 +20,7 @@ class SimpleTimePointExecutor implements TimePointExecutor {
     public SimpleTimePointExecutor() {
         int cores = Runtime.getRuntime().availableProcessors();
         executorService = Executors.newFixedThreadPool(cores * 2, new DaemonThreadFactory());
-        programInfos = new ArrayList<>();
+        programInfos = Collections.synchronizedList(new ArrayList<ProgramInfo>());
     }
 
     @Override
