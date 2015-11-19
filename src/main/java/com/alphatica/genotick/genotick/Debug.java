@@ -213,17 +213,8 @@ public class Debug {
     }
 
     private static void printArray(OutputStream stream, Object [] array) {
-        print(stream, "[");
-        boolean firstItem = true;
-        for (Object object : array) {
-            if ( ! firstItem) {
-                print(stream, " , ");
-            }
-            print(stream, object);
-            firstItem = false;
-        }
-        print(stream, "]");
-
+        List<Object> list = Arrays.asList(array);
+        printIterable(stream,list);
     }
 
     private static void printIterable(OutputStream stream, Iterable iterable) {
