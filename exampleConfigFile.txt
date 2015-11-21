@@ -5,7 +5,7 @@
 
 
 # This is a directory (relative to your current directory) where data files are stored.
-dataDirectory data_forex
+dataDirectory data
 
 # Time at which Genotick should start its simulation / training
 # Leave commented out to enable start when data start

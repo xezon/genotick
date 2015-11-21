@@ -15,14 +15,18 @@ public class Main {
     private static UserOutput output;
 
     public static void main(String... args) {
-
         setupDebug();
+        setupExceptionHandler();
         Parameters parameters = new Parameters(args);
         checkVersionRequest(parameters);
         getUserIO(parameters);
         checkReverse(parameters);
         checkYahoo(parameters);
         checkSimulation(parameters);
+    }
+
+    private static void setupExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler(Debug.createExceptionHandler());
     }
 
     private static void checkVersionRequest(Parameters parameters) {

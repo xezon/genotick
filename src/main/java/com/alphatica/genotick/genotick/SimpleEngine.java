@@ -1,5 +1,6 @@
 package com.alphatica.genotick.genotick;
 
+import com.alphatica.genotick.population.ProgramInfo;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointResult;
@@ -113,7 +114,8 @@ public class SimpleEngine implements Engine {
     }
 
     private void updatePopulation() {
-        killer.killPrograms(population,timePointExecutor.getProgramInfos());
-        breeder.breedPopulation(population,timePointExecutor.getProgramInfos());
+        List<ProgramInfo> list = timePointExecutor.getProgramInfos();
+        killer.killPrograms(population,list);
+        breeder.breedPopulation(population,list);
     }
 }

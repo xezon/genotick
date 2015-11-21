@@ -332,6 +332,15 @@ public class Debug {
         params.classEnable = enabled;
     }
 
+    public static Thread.UncaughtExceptionHandler createExceptionHandler() {
+        return new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread thread, Throwable throwable) {
+                Debug.log(params,throwable);
+            }
+        };
+    }
+
     @SuppressWarnings("unused")
     public static class Instance  {
         final DebugParams params;

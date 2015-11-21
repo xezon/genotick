@@ -32,7 +32,6 @@ class SimpleTimePointExecutor implements TimePointExecutor {
     public TimePointResult execute(List<ProgramData> programDataList,
                                    Population population, boolean updatePrograms) {
         programInfos.clear();
-        //Debug.d("TimePointExecutor programInfos size:",programInfos.size());
         TimePointResult timePointResult = new TimePointResult();
         if(programDataList.isEmpty())
             return timePointResult;

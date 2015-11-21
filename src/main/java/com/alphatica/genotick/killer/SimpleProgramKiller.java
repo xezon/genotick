@@ -7,7 +7,7 @@ import com.alphatica.genotick.population.ProgramInfo;
 import java.util.*;
 
 
-class SimpleProgramKiller implements ProgramKiller{
+class SimpleProgramKiller implements ProgramKiller {
     private ProgramKillerSettings settings;
     private final Random random;
 
@@ -19,25 +19,25 @@ class SimpleProgramKiller implements ProgramKiller{
     }
 
     @Override
-    public void killPrograms(Population population, List<ProgramInfo> list) {
-        killNonPredictingPrograms(population, list);
-        killNonSymmetricalPrograms(population, list);
-        removeProtectedPrograms(population,list);
-        killProgramsByWeight(population, list);
-        killProgramsByAge(population, list);
-        Debug.d("Population average weight:",ProgramInfo.getAverageWeight(list));
+    public void killPrograms(Population population, List<ProgramInfo> originalList) {
+        killNonPredictingPrograms(population, originalList);
+        killNonSymmetricalPrograms(population, originalList);
+        List<ProgramInfo> listCopy = new ArrayList<>(originalList);
+        removeProtectedPrograms(population,listCopy);
+        killProgramsByWeight(population, listCopy, originalList);
+        killProgramsByAge(population, listCopy, originalList);
+        Debug.d("Population average weight:",ProgramInfo.getAverageWeight(originalList));
     }
 
     private void killNonSymmetricalPrograms(Population population, List<ProgramInfo> list) {
         if(!settings.requireSymmetricalPrograms)
             return;
         Debug.d("Killing non symmetrical programs");
-        Iterator<ProgramInfo> iterator = list.iterator();
-        while(iterator.hasNext()) {
-            ProgramInfo programInfo = iterator.next();
-            if(programInfo.getBias() != 0) {
-                iterator.remove();
-                population.removeProgram(programInfo.getName());
+        for(int i = list.size() - 1; i >= 0; i--) {
+            ProgramInfo info = list.get(i);
+            if(info.getBias() != 0) {
+                list.remove(i);
+                population.removeProgram(info.getName());
             }
         }
         Debug.d("Finished killing non symmetrical programs");
@@ -47,12 +47,11 @@ class SimpleProgramKiller implements ProgramKiller{
         if(!settings.killNonPredictingPrograms)
             return;
         Debug.d("Killing non predicting programs");
-        Iterator<ProgramInfo> iterator = list.iterator();
-        while(iterator.hasNext()) {
-            ProgramInfo programInfo = iterator.next();
-            if(programInfo.getTotalPredictions() == 0) {
-                iterator.remove();
-                population.removeProgram(programInfo.getName());
+        for(int i = list.size() - 1; i >= 0; i--) {
+            ProgramInfo info = list.get(i);
+            if(info.getTotalPredictions() == 0) {
+                list.remove(i);
+                population.removeProgram(info.getName());
             }
         }
         Debug.d("Finished killing non predicting programs");
@@ -88,33 +87,34 @@ class SimpleProgramKiller implements ProgramKiller{
         settings = killerSettings;
     }
 
-    private void killProgramsByAge(Population population, List<ProgramInfo> list) {
-        Collections.sort(list,ProgramInfo.comparatorByAge);
-        int numberToKill = (int)Math.round(settings.maximumDeathByAge * list.size());
+    private void killProgramsByAge(Population population, List<ProgramInfo> listCopy, List<ProgramInfo> originalList) {
+        Collections.sort(listCopy,ProgramInfo.comparatorByAge);
+        int numberToKill = (int)Math.round(settings.maximumDeathByAge * originalList.size());
         Debug.d("Killing max",numberToKill,"by age.");
-        killPrograms(list,numberToKill,population,settings.probabilityOfDeathByAge);
+        killPrograms(listCopy,originalList,numberToKill,population,settings.probabilityOfDeathByAge);
         Debug.d("Finished killing by age.");
     }
 
-    private void killProgramsByWeight(Population population, List<ProgramInfo> list) {
+    private void killProgramsByWeight(Population population, List<ProgramInfo> listCopy, List<ProgramInfo> originalList) {
         if(population.haveSpaceToBreed())
             return;
-        Collections.sort(list, ProgramInfo.comparatorByAbsoluteWeight);
-        Collections.reverse(list);
-        int numberToKill = (int) Math.round(settings.maximumDeathByWeight * list.size());
+        Collections.sort(listCopy, ProgramInfo.comparatorByAbsoluteWeight);
+        Collections.reverse(listCopy);
+        int numberToKill = (int) Math.round(settings.maximumDeathByWeight * originalList.size());
         Debug.d("Killing max",numberToKill,"by weight");
-        killPrograms(list,numberToKill,population,settings.probabilityOfDeathByWeight);
+        killPrograms(listCopy,originalList,numberToKill,population,settings.probabilityOfDeathByWeight);
         Debug.d("Finished killing by weight");
     }
 
-    private void killPrograms(List<ProgramInfo> list, int numberToKill, Population population, double probability) {
+    private void killPrograms(List<ProgramInfo> listCopy, List<ProgramInfo> originalList, int numberToKill, Population population, double probability) {
         while(numberToKill-- > 0) {
-            ProgramInfo toKill = getLastFromList(list);
+            ProgramInfo toKill = getLastFromList(listCopy);
             if(toKill == null)
                 return;
             if(random.nextDouble() < probability) {
                 //Debug.d("Killing program:",toKill.getName());
                 population.removeProgram(toKill.getName());
+                originalList.remove(toKill);
             }
         }
     }
