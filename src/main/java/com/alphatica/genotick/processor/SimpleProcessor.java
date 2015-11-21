@@ -81,16 +81,11 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
 
     private void executeInstructionList(InstructionList list)  {
         list.zeroOutVariables();
-        //Debug.d("Starting to execute instruction list, size",list.getSize());
         terminateInstructionList = false;
         int instructionPointer = 0;
         do {
-            //Debug.d("Instruction pointer = ",instructionPointer);
             Instruction instruction = list.getInstruction(instructionPointer++);
             instructionList = list; /* Set this every time - it could have been changed by recursive function call */
-            //Debug.d("Executing instruction number",totalInstructionExecuted);
-            //Debug.d(dumpObject(instruction));
-            //Debug.d("Executing",instruction.getClass().getCanonicalName(),"pointer",instructionPointer);
             instruction.executeOn(this);
             totalInstructionExecuted++;
             if(totalInstructionExecuted > programInstructionLimit) {
@@ -105,7 +100,6 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
                     newPointer = 0;
                 instructionPointer = newPointer;
             }
-            //Debug.d("Terminate",terminateInstructionList,"programResult",programResult);
         } while (!terminateInstructionList && programResult == null);
     }
 
@@ -257,10 +251,7 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
     public void execute(SubtractRegisterFromRegister ins) {
         int reg1 = ins.getRegister1();
         int reg2 = ins.getRegister2();
-        //Debug.d("Sub reg1 = reg1 - reg2",reg1,reg2);
-        //Debug.d("Values",registers[reg1],registers[reg2]);
         registers[reg1] -= registers[reg2];
-        //Debug.d("Result",registers[reg1]);
     }
 
     @Override

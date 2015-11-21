@@ -112,7 +112,6 @@ class SimpleProgramKiller implements ProgramKiller {
             if(toKill == null)
                 return;
             if(random.nextDouble() < probability) {
-                //Debug.d("Killing program:",toKill.getName());
                 population.removeProgram(toKill.getName());
                 originalList.remove(toKill);
             }

@@ -1,7 +1,5 @@
 package com.alphatica.genotick.population;
 
-import com.alphatica.genotick.genotick.Debug;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,7 +30,6 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         for(int i = 0; i < files.length; i++) {
             String longString = files[i].substring(0,files[i].indexOf('.'));
             names[i] = new ProgramName(Long.valueOf(longString));
-            //Debug.d("Adding program to list:",names[i].getName());
         }
         return names;
     }
@@ -84,7 +81,6 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         if(program.getName() == null) {
             program.setName(getAvailableName());
         }
-        //Debug.d("DAO saveProgram:",program.getName());
         File file = createFileForName(program.getName());
         saveProgramToFile(program,file);
     }
@@ -93,7 +89,6 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     public void removeProgram(ProgramName programName) {
         File file = createFileForName(programName);
         boolean result = file.delete();
-        //Debug.d("Deleting program:",programName.getName());
         if(!result)
             throw new DAOException("Unable to remove file " + file.getAbsolutePath());
     }
@@ -147,7 +142,6 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         deleteFileIfExists(file);
         try(ObjectOutputStream ous = new ObjectOutputStream(new BufferedOutputStream( new FileOutputStream(file)))) {
             ous.writeObject(program);
-            //Debug.d("Saved program to file:",program.getName());
         } catch (IOException ex) {
             throw new DAOException(ex);
         }

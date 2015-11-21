@@ -74,7 +74,6 @@ class SimpleTimePointExecutor implements TimePointExecutor {
                                                           boolean updatePrograms) {
         List<Future<List<ProgramResult>>> tasks = new ArrayList<>();
         for(ProgramName programName: population.listProgramNames()) {
-            //Debug.d("Submitting executing",programName.getName());
             Task task = new Task(programName, programDataList, population, updatePrograms);
             Future<List<ProgramResult>> future = executorService.submit(task);
             tasks.add(future);
@@ -99,7 +98,6 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         @Override
         public List<ProgramResult> call() throws Exception {
             ProgramExecutor programExecutor = programExecutorFactory.getDefaultProgramExecutor();
-            //Debug.d("TimePointExecutor getting",programName);
             Program program = population.getProgram(programName);
             List<ProgramResult> list = dataSetExecutor.execute(programDataList,program,programExecutor);
             if(updatePrograms) {
