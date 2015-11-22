@@ -13,19 +13,19 @@ import java.util.List;
 public class Program implements Serializable {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -32164665564L;
+    private static final DecimalFormat weightFormat = new DecimalFormat("0.00");
+
+    private final int maximumDataOffset;
+
     private InstructionList mainFunction;
     private ProgramName name;
     private int totalChildren;
     private int totalPredictions;
-
-
     private int correctPredictions;
     private double inheritedWeight;
-    private static final DecimalFormat weightFormat = new DecimalFormat("0.00");
     private int totalOutcomes;
     private long outcomesAtLastChild;
     private int bias;
-    private final int maximumDataOffset;
 
     public static Program createEmptyProgram(int maximumDataOffset) {
         return new Program(maximumDataOffset);
@@ -71,6 +71,9 @@ public class Program implements Serializable {
         return mainFunction;
     }
 
+    public int getTotalChildren() {
+        return totalChildren;
+    }
 
     public double getWeight() {
         double earnedWeight = WeightCalculator.calculateWeight(this);

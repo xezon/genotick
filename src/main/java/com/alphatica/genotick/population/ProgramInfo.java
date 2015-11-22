@@ -7,19 +7,21 @@ import java.util.List;
 public class ProgramInfo {
     public static final Comparator<ProgramInfo> comparatorByAge = new AgeComparator();
     public static final Comparator<ProgramInfo> comparatorByAbsoluteWeight = new AbsoluteWeightComparator();
+    private static final DecimalFormat format = new DecimalFormat("0.00");
     private final ProgramName name;
     private final double weight;
     private final long lastChildOutcomes;
+    private final long totalChildren;
     private final long length;
     private final int totalPredictions;
-    private final DecimalFormat format = new DecimalFormat("0.00");
     private final int totalOutcomes;
     private final int bias;
 
     @Override
     public String toString() {
         return name.toString() + ": Outcomes: " + String.valueOf(totalPredictions) + " weight: " + format.format(weight) +
-                " bias: " + String.valueOf(bias) + " length: " + String.valueOf(length);
+                " bias: " + String.valueOf(bias) + " length: " + String.valueOf(length) +
+                " totalChildren: " + String.valueOf(totalChildren);
     }
 
     public ProgramName getName() {
@@ -38,6 +40,7 @@ public class ProgramInfo {
         name = new ProgramName(program.getName().getName());
         weight = program.getWeight();
         lastChildOutcomes = program.getOutcomesAtLastChild();
+        totalChildren = program.getTotalChildren();
         length = program.getLength();
         totalPredictions = program.getTotalPredictions();
         totalOutcomes = program.getTotalOutcomes();

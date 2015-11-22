@@ -2,11 +2,19 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.data.DataUtils;
 import com.alphatica.genotick.data.YahooFixer;
+import com.alphatica.genotick.population.Population;
+import com.alphatica.genotick.population.PopulationDAOFileSystem;
+import com.alphatica.genotick.population.ProgramInfo;
 import com.alphatica.genotick.reversal.Reversal;
 import com.alphatica.genotick.ui.Parameters;
 import com.alphatica.genotick.ui.UserInput;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
@@ -19,10 +27,82 @@ public class Main {
         setupExceptionHandler();
         Parameters parameters = new Parameters(args);
         checkVersionRequest(parameters);
+        checkShowPopulation(parameters);
         getUserIO(parameters);
         checkReverse(parameters);
         checkYahoo(parameters);
         checkSimulation(parameters);
+    }
+
+    private static void checkShowPopulation(Parameters parameters) {
+        String value = parameters.getValue("showPopulation");
+        if(value != null) {
+            try {
+                showPopulation(value);
+            } catch (IllegalAccessException e) {
+                Debug.d(e);
+            }
+            System.exit(0);
+        }
+    }
+
+    private static void showPopulation(String value) throws IllegalAccessException {
+        PopulationDAOFileSystem dao = new PopulationDAOFileSystem();
+        dao.setSettings(value);
+        Population population = PopulationFactory.getDefaultPopulation(dao);
+        showHeader();
+        showPrograms(population);
+    }
+
+    private static void showPrograms(Population population) throws IllegalAccessException {
+        for(ProgramInfo programInfo: population.getProgramInfoList()) {
+            String info = getProgramInfoString(programInfo);
+            System.out.println(info);
+        }
+    }
+
+    private static String getProgramInfoString(ProgramInfo programInfo) throws IllegalAccessException {
+        StringBuilder sb = new StringBuilder();
+        Field [] fields = programInfo.getClass().getDeclaredFields();
+        for(Field field: fields) {
+            field.setAccessible(true);
+            if(!Modifier.isStatic(field.getModifiers())) {
+                Object object = field.get(programInfo);
+                if(sb.length() > 0) {
+                    sb.append(",");
+                }
+                sb.append(object.toString());
+            }
+        }
+        return sb.toString();
+    }
+
+    private static void showHeader() {
+        Class infoClass = ProgramInfo.class;
+        List<Field> fields = buildFields(infoClass);
+        String line = buildLine(fields);
+        System.out.println(line);
+    }
+
+    private static List<Field> buildFields(Class infoClass) {
+        List<Field> fields = new ArrayList<>();
+        for(Field field: infoClass.getDeclaredFields()) {
+            if(!Modifier.isStatic(field.getModifiers())) {
+                fields.add(field);
+            }
+        }
+        return fields;
+    }
+
+    private static String buildLine(List<Field> fields) {
+        StringBuilder sb = new StringBuilder();
+        for (Field field : fields) {
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
+            sb.append(field.getName());
+        }
+        return sb.toString();
     }
 
     private static void setupExceptionHandler() {
