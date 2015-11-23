@@ -7,11 +7,11 @@ import java.util.Random;
 
 public class InstructionList implements Serializable {
     @SuppressWarnings("unused")
-    private static final long serialVersionUID = 2674027980981161615L;
+    private static final long serialVersionUID = 267402795981161615L;
 
     private static final Random random = new Random();
     private final List<Instruction> list;
-    private final int variablesCount = 8;
+    private final int variablesCount = 256;
     private final double[] variables;
 
     private int validateVariableNumber(int index) {
@@ -65,5 +65,9 @@ public class InstructionList implements Serializable {
             return position;
         else
             return random.nextInt(list.size());
+    }
+
+    public int getVariablesCount() {
+        return variablesCount;
     }
 }

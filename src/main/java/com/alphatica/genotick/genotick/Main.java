@@ -4,6 +4,7 @@ import com.alphatica.genotick.data.DataUtils;
 import com.alphatica.genotick.data.YahooFixer;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.PopulationDAOFileSystem;
+import com.alphatica.genotick.population.Program;
 import com.alphatica.genotick.population.ProgramInfo;
 import com.alphatica.genotick.reversal.Reversal;
 import com.alphatica.genotick.ui.Parameters;
@@ -11,6 +12,7 @@ import com.alphatica.genotick.ui.UserInput;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -28,10 +30,34 @@ public class Main {
         Parameters parameters = new Parameters(args);
         checkVersionRequest(parameters);
         checkShowPopulation(parameters);
+        checkShowProgram(parameters);
         getUserIO(parameters);
         checkReverse(parameters);
         checkYahoo(parameters);
         checkSimulation(parameters);
+    }
+
+    private static void checkShowProgram(Parameters parameters) {
+        String value = parameters.getValue("showProgram");
+        if(value != null) {
+            try {
+                showProgram(value);
+            } catch (IllegalAccessException e) {
+                Debug.d(e);
+            }
+            System.exit(0);
+        }
+    }
+
+    private static void showProgram(String value) throws IllegalAccessException {
+        String programString = getProgramString(value);
+        System.out.println(programString);
+    }
+
+    private static String getProgramString(String path) throws IllegalAccessException {
+        File file = new File(path);
+        Program program = PopulationDAOFileSystem.getProgramFromFile(file);
+        return program.showProgram();
     }
 
     private static void checkShowPopulation(Parameters parameters) {

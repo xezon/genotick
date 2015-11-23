@@ -4,21 +4,23 @@ package com.alphatica.genotick.population;
 import com.alphatica.genotick.genotick.Outcome;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.genotick.WeightCalculator;
+import com.alphatica.genotick.instructions.Instruction;
 import com.alphatica.genotick.instructions.InstructionList;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
 import java.util.List;
 
 public class Program implements Serializable {
     @SuppressWarnings("unused")
-    private static final long serialVersionUID = -32164665564L;
+    private static final long serialVersionUID = -32164662984L;
     private static final DecimalFormat weightFormat = new DecimalFormat("0.00");
 
-    private final int maximumDataOffset;
-
-    private InstructionList mainFunction;
     private ProgramName name;
+    private final int maximumDataOffset;
+    private InstructionList mainFunction;
     private int totalChildren;
     private int totalPredictions;
     private int correctPredictions;
@@ -125,5 +127,34 @@ public class Program implements Serializable {
 
     public void setName(ProgramName name) {
         this.name = name;
+    }
+
+    public String showProgram() throws IllegalAccessException {
+        StringBuilder sb = new StringBuilder();
+        addFields(sb);
+        addMainFunction(sb);
+        return sb.toString();
+    }
+
+    private void addMainFunction(StringBuilder sb) throws IllegalAccessException {
+        sb.append("MainFunction:").append("\n");
+        sb.append("VariableCount: ").append(mainFunction.getVariablesCount()).append("\n");
+        for(int i = 0; i < mainFunction.getSize(); i++) {
+            Instruction instruction = mainFunction.getInstruction(i);
+            sb.append(instruction.instructionString()).append("\n");
+        }
+    }
+
+    private void addFields(StringBuilder sb) throws IllegalAccessException {
+        Field[] fields = this.getClass().getDeclaredFields();
+        for(Field field: fields) {
+            if(field.getName().equals("mainFunction"))
+                continue;
+            field.setAccessible(true);
+            if(!Modifier.isStatic(field.getModifiers())) {
+                sb.append(field.getName()).append(" ").
+                        append(field.get(this).toString()).append("\n");
+            }
+        }
     }
 }

@@ -12,6 +12,8 @@ import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.killer.ProgramKiller;
 import com.alphatica.genotick.population.Population;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,9 +49,19 @@ public class SimpleEngine implements Engine {
             timePoint.increment();
         }
         if(!engineSettings.executionOnly) {
-            population.savePopulation(getSavedPopulationDirName());
+            savePopulation();
         }
         return timePointStats;
+    }
+
+    private void savePopulation() {
+        String dirName = getSavedPopulationDirName();
+        File dirFile = new File(dirName);
+        if(!dirFile.exists() && !dirFile.mkdirs()) {
+            Debug.d("Unable to create directory",dirName);
+        } else {
+            population.savePopulation(dirName);
+        }
     }
 
     @Override

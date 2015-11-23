@@ -62,7 +62,7 @@ public class DataUtils {
     }
 
     public static String getDateTimeString() {
-        DateFormat format = new SimpleDateFormat("yyyy_MM_dd_hh_mm");
+        DateFormat format = new SimpleDateFormat("yyyy_MM_dd_HH_mm");
         return format.format(Calendar.getInstance().getTime());
     }
 }

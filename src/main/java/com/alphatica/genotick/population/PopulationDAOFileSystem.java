@@ -86,6 +86,14 @@ public class PopulationDAOFileSystem implements PopulationDAO {
             throw new DAOException("Unable to remove file " + file.getAbsolutePath());
     }
 
+    public static Program getProgramFromFile(File file) {
+        try(ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream( new FileInputStream(file)))) {
+            return (Program) ois.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            throw new DAOException(e);
+        }
+    }
+
     private List<ProgramName> getAllProgramNames() {
         List<ProgramName> list = new ArrayList<>();
         String [] fileList = listFiles(programsPath);
@@ -117,14 +125,6 @@ public class PopulationDAOFileSystem implements PopulationDAO {
             file = new File(programsPath + String.valueOf(l) + FILE_EXTENSION);
         } while (file.exists());
         return new ProgramName(l);
-    }
-
-    private Program getProgramFromFile(File file) {
-        try(ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream( new FileInputStream(file)))) {
-            return (Program) ois.readObject();
-        } catch (ClassNotFoundException | IOException e) {
-            throw new DAOException(e);
-        }
     }
 
     private File createFileForName(ProgramName name) {
