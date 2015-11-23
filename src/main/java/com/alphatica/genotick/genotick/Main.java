@@ -20,7 +20,7 @@ import java.util.List;
 
 public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
-    private static final String VERSION = "Genotick version 0.7 (copyleft 2015)";
+    private static final String VERSION = "Genotick version 0.8 (copyleft 2015)";
     private static UserInput input;
     private static UserOutput output;
 
