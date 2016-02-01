@@ -20,7 +20,7 @@ class RandomParametersInput implements UserInput {
     }
 
     public MainSettings assignRandom(MainSettings settings) {
-        Random r = new Random();
+        Random r = Main.random;
         settings.populationDesiredSize = r.nextInt(5000);
         settings.dataMaximumOffset = r.nextInt(256);
         settings.processorInstructionLimit = r.nextInt(256)+1;

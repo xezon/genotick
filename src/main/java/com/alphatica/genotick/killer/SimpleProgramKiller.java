@@ -1,6 +1,7 @@
 package com.alphatica.genotick.killer;
 
 import com.alphatica.genotick.genotick.Debug;
+import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.ProgramInfo;
 
@@ -15,7 +16,7 @@ class SimpleProgramKiller implements ProgramKiller {
         return new SimpleProgramKiller();
     }
     private SimpleProgramKiller() {
-        random = new Random();
+        random = Main.random;
     }
 
     @Override

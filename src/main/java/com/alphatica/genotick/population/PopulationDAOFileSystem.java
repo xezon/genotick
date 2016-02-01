@@ -1,5 +1,7 @@
 package com.alphatica.genotick.population;
 
+import com.alphatica.genotick.genotick.Main;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -9,7 +11,7 @@ import java.util.Random;
 public class PopulationDAOFileSystem implements PopulationDAO {
     private static final String FILE_EXTENSION = ".prg";
     private String programsPath = "population";
-    private final Random random = new Random();
+    private final Random random = Main.random;
 
     @Override
     public void setSettings(String pathToDir) {

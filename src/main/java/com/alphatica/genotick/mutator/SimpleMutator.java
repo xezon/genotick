@@ -1,5 +1,6 @@
 package com.alphatica.genotick.mutator;
 
+import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.instructions.Instruction;
 import com.alphatica.genotick.processor.Processor;
 
@@ -15,7 +16,7 @@ class SimpleMutator implements Mutator {
     private int totalInstructions;
 
     private SimpleMutator() throws ClassNotFoundException {
-        random = new Random();
+        random = Main.random;
         instructionList = new ArrayList<>();
         buildInstructionList(instructionList);
     }

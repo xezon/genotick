@@ -17,14 +17,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
+    public static Random random;
     private static final String VERSION = "Genotick version 0.8 (copyleft 2015)";
     private static UserInput input;
     private static UserOutput output;
 
     public static void main(String... args) {
+        assignRandom();
         setupDebug();
         setupExceptionHandler();
         Parameters parameters = new Parameters(args);
@@ -35,6 +38,16 @@ public class Main {
         checkReverse(parameters);
         checkYahoo(parameters);
         checkSimulation(parameters);
+    }
+
+    private static void assignRandom() {
+        random = new Random();
+        String seedString = System.getenv("GENOTICK_RANDOM_SEED");
+        if( seedString != null) {
+            long seed = Long.parseLong(seedString);
+            random.setSeed(seed);
+            Debug.d("Assigning",seed,"to random seed. Testing only!");
+        }
     }
 
     private static void checkShowProgram(Parameters parameters) {
