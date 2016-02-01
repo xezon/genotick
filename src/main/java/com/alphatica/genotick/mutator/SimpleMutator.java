@@ -76,7 +76,11 @@ class SimpleMutator implements Mutator {
 
     @Override
     public double getNextDouble() {
-        return random.nextDouble();
+        if(random.nextBoolean()) {
+            return random.nextDouble();
+        } else {
+            return -random.nextDouble();
+        }
     }
 
     @Override
