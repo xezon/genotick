@@ -57,7 +57,7 @@ public class SimpleBreeder implements ProgramBreeder {
 
     private void createNewProgram(Population population) {
         Program program = Program.createEmptyProgram(settings.dataMaximumOffset);
-        int instructionsCount = mutator.getNextInt() % 1024;
+        int instructionsCount = Math.abs(mutator.getNextInt() % 1024);
         InstructionList main = program.getMainFunction();
         while(instructionsCount-- > 0) {
             addInstructionToMain(main);
@@ -171,7 +171,7 @@ public class SimpleBreeder implements ProgramBreeder {
 
     private Program getPossibleParent(Population population, List<ProgramInfo> list) {
         double totalWeight = sumTotalWeight(list);
-        double target = totalWeight * mutator.getNextDouble();
+        double target = Math.abs(totalWeight * mutator.getNextDouble());
         double weightSoFar = 0;
         Program parent = null;
         Iterator<ProgramInfo> iterator = list.iterator();
