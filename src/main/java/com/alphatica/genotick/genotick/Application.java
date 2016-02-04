@@ -1,5 +1,7 @@
 package com.alphatica.genotick.genotick;
 
+import com.alphatica.genotick.data.DataSetName;
+import com.alphatica.genotick.timepoint.SetStats;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointExecutorFactory;
 import com.alphatica.genotick.timepoint.TimePointStats;
@@ -19,7 +21,9 @@ import com.alphatica.genotick.population.*;
 import com.alphatica.genotick.processor.ProgramExecutorFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Application {
     private final UserOutput output;
@@ -123,12 +127,36 @@ public class Application {
     }
 
     private void showSummary(List<TimePointStats> list) {
+        Map<DataSetName,Double> statsResults = new HashMap<>();
         double result = 1;
         for (TimePointStats stats : list) {
             double percent = stats.getPercentEarned();
+            recordSetsProfit(stats,statsResults);
             result *= percent / 100.0 + 1;
         }
+        showStatsResults(statsResults);
         Debug.d("Final result for genotic:", result);
+    }
+
+    private void recordSetsProfit(TimePointStats stats, Map<DataSetName, Double> statsResults) {
+        for(Map.Entry<DataSetName,SetStats> entry: stats.listSets()) {
+            recordProfit(entry.getKey(),entry.getValue(),statsResults);
+        }
+    }
+
+    private void recordProfit(DataSetName name, SetStats setStats, Map<DataSetName, Double> statsResults) {
+        Double soFar = statsResults.get(name);
+        if(soFar == null) {
+            soFar = 0.0;
+        }
+        soFar += setStats.getTotalPercent();
+        statsResults.put(name,soFar);
+    }
+
+    private void showStatsResults(Map<DataSetName, Double> statsResults) {
+        for(Map.Entry<DataSetName,Double> entry: statsResults.entrySet()) {
+            Debug.d("Profit for",entry.getKey(),":",entry.getValue());
+        }
     }
 
 }
