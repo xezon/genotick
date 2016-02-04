@@ -3,7 +3,7 @@ package com.alphatica.genotick.timepoint;
 public class TimePoint implements Comparable<TimePoint> {
 
 
-    private long value;
+    private final long value;
     public TimePoint(long i) {
         this.value = i;
     }
@@ -22,11 +22,11 @@ public class TimePoint implements Comparable<TimePoint> {
         return (int)(this.value - timePoint.value);
     }
 
-    public void increment() {
-        value++;
-    }
-
     public long getValue() {
         return value;
+    }
+
+    public TimePoint next() {
+        return new TimePoint(value + 1);
     }
 }

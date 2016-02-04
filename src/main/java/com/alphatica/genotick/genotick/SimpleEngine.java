@@ -46,7 +46,7 @@ public class SimpleEngine implements Engine {
                 result *= (stat.getPercentEarned() / 100 + 1);
                 Debug.d("Time:",timePoint,"Percent earned so far:",(result - 1) * 100);
             }
-            timePoint.increment();
+            timePoint = timePoint.next();
         }
         if(!engineSettings.executionOnly) {
             savePopulation();
