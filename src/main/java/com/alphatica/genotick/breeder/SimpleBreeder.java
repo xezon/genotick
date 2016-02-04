@@ -73,7 +73,6 @@ public class SimpleBreeder implements ProgramBreeder {
     private void breedPopulationFromParents(Population population, List<ProgramInfo> originalList) {
         List<ProgramInfo> programInfoList = new ArrayList<>(originalList);
         removeNotAllowedPrograms(programInfoList);
-        Collections.sort(programInfoList, ProgramInfo.comparatorByAbsoluteWeight);
         breedPopulationFromList(population, programInfoList);
     }
 
@@ -173,18 +172,16 @@ public class SimpleBreeder implements ProgramBreeder {
         double totalWeight = sumTotalWeight(list);
         double target = Math.abs(totalWeight * mutator.getNextDouble());
         double weightSoFar = 0;
-        Program parent = null;
         Iterator<ProgramInfo> iterator = list.iterator();
         while(iterator.hasNext()) {
             ProgramInfo programInfo = iterator.next();
             weightSoFar += Math.abs(programInfo.getWeight());
             if(weightSoFar >= target) {
-                parent = population.getProgram(programInfo.getName());
                 iterator.remove();
-                break;
+                return population.getProgram(programInfo.getName());
             }
         }
-        return parent;
+        return null;
     }
 
     private double sumTotalWeight(List<ProgramInfo> list) {
