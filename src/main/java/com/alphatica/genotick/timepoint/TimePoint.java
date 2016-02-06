@@ -19,7 +19,13 @@ public class TimePoint implements Comparable<TimePoint> {
 
     @Override
     public int compareTo(@SuppressWarnings("NullableProblems") TimePoint timePoint) {
-        return (int)(this.value - timePoint.value);
+        if(this.value > timePoint.value) {
+            return 1;
+        } else if(this.value < timePoint.value) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 
     public long getValue() {

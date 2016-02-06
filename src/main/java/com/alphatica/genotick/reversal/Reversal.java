@@ -4,6 +4,7 @@ import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.FileSystemDataLoader;
 import com.alphatica.genotick.data.MainAppData;
+import com.alphatica.genotick.genotick.Debug;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.*;

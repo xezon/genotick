@@ -67,7 +67,7 @@ public class DataSet {
     }
 
     private void fillFirstNumberAsTimePoint(int lineNumber, List<Number> line) {
-        TimePoint timePoint = new TimePoint(line.get(0).intValue());
+        TimePoint timePoint = new TimePoint(line.get(0).longValue());
         // Arrays start indexing from 0, but humans count text lines starting from 1.
         // New timePoint will be assigned to index = lineNumber -1, so
         // we have to check what happened two lines ago!
