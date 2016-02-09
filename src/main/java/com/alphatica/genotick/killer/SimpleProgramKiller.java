@@ -33,29 +33,33 @@ class SimpleProgramKiller implements ProgramKiller {
     private void killNonSymmetricalPrograms(Population population, List<ProgramInfo> list) {
         if(!settings.requireSymmetricalPrograms)
             return;
+        int numberKilled = 0;
         Debug.d("Killing non symmetrical programs");
         for(int i = list.size() - 1; i >= 0; i--) {
             ProgramInfo info = list.get(i);
             if(info.getBias() != 0) {
                 list.remove(i);
                 population.removeProgram(info.getName());
+                numberKilled++;
             }
         }
-        Debug.d("Finished killing non symmetrical programs");
+        Debug.d("Finished killing non symmetrical programs. Killed:",numberKilled);
     }
 
     private void killNonPredictingPrograms(Population population, List<ProgramInfo> list) {
         if(!settings.killNonPredictingPrograms)
             return;
         Debug.d("Killing non predicting programs");
+        int numberKilled = 0;
         for(int i = list.size() - 1; i >= 0; i--) {
             ProgramInfo info = list.get(i);
             if(info.getTotalPredictions() == 0) {
                 list.remove(i);
                 population.removeProgram(info.getName());
+                numberKilled++;
             }
         }
-        Debug.d("Finished killing non predicting programs");
+        Debug.d("Finished killing non predicting programs. Killed:",numberKilled);
     }
 
     private void removeProtectedPrograms(Population population, List<ProgramInfo> list) {
@@ -92,8 +96,8 @@ class SimpleProgramKiller implements ProgramKiller {
         Collections.sort(listCopy,ProgramInfo.comparatorByAge);
         int numberToKill = (int)Math.round(settings.maximumDeathByAge * originalList.size());
         Debug.d("Killing max",numberToKill,"by age.");
-        killPrograms(listCopy,originalList,numberToKill,population,settings.probabilityOfDeathByAge);
-        Debug.d("Finished killing by age.");
+        int numberKilled = killPrograms(listCopy,originalList,numberToKill,population,settings.probabilityOfDeathByAge);
+        Debug.d("Finished killing by age. Killed:",numberKilled);
     }
 
     private void killProgramsByWeight(Population population, List<ProgramInfo> listCopy, List<ProgramInfo> originalList) {
@@ -103,20 +107,23 @@ class SimpleProgramKiller implements ProgramKiller {
         Collections.reverse(listCopy);
         int numberToKill = (int) Math.round(settings.maximumDeathByWeight * originalList.size());
         Debug.d("Killing max",numberToKill,"by weight");
-        killPrograms(listCopy,originalList,numberToKill,population,settings.probabilityOfDeathByWeight);
-        Debug.d("Finished killing by weight");
+        int numberKilled = killPrograms(listCopy,originalList,numberToKill,population,settings.probabilityOfDeathByWeight);
+        Debug.d("Finished killing by weight. Killed:",numberKilled);
     }
 
-    private void killPrograms(List<ProgramInfo> listCopy, List<ProgramInfo> originalList, int numberToKill, Population population, double probability) {
+    private int killPrograms(List<ProgramInfo> listCopy, List<ProgramInfo> originalList, int numberToKill, Population population, double probability) {
+        int numberKilled = 0;
         while(numberToKill-- > 0) {
             ProgramInfo toKill = getLastFromList(listCopy);
             if(toKill == null)
-                return;
+                return numberKilled;
             if(random.nextDouble() < probability) {
                 population.removeProgram(toKill.getName());
                 originalList.remove(toKill);
+                numberKilled++;
             }
         }
+        return numberKilled;
     }
 
     private ProgramInfo getLastFromList(List<ProgramInfo> list) {

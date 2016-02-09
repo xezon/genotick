@@ -47,6 +47,7 @@ public class ProgramInfo {
         bias = program.getBias();
     }
 
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean canBeParent(long minimumParentAge, long timeBetweenChildren) {
         if(totalPredictions < minimumParentAge)
