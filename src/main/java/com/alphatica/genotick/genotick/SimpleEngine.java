@@ -26,8 +26,10 @@ public class SimpleEngine implements Engine {
     private ProgramBreeder breeder;
     private Population population;
     private MainAppData data;
+    private ProfitRecorder profitRecorder;
 
     private SimpleEngine() {
+        profitRecorder = new ProfitRecorder();
     }
     public static Engine getEngine() {
         return new SimpleEngine();
@@ -45,6 +47,7 @@ public class SimpleEngine implements Engine {
             if(stat != null) {
                 timePointStats.add(stat);
                 result *= (stat.getPercentEarned() / 100 + 1);
+                profitRecorder.recordProfit(stat.getPercentEarned());
                 output.reportProfitForTimePoint(timePoint,(result - 1) * 100, stat.getPercentEarned());
                 Debug.d("Time:",timePoint,"Percent earned so far:",(result - 1) * 100);
             }
@@ -53,6 +56,8 @@ public class SimpleEngine implements Engine {
         if(!engineSettings.executionOnly) {
             savePopulation();
         }
+        Debug.d("Profit:",profitRecorder.getProfit(),"Drawdown:",profitRecorder.getMaxDrawdown(),
+                "Profit / DD:",profitRecorder.getProfit() / profitRecorder.getMaxDrawdown());
         return timePointStats;
     }
 
