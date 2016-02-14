@@ -19,6 +19,7 @@ import com.alphatica.genotick.mutator.MutatorFactory;
 import com.alphatica.genotick.mutator.MutatorSettings;
 import com.alphatica.genotick.population.*;
 import com.alphatica.genotick.processor.ProgramExecutorFactory;
+import com.alphatica.genotick.ui.UserInput;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.util.HashMap;
@@ -27,8 +28,10 @@ import java.util.Map;
 
 public class Application {
     private final UserOutput output;
+    private final UserInput input;
 
-    public Application(UserOutput output) {
+    public Application(UserInput input, UserOutput output) {
+        this.input = input;
         this.output = output;
     }
 
@@ -41,7 +44,7 @@ public class Application {
         ProgramBreeder breeder = wireProgramBreeder(mainSettings, mutator);
         Population population = wirePopulation(mainSettings);
         Engine engine = wireEngine(mainSettings, data, killer, breeder, population);
-        List<TimePointStats> results = engine.start();
+        List<TimePointStats> results = engine.start(output);
         showSummary(results);
     }
 

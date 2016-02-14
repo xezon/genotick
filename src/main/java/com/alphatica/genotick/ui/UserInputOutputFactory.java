@@ -4,6 +4,7 @@ import com.alphatica.genotick.genotick.Debug;
 
 public class UserInputOutputFactory {
     private static final String INPUT_STRING = "input";
+    private static final String OUTPUT_STRING = "output";
 
     public static UserInput getUserInput(Parameters parameters) {
         String input = parameters.getValue(INPUT_STRING);
@@ -32,8 +33,13 @@ public class UserInputOutputFactory {
         }
     }
 
+    public static UserOutput getUserOutput(Parameters parameters) {
+        String output = parameters.getValue(OUTPUT_STRING);
+        parameters.removeKey(OUTPUT_STRING);
+        if (output != null && output.equals("csv"))
+            return new CsvOutput();
+        else
+            return new ConsoleOutput();
 
-    public static UserOutput getUserOutput() {
-        return new ConsoleOutput();
     }
 }

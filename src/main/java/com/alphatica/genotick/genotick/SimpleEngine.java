@@ -11,6 +11,7 @@ import com.alphatica.genotick.data.DataUtils;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.killer.ProgramKiller;
 import com.alphatica.genotick.population.Population;
+import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -33,7 +34,7 @@ public class SimpleEngine implements Engine {
     }
 
     @Override
-    public List<TimePointStats> start() {
+    public List<TimePointStats> start(UserOutput output) {
         Thread.currentThread().setName("Main engine execution thread");
         double result = 1;
         initPopulation();
@@ -44,6 +45,7 @@ public class SimpleEngine implements Engine {
             if(stat != null) {
                 timePointStats.add(stat);
                 result *= (stat.getPercentEarned() / 100 + 1);
+                output.reportProfitForTimePoint(timePoint,(result - 1) * 100, stat.getPercentEarned());
                 Debug.d("Time:",timePoint,"Percent earned so far:",(result - 1) * 100);
             }
             timePoint = timePoint.next();
