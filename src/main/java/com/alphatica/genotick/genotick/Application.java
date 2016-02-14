@@ -44,6 +44,7 @@ public class Application {
         ProgramBreeder breeder = wireProgramBreeder(mainSettings, mutator);
         Population population = wirePopulation(mainSettings);
         Engine engine = wireEngine(mainSettings, data, killer, breeder, population);
+        DataSetResult.setThreshold(mainSettings.resultThreshold);
         List<TimePointStats> results = engine.start(output);
         showSummary(results);
     }

@@ -25,10 +25,10 @@ class ConsoleInput implements UserInput {
         MainSettings settings = MainSettings.getSettings(data.getFirstTimePoint(), data.getLastTimePoint());
         settings.startTimePoint = new TimePoint(getLong("Start time point",settings.startTimePoint.getValue()));
         settings.endTimePoint = new TimePoint(getLong("End time point", settings.endTimePoint.getValue()));
-
         settings.populationDAO = getString("Population storage", settings.populationDAO);
         settings.executionOnly = getBoolean("Prediction only", settings.executionOnly);
         settings.processorInstructionLimit = getInteger("Processor instruction limit", settings.processorInstructionLimit);
+        settings.resultThreshold = getDouble("Result threshold",settings.resultThreshold);
 
         if (!settings.executionOnly) {
             settings.dataMaximumOffset = getInteger("Data maximum offset", settings.dataMaximumOffset);

@@ -90,3 +90,10 @@ protectBestPrograms	0.02
 # Even if it's protected.
 requireSymmetricalPrograms	true
 
+# This prevents Genotick from trading if Long votes are too close to Short votes.
+# Majority weight is divided by this number and still has to be bigger than minority.
+# By default this is set to 1, so even small difference can tilt the scale.
+# For example setting this number to 2 means that majority weight has to be at least 2 times bigger
+# than minority. Numbers below 1 make no sense.
+resultThreshold 1
+

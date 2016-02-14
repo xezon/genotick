@@ -37,6 +37,7 @@ class RandomParametersInput implements UserInput {
         settings.minimumOutcomesToAllowBreeding = r.nextInt(50);
         settings.minimumOutcomesBetweenBreeding = r.nextInt(50);
         settings.randomProgramsAtEachUpdate = r.nextDouble();
+        settings.resultThreshold = 1 + (r.nextDouble() * 9);
         return settings;
     }
 

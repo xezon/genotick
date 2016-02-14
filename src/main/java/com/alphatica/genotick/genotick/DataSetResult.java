@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataSetResult {
+    private static double threshold = 1;
+
     private final DataSetName name;
     private double weightUp;
     private double weightOut;
@@ -16,6 +18,10 @@ public class DataSetResult {
 
     public DataSetResult(DataSetName name) {
         this.name = name;
+    }
+
+    public static void setThreshold(double threshold) {
+        DataSetResult.threshold = threshold;
     }
 
     public void addResult(ProgramResult programResult) {
@@ -59,8 +65,31 @@ public class DataSetResult {
 
     public Prediction getCumulativePrediction() {
         double direction = weightUp - weightDown;
-        Debug.d("Up:",weightUp,countUp,"Down:",weightDown,countDown,"Out:",weightOut,countOut);
-        return Prediction.getPrediction(direction);
+        Debug.d("Before threshold: Up:",weightUp,countUp,"Down:",weightDown,countDown,"Out:",weightOut,countOut,
+                "Direction:",direction);
+        double directionAfterThreshold = applyThreshold(direction);
+        if(direction * directionAfterThreshold < 0) {
+            Debug.d("Not enough to pass threshold (",threshold,"): Up:",weightUp,"Down:",weightDown);
+            return Prediction.OUT;
+        }
+        Debug.d("After threshold: Up:",weightUp,countUp,"Down:",weightDown,countDown,"Out:",weightOut,countOut,
+                "Direction",directionAfterThreshold);
+        return Prediction.getPrediction(directionAfterThreshold);
+    }
+
+    private double applyThreshold(double direction) {
+        if(threshold == 1) {
+            return direction;
+        }
+        double localWeightUp = weightUp;
+        double localWeightDown = weightDown;
+        if(direction > 0) {
+            localWeightUp /= threshold;
+        }
+        if(direction < 0) {
+            localWeightDown /= threshold;
+        }
+        return localWeightUp - localWeightDown;
     }
 
     public DataSetName getName() {

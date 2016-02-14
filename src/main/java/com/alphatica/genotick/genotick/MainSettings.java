@@ -29,6 +29,7 @@ public class MainSettings {
     public double randomProgramsAtEachUpdate = 0.02;
     public double protectBestPrograms = 0.02;
     public boolean requireSymmetricalPrograms = true;
+    public double resultThreshold = 1;
 
     private MainSettings() {
         /* Empty */
@@ -71,6 +72,7 @@ public class MainSettings {
         ensure(minimumOutcomesBetweenBreeding >= 0, atLeastZeroString("Minimum outcomes between breeding"));
         ensure(randomProgramsAtEachUpdate >=0, zeroToOneString("Random Programs at Each Update"));
         ensure(protectBestPrograms >= 0, zeroToOneString("Protect Best Programs"));
+        ensure(resultThreshold >= 1,atLeastOneString("Result threshold"));
 
     }
     private String atLeastZeroString(String s) {
@@ -82,6 +84,7 @@ public class MainSettings {
     private String greaterThanZeroString(String s) {
         return s + " must be greater than 0";
     }
+    private String atLeastOneString(String s) {return s + " must be greater than 1";}
     private boolean checkZeroToOne(double value) {
         return value >= 0 && value <= 1;
     }
