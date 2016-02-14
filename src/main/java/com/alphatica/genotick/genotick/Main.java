@@ -22,7 +22,7 @@ import java.util.Random;
 public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
     public static Random random;
-    private static final String VERSION = "Genotick version 0.8 (copyleft 2015)";
+    private static final String VERSION = "Genotick version 0.9.2 (copyleft 2015)";
     private static UserInput input;
     private static UserOutput output;
 
