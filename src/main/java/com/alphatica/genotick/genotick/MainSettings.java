@@ -55,8 +55,8 @@ public class MainSettings {
     }
 
     public void validate() {
-        ensure(startTimePoint.compareTo(endTimePoint) < 0,
-                "Start TimePoint must be lower than End TimePoint");
+        ensure(startTimePoint.compareTo(endTimePoint) <= 0,
+                "End Time Point must be higher or equal Start Time Point");
         ensure(populationDesiredSize > 0, greaterThanZeroString("Population desired size"));
         ensure(dataMaximumOffset > 0, greaterThanZeroString("Data Maximum Offset"));
         ensure(processorInstructionLimit > 0, greaterThanZeroString("Processor Instruction Limit"));
