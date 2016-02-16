@@ -39,7 +39,7 @@ java -jar $genotick showPopulation=$dir | grep -v name | cut -d',' -f1,2 | sed -
 while read name weight;
 do
 export int_weight=`echo $weight | cut -d'.' -f1`
-if [ $int_weight -ge $min_weight ]; then
+if (( $int_weight >= $min_weight )); then
 	cp -v $dir/$name.prg $new_dir
 fi
 done
