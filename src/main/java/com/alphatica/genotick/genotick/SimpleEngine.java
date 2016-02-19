@@ -56,9 +56,15 @@ public class SimpleEngine implements Engine {
         if(!engineSettings.executionOnly) {
             savePopulation();
         }
-        Debug.d("Profit:",profitRecorder.getProfit(),"Drawdown:",profitRecorder.getMaxDrawdown(),
-                "Profit / DD:",profitRecorder.getProfit() / profitRecorder.getMaxDrawdown());
+        showSummary();
         return timePointStats;
+    }
+
+    private void showSummary() {
+        Debug.d("Total: Profit:",profitRecorder.getProfit(),"Drawdown:",profitRecorder.getMaxDrawdown(),
+                "Profit / DD:",profitRecorder.getProfit() / profitRecorder.getMaxDrawdown());
+        Debug.d("Second Half: Profit:",profitRecorder.getProfitSecondHalf(),"Drawdown:",profitRecorder.getMaxDrawdownSecondHalf(),
+                "Profit / DD:",profitRecorder.getProfitSecondHalf() / profitRecorder.getMaxDrawdownSecondHalf());
     }
 
     private void savePopulation() {
