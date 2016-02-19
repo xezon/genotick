@@ -20,4 +20,9 @@ public enum Prediction {
     public boolean isCorrect(Double actualFutureChange) {
         return actualFutureChange * value > 0;
     }
+
+    @Override
+    public String toString() {
+        return name();
+    }
 }

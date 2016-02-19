@@ -43,7 +43,7 @@ public class SimpleEngine implements Engine {
         TimePoint timePoint = new TimePoint(engineSettings.startTimePoint);
         List<TimePointStats> timePointStats = new ArrayList<>();
         while(engineSettings.endTimePoint.compareTo(timePoint) >= 0) {
-            TimePointStats stat = executeTimePoint(timePoint);
+            TimePointStats stat = executeTimePoint(timePoint, output);
             if(stat != null) {
                 timePointStats.add(stat);
                 result *= (stat.getPercentEarned() / 100 + 1);
@@ -101,7 +101,7 @@ public class SimpleEngine implements Engine {
             breeder.breedPopulation(population, timePointExecutor.getProgramInfos());
     }
 
-    private TimePointStats executeTimePoint(TimePoint timePoint) {
+    private TimePointStats executeTimePoint(TimePoint timePoint, UserOutput output) {
         List<ProgramData> programDataList = data.prepareProgramDataList(timePoint);
         if(programDataList.isEmpty())
             return null;
@@ -111,6 +111,7 @@ public class SimpleEngine implements Engine {
         for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction();
             Debug.d(timePoint,"Prediction for:",dataSetResult.getName(),prediction);
+            output.showPrediction(timePoint,dataSetResult.getName(),prediction);
             Double actualChange = data.getActualChange(dataSetResult.getName(),timePoint);
             if(!actualChange.isNaN()) {
                 Debug.d("Actual change:", actualChange);
