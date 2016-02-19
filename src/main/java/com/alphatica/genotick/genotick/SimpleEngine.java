@@ -110,7 +110,7 @@ public class SimpleEngine implements Engine {
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction();
-            Debug.d("Prediction for:",dataSetResult.getName(),prediction);
+            Debug.d(timePoint,"Prediction for:",dataSetResult.getName(),prediction);
             Double actualChange = data.getActualChange(dataSetResult.getName(),timePoint);
             if(!actualChange.isNaN()) {
                 Debug.d("Actual change:", actualChange);
