@@ -10,39 +10,39 @@ import java.util.Random;
 
 public class PopulationDAOFileSystem implements PopulationDAO {
     private static final String FILE_EXTENSION = ".prg";
-    private String programsPath = "population";
+    private String robotsPath = "population";
     private final Random random = Main.random;
 
     @Override
     public void setSettings(String pathToDir) {
-        this.programsPath = pathToDir;
+        this.robotsPath = pathToDir;
     }
 
     @Override
-    public ProgramName[] listProgramNames() {
-        String [] files = listFiles(programsPath);
-        ProgramName[] names = new ProgramName[files.length];
+    public RobotName[] listRobotNames() {
+        String [] files = listFiles(robotsPath);
+        RobotName[] names = new RobotName[files.length];
         for(int i = 0; i < files.length; i++) {
             String longString = files[i].substring(0,files[i].indexOf('.'));
-            names[i] = new ProgramName(Long.valueOf(longString));
+            names[i] = new RobotName(Long.valueOf(longString));
         }
         return names;
     }
 
     @Override
-    public Program getProgramByName(ProgramName name) {
+    public Robot getRobotByName(RobotName name) {
         File file = createFileForName(name);
-        return getProgramFromFile(file);
+        return getRobotFromFile(file);
     }
 
     @Override
-    public Iterable<Program> getProgramList() {
-        return new Iterable<Program>() {
-            class ListAvailablePrograms implements Iterator<Program> {
-                final private List<ProgramName> names;
+    public Iterable<Robot> getRobotList() {
+        return new Iterable<Robot>() {
+            class ListAvailableRobots implements Iterator<Robot> {
+                final private List<RobotName> names;
                 int index = 0;
-                ListAvailablePrograms() {
-                    names = getAllProgramNames();
+                ListAvailableRobots() {
+                    names = getAllRobotsNames();
                 }
                 @Override
                 public boolean hasNext() {
@@ -50,8 +50,8 @@ public class PopulationDAOFileSystem implements PopulationDAO {
                 }
 
                 @Override
-                public Program next() {
-                    return getProgramByName(names.get(index++));
+                public Robot next() {
+                    return getRobotByName(names.get(index++));
                 }
 
                 @Override
@@ -60,51 +60,51 @@ public class PopulationDAOFileSystem implements PopulationDAO {
                 }
             }
             @Override
-            public Iterator<Program> iterator() {
-                return new ListAvailablePrograms();
+            public Iterator<Robot> iterator() {
+                return new ListAvailableRobots();
             }
         };
     }
 
     @Override
-    public int getAvailableProgramsCount() {
-        return getAllProgramNames().size();
+    public int getAvailableRobotsCount() {
+        return getAllRobotsNames().size();
     }
 
     @Override
-    public void saveProgram(Program program) {
-        if(program.getName() == null) {
-            program.setName(getAvailableName());
+    public void saveRobot(Robot robot) {
+        if(robot.getName() == null) {
+            robot.setName(getAvailableName());
         }
-        File file = createFileForName(program.getName());
-        saveProgramToFile(program,file);
+        File file = createFileForName(robot.getName());
+        saveRobotToFile(robot,file);
     }
 
     @Override
-    public void removeProgram(ProgramName programName) {
-        File file = createFileForName(programName);
+    public void removeRobot(RobotName robotName) {
+        File file = createFileForName(robotName);
         boolean result = file.delete();
         if(!result)
             throw new DAOException("Unable to remove file " + file.getAbsolutePath());
     }
 
-    public static Program getProgramFromFile(File file) {
+    public static Robot getRobotFromFile(File file) {
         try(ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream( new FileInputStream(file)))) {
-            return (Program) ois.readObject();
+            return (Robot) ois.readObject();
         } catch (ClassNotFoundException | IOException e) {
             throw new DAOException(e);
         }
     }
 
-    private List<ProgramName> getAllProgramNames() {
-        List<ProgramName> list = new ArrayList<>();
-        String [] fileList = listFiles(programsPath);
+    private List<RobotName> getAllRobotsNames() {
+        List<RobotName> list = new ArrayList<>();
+        String [] fileList = listFiles(robotsPath);
         if(fileList == null)
             return list;
         for(String name: fileList) {
             String shortName = name.split("\\.")[0];
             Long l = Long.parseLong(shortName);
-            list.add(new ProgramName(l));
+            list.add(new RobotName(l));
         }
         return list;
     }
@@ -119,24 +119,24 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         });
     }
 
-    private ProgramName getAvailableName() {
+    private RobotName getAvailableName() {
         File file;
         long l;
         do {
             l = Math.abs(random.nextLong());
-            file = new File(programsPath + String.valueOf(l) + FILE_EXTENSION);
+            file = new File(robotsPath + String.valueOf(l) + FILE_EXTENSION);
         } while (file.exists());
-        return new ProgramName(l);
+        return new RobotName(l);
     }
 
-    private File createFileForName(ProgramName name) {
-        return new File(programsPath + File.separator + name.toString() + FILE_EXTENSION);
+    private File createFileForName(RobotName name) {
+        return new File(robotsPath + File.separator + name.toString() + FILE_EXTENSION);
     }
 
-    private void saveProgramToFile(Program program, File file)  {
+    private void saveRobotToFile(Robot robot, File file)  {
         deleteFileIfExists(file);
         try(ObjectOutputStream ous = new ObjectOutputStream(new BufferedOutputStream( new FileOutputStream(file)))) {
-            ous.writeObject(program);
+            ous.writeObject(robot);
         } catch (IOException ex) {
             throw new DAOException(ex);
         }

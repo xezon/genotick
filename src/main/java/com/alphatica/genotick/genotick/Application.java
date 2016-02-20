@@ -6,19 +6,19 @@ import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointExecutorFactory;
 import com.alphatica.genotick.timepoint.TimePointStats;
 import com.alphatica.genotick.breeder.BreederSettings;
-import com.alphatica.genotick.breeder.ProgramBreeder;
-import com.alphatica.genotick.breeder.ProgramBreederFactory;
+import com.alphatica.genotick.breeder.RobotBreeder;
+import com.alphatica.genotick.breeder.RobotBreederFactory;
 import com.alphatica.genotick.data.DataFactory;
 import com.alphatica.genotick.data.DataLoader;
 import com.alphatica.genotick.data.MainAppData;
-import com.alphatica.genotick.killer.ProgramKiller;
-import com.alphatica.genotick.killer.ProgramKillerFactory;
-import com.alphatica.genotick.killer.ProgramKillerSettings;
+import com.alphatica.genotick.killer.RobotKiller;
+import com.alphatica.genotick.killer.RobotKillerFactory;
+import com.alphatica.genotick.killer.RobotKillerSettings;
 import com.alphatica.genotick.mutator.Mutator;
 import com.alphatica.genotick.mutator.MutatorFactory;
 import com.alphatica.genotick.mutator.MutatorSettings;
 import com.alphatica.genotick.population.*;
-import com.alphatica.genotick.processor.ProgramExecutorFactory;
+import com.alphatica.genotick.processor.RobotExecutorFactory;
 import com.alphatica.genotick.ui.UserInput;
 import com.alphatica.genotick.ui.UserOutput;
 
@@ -39,9 +39,9 @@ public class Application {
         if(!validateSettings(mainSettings))
             return;
         logSettings(mainSettings);
-        ProgramKiller killer = getProgramKiller(mainSettings);
+        RobotKiller killer = getRobotKiller(mainSettings);
         Mutator mutator = getMutator(mainSettings);
-        ProgramBreeder breeder = wireProgramBreeder(mainSettings, mutator);
+        RobotBreeder breeder = wireBreeder(mainSettings, mutator);
         Population population = wirePopulation(mainSettings);
         Engine engine = wireEngine(mainSettings, data, killer, breeder, population);
         DataSetResult.setThreshold(mainSettings.resultThreshold);
@@ -51,7 +51,7 @@ public class Application {
 
     public MainAppData createData(String dataSettings) {
         DataLoader dataLoader = DataFactory.getDefaultLoader(dataSettings);
-        return dataLoader.createProgramData();
+        return dataLoader.createRobotData();
     }
 
     private boolean validateSettings(MainSettings settings) {
@@ -64,8 +64,8 @@ public class Application {
         }
     }
 
-    private Engine wireEngine(MainSettings mainSettings, MainAppData data, ProgramKiller killer,
-                              ProgramBreeder breeder, Population population) {
+    private Engine wireEngine(MainSettings mainSettings, MainAppData data, RobotKiller killer,
+                              RobotBreeder breeder, Population population) {
         EngineSettings engineSettings = getEngineSettings(mainSettings);
         TimePointExecutor timePointExecutor = wireTimePointExecutor(mainSettings);
         return EngineFactory.getDefaultEngine(engineSettings, data, timePointExecutor, killer, breeder, population);
@@ -73,9 +73,9 @@ public class Application {
 
     private TimePointExecutor wireTimePointExecutor(MainSettings settings) {
         DataSetExecutor dataSetExecutor = new SimpleDataSetExecutor();
-        ProgramExecutorSettings programExecutorSettings = new ProgramExecutorSettings(settings);
-        ProgramExecutorFactory programExecutorFactory = new ProgramExecutorFactory(programExecutorSettings);
-        return TimePointExecutorFactory.getDefaultExecutor(dataSetExecutor,programExecutorFactory);
+        RobotExecutorSettings robotExecutorSettings = new RobotExecutorSettings(settings);
+        RobotExecutorFactory robotExecutorFactory = new RobotExecutorFactory(robotExecutorSettings);
+        return TimePointExecutorFactory.getDefaultExecutor(dataSetExecutor, robotExecutorFactory);
     }
 
     private Population wirePopulation(MainSettings settings) {
@@ -85,27 +85,27 @@ public class Application {
         return population;
     }
 
-    private ProgramBreeder wireProgramBreeder(MainSettings settings, Mutator mutator) {
+    private RobotBreeder wireBreeder(MainSettings settings, Mutator mutator) {
         BreederSettings breederSettings = new BreederSettings(
                 settings.minimumOutcomesBetweenBreeding,
                 settings.inheritedChildWeight,
                 settings.minimumOutcomesToAllowBreeding,
-                settings.randomProgramsAtEachUpdate,
+                settings.randomRobotsAtEachUpdate,
                 settings.dataMaximumOffset);
-        return ProgramBreederFactory.getDefaultBreeder(breederSettings, mutator);
+        return RobotBreederFactory.getDefaultBreeder(breederSettings, mutator);
     }
 
-    private ProgramKiller getProgramKiller(MainSettings settings) {
-        ProgramKillerSettings killerSettings = new ProgramKillerSettings();
+    private RobotKiller getRobotKiller(MainSettings settings) {
+        RobotKillerSettings killerSettings = new RobotKillerSettings();
         killerSettings.maximumDeathByAge = settings.maximumDeathByAge;
         killerSettings.maximumDeathByWeight = settings.maximumDeathByWeight;
         killerSettings.probabilityOfDeathByAge = settings.probabilityOfDeathByAge;
         killerSettings.probabilityOfDeathByWeight = settings.probabilityOfDeathByWeight;
-        killerSettings.protectProgramUntilOutcomes = settings.protectProgramUntilOutcomes;
-        killerSettings.protectBestPrograms = settings.protectBestPrograms;
-        killerSettings.killNonPredictingPrograms = settings.killNonPredictingPrograms;
-        killerSettings.requireSymmetricalPrograms = settings.requireSymmetricalPrograms;
-        return ProgramKillerFactory.getDefaultProgramKiller(killerSettings);
+        killerSettings.protectRobotsUntilOutcomes = settings.protectRobotsUntilOutcomes;
+        killerSettings.protectBestRobots = settings.protectBestRobots;
+        killerSettings.killNonPredictingRobots = settings.killNonPredictingRobots;
+        killerSettings.requireSymmetricalRobots = settings.requireSymmetricalRobots;
+        return RobotKillerFactory.getDefaultRobotKiller(killerSettings);
     }
 
     private Mutator getMutator(MainSettings settings) {

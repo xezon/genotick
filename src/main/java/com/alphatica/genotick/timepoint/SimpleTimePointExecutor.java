@@ -2,7 +2,7 @@ package com.alphatica.genotick.timepoint;
 
 import com.alphatica.genotick.genotick.*;
 import com.alphatica.genotick.population.*;
-import com.alphatica.genotick.processor.ProgramExecutorFactory;
+import com.alphatica.genotick.processor.RobotExecutorFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,43 +12,42 @@ import java.util.concurrent.*;
 class SimpleTimePointExecutor implements TimePointExecutor {
 
     private final ExecutorService executorService;
-    private final List<ProgramInfo> programInfos;
+    private final List<RobotInfo> robotInfos;
     private DataSetExecutor dataSetExecutor;
-    private ProgramExecutorFactory programExecutorFactory;
+    private RobotExecutorFactory robotExecutorFactory;
 
 
     public SimpleTimePointExecutor() {
         int cores = Runtime.getRuntime().availableProcessors();
         executorService = Executors.newFixedThreadPool(cores * 2, new DaemonThreadFactory());
-        programInfos = Collections.synchronizedList(new ArrayList<ProgramInfo>());
+        robotInfos = Collections.synchronizedList(new ArrayList<RobotInfo>());
+    }
+
+    public List<RobotInfo> getRobotInfos() {
+        return robotInfos;
     }
 
     @Override
-    public List<ProgramInfo> getProgramInfos() {
-        return programInfos;
-    }
-
-    @Override
-    public TimePointResult execute(List<ProgramData> programDataList,
-                                   Population population, boolean updatePrograms) {
-        programInfos.clear();
+    public TimePointResult execute(List<RobotData> robotDataList,
+                                   Population population, boolean updateRobots) {
+        robotInfos.clear();
         TimePointResult timePointResult = new TimePointResult();
-        if(programDataList.isEmpty())
+        if(robotDataList.isEmpty())
             return timePointResult;
-        List<Future<List<ProgramResult>>> tasks = submitTasks(programDataList,population,updatePrograms);
+        List<Future<List<RobotResult>>> tasks = submitTasks(robotDataList,population,updateRobots);
         getResults(timePointResult,tasks);
         return timePointResult;
     }
 
-    private void getResults(TimePointResult timePointResult, List<Future<List<ProgramResult>>> tasks) {
+    private void getResults(TimePointResult timePointResult, List<Future<List<RobotResult>>> tasks) {
         while(!tasks.isEmpty()) {
             try {
                 int lastIndex = tasks.size() - 1;
-                Future<List<ProgramResult>> future = tasks.get(lastIndex);
-                List<ProgramResult> results = future.get();
+                Future<List<RobotResult>> future = tasks.get(lastIndex);
+                List<RobotResult> results = future.get();
                 tasks.remove(lastIndex);
-                for(ProgramResult result: results) {
-                    timePointResult.addProgramResult(result);
+                for(RobotResult result: results) {
+                    timePointResult.addRobotResult(result);
                 }
             } catch (InterruptedException ignore) {
                 /* Do nothing, try again */
@@ -61,62 +60,62 @@ class SimpleTimePointExecutor implements TimePointExecutor {
 
 
     @Override
-    public void setSettings(DataSetExecutor dataSetExecutor, ProgramExecutorFactory programExecutorFactory) {
+    public void setSettings(DataSetExecutor dataSetExecutor, RobotExecutorFactory robotExecutorFactory) {
         this.dataSetExecutor = dataSetExecutor;
-        this.programExecutorFactory = programExecutorFactory;
+        this.robotExecutorFactory = robotExecutorFactory;
     }
 
     /*
        Return type here is as ugly as it gets and I'm not proud. However, it seems to be the quickest.
        */
-    private List<Future<List<ProgramResult>>> submitTasks(List<ProgramData> programDataList,
-                                                          Population population,
-                                                          boolean updatePrograms) {
-        List<Future<List<ProgramResult>>> tasks = new ArrayList<>();
-        for(ProgramName programName: population.listProgramNames()) {
-            Task task = new Task(programName, programDataList, population, updatePrograms);
-            Future<List<ProgramResult>> future = executorService.submit(task);
+    private List<Future<List<RobotResult>>> submitTasks(List<RobotData> robotDataList,
+                                                        Population population,
+                                                        boolean updateRobots) {
+        List<Future<List<RobotResult>>> tasks = new ArrayList<>();
+        for(RobotName robotName : population.listRobotsNames()) {
+            Task task = new Task(robotName, robotDataList, population, updateRobots);
+            Future<List<RobotResult>> future = executorService.submit(task);
             tasks.add(future);
         }
         return tasks;
     }
 
-    private class Task implements Callable<List<ProgramResult>> {
+    private class Task implements Callable<List<RobotResult>> {
 
-        private final ProgramName programName;
-        private final List<ProgramData> programDataList;
+        private final RobotName robotName;
+        private final List<RobotData> robotDataList;
         private final Population population;
-        private final boolean updatePrograms;
+        private final boolean updateRobots;
 
-        public Task(ProgramName programName, List<ProgramData> programDataList, Population population, boolean updatePrograms) {
-            this.programName = programName;
-            this.programDataList = programDataList;
+        public Task(RobotName robotName, List<RobotData> robotDataList, Population population, boolean updateRobots) {
+            this.robotName = robotName;
+            this.robotDataList = robotDataList;
             this.population = population;
-            this.updatePrograms = updatePrograms;
+            this.updateRobots = updateRobots;
         }
 
         @Override
-        public List<ProgramResult> call() throws Exception {
-            ProgramExecutor programExecutor = programExecutorFactory.getDefaultProgramExecutor();
-            Program program = population.getProgram(programName);
-            List<ProgramResult> list = dataSetExecutor.execute(programDataList,program,programExecutor);
-            if(updatePrograms) {
-                updateProgram(program,list);
+        public List<RobotResult> call() throws Exception {
+            RobotExecutor robotExecutor = robotExecutorFactory.getDefaultRobotExecutor();
+            Robot robot = population.getRobot(robotName);
+            List<RobotResult> list = dataSetExecutor.execute(robotDataList, robot, robotExecutor);
+            if(updateRobots) {
+                updateRobots(robot,list);
             }
-            ProgramInfo programInfo = new ProgramInfo(program);
-            programInfos.add(programInfo);
+            RobotInfo robotInfo = new RobotInfo(robot);
+            robotInfos.add(robotInfo);
             return list;
         }
 
-        private void updateProgram(Program program,List<ProgramResult> list) {
+        private void updateRobots(Robot robot, List<RobotResult> list) {
             List<Outcome> outcomes = new ArrayList<>();
-            for(ProgramResult result: list) {
-                program.recordPrediction(result.getPrediction());
+            for(RobotResult result: list) {
+                robot.recordPrediction(result.getPrediction());
                 Outcome outcome = Outcome.getOutcome(result.getPrediction(),result.getData().getActualChange());
                 outcomes.add(outcome);
             }
-            program.recordOutcomes(outcomes);
-            population.saveProgram(program);
+            robot.recordOutcomes(outcomes);
+            population.saveRobot(robot);
         }
     }
 }

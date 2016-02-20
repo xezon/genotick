@@ -2,12 +2,12 @@ package com.alphatica.genotick.population;
 
 import java.io.Serializable;
 
-public class ProgramName implements Serializable {
+public class RobotName implements Serializable {
     @SuppressWarnings("unused")
     private final static long serialVersionUID = 32136468798664L;
     private final long name;
 
-    public ProgramName(long name) {
+    public RobotName(long name) {
         this.name = name;
     }
 
@@ -26,7 +26,7 @@ public class ProgramName implements Serializable {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        ProgramName that = (ProgramName) o;
+        RobotName that = (RobotName) o;
         return name == that.getName();
     }
 

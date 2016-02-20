@@ -29,22 +29,22 @@ class RandomParametersInput implements UserInput {
         settings.probabilityOfDeathByAge = r.nextDouble();
         settings.probabilityOfDeathByWeight = r.nextDouble();
         settings.inheritedChildWeight = r.nextDouble();
-        settings.protectProgramUntilOutcomes = r.nextInt(100);
-        settings.protectBestPrograms = r.nextDouble();
+        settings.protectRobotsUntilOutcomes = r.nextInt(100);
+        settings.protectBestRobots = r.nextDouble();
         settings.newInstructionProbability = r.nextDouble();
         settings.instructionMutationProbability = r.nextDouble();
         settings.skipInstructionProbability = settings.newInstructionProbability;
         settings.minimumOutcomesToAllowBreeding = r.nextInt(50);
         settings.minimumOutcomesBetweenBreeding = r.nextInt(50);
-        settings.randomProgramsAtEachUpdate = r.nextDouble();
+        settings.randomRobotsAtEachUpdate = r.nextDouble();
         settings.resultThreshold = 1 + (r.nextDouble() * 9);
         return settings;
     }
 
     private  MainSettings getSettings(MainSettings defaults) {
         defaults.populationDAO = "RAM";
-        defaults.requireSymmetricalPrograms = true;
-        defaults.killNonPredictingPrograms = true;
+        defaults.requireSymmetricalRobots = true;
+        defaults.killNonPredictingRobots = true;
         defaults.executionOnly = false;
         return assignRandom(defaults);
     }

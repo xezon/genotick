@@ -2,10 +2,10 @@ package com.alphatica.genotick.population;
 
 import com.alphatica.genotick.genotick.MainSettings;
 
-public class ProgramExecutorSettings {
+public class RobotExecutorSettings {
     public final int instructionLimit;
 
-    public ProgramExecutorSettings(MainSettings settings) {
+    public RobotExecutorSettings(MainSettings settings) {
         instructionLimit = settings.processorInstructionLimit;
     }
 }

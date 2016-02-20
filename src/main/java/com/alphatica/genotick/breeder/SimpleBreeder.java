@@ -6,63 +6,62 @@ import com.alphatica.genotick.instructions.InstructionList;
 import com.alphatica.genotick.instructions.TerminateInstructionList;
 import com.alphatica.genotick.mutator.Mutator;
 import com.alphatica.genotick.population.Population;
-import com.alphatica.genotick.population.Program;
-import com.alphatica.genotick.population.ProgramInfo;
+import com.alphatica.genotick.population.Robot;
+import com.alphatica.genotick.population.RobotInfo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class SimpleBreeder implements ProgramBreeder {
+public class SimpleBreeder implements RobotBreeder {
     private BreederSettings settings;
     private Mutator mutator;
 
-    public static ProgramBreeder getInstance() {
+    public static RobotBreeder getInstance() {
         return new SimpleBreeder();
     }
 
     @Override
-    public void breedPopulation(Population population, List<ProgramInfo> programInfos) {
+    public void breedPopulation(Population population, List<RobotInfo> robotInfos) {
         Debug.d("Breeding population");
         Debug.d("Current population size", population.getSize());
-        addRequiredRandomPrograms(population);
+        addRequiredRandomRobots(population);
         if(population.haveSpaceToBreed()) {
-            breedPopulationFromParents(population,programInfos);
-            addOptionalRandomPrograms(population);
+            breedPopulationFromParents(population, robotInfos);
+            addOptionalRandomRobots(population);
         }
         Debug.d("Breeder exiting");
         Debug.d("Current population size", population.getSize());
     }
 
-    private void addOptionalRandomPrograms(Population population) {
+    private void addOptionalRandomRobots(Population population) {
         int count = population.getDesiredSize() - population.getSize();
         if(count > 0) {
-            fillWithPrograms(count, population);
+            fillWithRobots(count, population);
         }
     }
 
-    private void addRequiredRandomPrograms(Population population) {
-        if(settings.randomPrograms > 0) {
-            int count = (int)Math.round(settings.randomPrograms * population.getDesiredSize());
-            fillWithPrograms(count,population);
+    private void addRequiredRandomRobots(Population population) {
+        if(settings.randomRobots > 0) {
+            int count = (int)Math.round(settings.randomRobots * population.getDesiredSize());
+            fillWithRobots(count,population);
         }
     }
 
-    private void fillWithPrograms(int count, Population population) {
+    private void fillWithRobots(int count, Population population) {
         for(int i = 0; i < count; i++) {
-            createNewProgram(population);
+            createNewRobot(population);
         }
     }
 
-    private void createNewProgram(Population population) {
-        Program program = Program.createEmptyProgram(settings.dataMaximumOffset);
+    private void createNewRobot(Population population) {
+        Robot robot = Robot.createEmptyRobot(settings.dataMaximumOffset);
         int instructionsCount = Math.abs(mutator.getNextInt() % 1024);
-        InstructionList main = program.getMainFunction();
+        InstructionList main = robot.getMainFunction();
         while(instructionsCount-- > 0) {
             addInstructionToMain(main);
         }
-        population.saveProgram(program);
+        population.saveRobot(robot);
     }
 
     private void addInstructionToMain(InstructionList main) {
@@ -70,56 +69,56 @@ public class SimpleBreeder implements ProgramBreeder {
         instruction.mutate(mutator);
         main.addInstruction(instruction);
     }
-    private void breedPopulationFromParents(Population population, List<ProgramInfo> originalList) {
-        List<ProgramInfo> programInfoList = new ArrayList<>(originalList);
-        removeNotAllowedPrograms(programInfoList);
-        breedPopulationFromList(population, programInfoList);
+    private void breedPopulationFromParents(Population population, List<RobotInfo> originalList) {
+        List<RobotInfo> robotInfos = new ArrayList<>(originalList);
+        removeNotAllowedRobots(robotInfos);
+        breedPopulationFromList(population, robotInfos);
     }
 
-    private void removeNotAllowedPrograms(List<ProgramInfo> programInfoList) {
-        Iterator<ProgramInfo> iterator = programInfoList.iterator();
+    private void removeNotAllowedRobots(List<RobotInfo> robotInfos) {
+        Iterator<RobotInfo> iterator = robotInfos.iterator();
         while(iterator.hasNext()) {
-            ProgramInfo programInfo = iterator.next();
-            if(!programInfo.canBeParent(settings.minimumOutcomesToAllowBreeding, settings.outcomesBetweenBreeding))
+            RobotInfo robotInfo = iterator.next();
+            if(!robotInfo.canBeParent(settings.minimumOutcomesToAllowBreeding, settings.outcomesBetweenBreeding))
                 iterator.remove();
         }
     }
 
-    private void breedPopulationFromList(Population population, List<ProgramInfo> list) {
+    private void breedPopulationFromList(Population population, List<RobotInfo> list) {
         while(population.haveSpaceToBreed()) {
-            Program parent1 = getPossibleParent(population, list);
-            Program parent2 = getPossibleParent(population,list);
+            Robot parent1 = getPossibleParent(population, list);
+            Robot parent2 = getPossibleParent(population,list);
             if(parent1 == null || parent2 == null)
                 break;
-            Program child = Program.createEmptyProgram(settings.dataMaximumOffset);
+            Robot child = Robot.createEmptyRobot(settings.dataMaximumOffset);
             makeChild(parent1, parent2, child);
-            population.saveProgram(child);
+            population.saveRobot(child);
             parent1.increaseChildren();
-            population.saveProgram(parent1);
+            population.saveRobot(parent1);
             parent2.increaseChildren();
-            population.saveProgram(parent2);
+            population.saveRobot(parent2);
         }
     }
 
-    private void makeChild(Program parent1, Program parent2, Program child) {
+    private void makeChild(Robot parent1, Robot parent2, Robot child) {
         double weight = getParentsWeight(parent1, parent2);
         child.setInheritedWeight(weight);
         InstructionList instructionList = mixMainInstructionLists(parent1,parent2);
         child.setMainInstructionList(instructionList);
     }
 
-    private double getParentsWeight(Program parent1, Program parent2) {
+    private double getParentsWeight(Robot parent1, Robot parent2) {
         return settings.inheritedWeightPercent * (parent1.getWeight() + parent2.getWeight()) / 2;
     }
 
-    private InstructionList mixMainInstructionLists(Program parent1, Program parent2) {
+    private InstructionList mixMainInstructionLists(Robot parent1, Robot parent2) {
         InstructionList source1 = parent1.getMainFunction();
         InstructionList source2 = parent2.getMainFunction();
         return blendInstructionLists(source1,source2);
     }
 
     /*
-    This potentially will make programs gradually shorter.
+    This potentially will make robots gradually shorter.
     Let's say that list1.size == 4 and list2.size == 2. Average length is 3.
     Then, break1 will be between <0,3> and break2 <0,1>
     All possible lengths for new InstructionList will be: 0,1,2,3,1,2,3,4 with equal probability.
@@ -168,26 +167,26 @@ public class SimpleBreeder implements ProgramBreeder {
         }
     }
 
-    private Program getPossibleParent(Population population, List<ProgramInfo> list) {
+    private Robot getPossibleParent(Population population, List<RobotInfo> list) {
         double totalWeight = sumTotalWeight(list);
         double target = Math.abs(totalWeight * mutator.getNextDouble());
         double weightSoFar = 0;
-        Iterator<ProgramInfo> iterator = list.iterator();
+        Iterator<RobotInfo> iterator = list.iterator();
         while(iterator.hasNext()) {
-            ProgramInfo programInfo = iterator.next();
-            weightSoFar += Math.abs(programInfo.getWeight());
+            RobotInfo robotInfo = iterator.next();
+            weightSoFar += Math.abs(robotInfo.getWeight());
             if(weightSoFar >= target) {
                 iterator.remove();
-                return population.getProgram(programInfo.getName());
+                return population.getRobot(robotInfo.getName());
             }
         }
         return null;
     }
 
-    private double sumTotalWeight(List<ProgramInfo> list) {
+    private double sumTotalWeight(List<RobotInfo> list) {
         double weight = 0;
-        for(ProgramInfo programInfo: list) {
-            weight += Math.abs(programInfo.getWeight());
+        for(RobotInfo robotInfo: list) {
+            weight += Math.abs(robotInfo.getWeight());
         }
         return weight;
     }

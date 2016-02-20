@@ -2,7 +2,7 @@ package com.alphatica.genotick.timepoint;
 
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.DataSetResult;
-import com.alphatica.genotick.genotick.ProgramResult;
+import com.alphatica.genotick.genotick.RobotResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,10 +14,10 @@ public class TimePointResult {
         dataSetResultMap = new HashMap<>();
     }
 
-    public void addProgramResult(ProgramResult programResult) {
-        DataSetName name = programResult.getData().getName();
+    public void addRobotResult(RobotResult robotResult) {
+        DataSetName name = robotResult.getData().getName();
         DataSetResult dataSetResult = getDataSetResult(name);
-        dataSetResult.addResult(programResult);
+        dataSetResult.addResult(robotResult);
     }
 
     private DataSetResult getDataSetResult(DataSetName name) {

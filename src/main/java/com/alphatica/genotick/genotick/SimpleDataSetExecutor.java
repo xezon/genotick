@@ -1,7 +1,7 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.population.Program;
-import com.alphatica.genotick.population.ProgramExecutor;
+import com.alphatica.genotick.population.Robot;
+import com.alphatica.genotick.population.RobotExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +10,14 @@ public class  SimpleDataSetExecutor implements DataSetExecutor {
 
 
     @Override
-    public List<ProgramResult> execute(List<ProgramData> programDataList, Program program, ProgramExecutor programExecutor) {
-        List<ProgramResult> programResultList = new ArrayList<>(programDataList.size());
-        for(ProgramData programData: programDataList) {
-            Prediction prediction = programExecutor.executeProgram(programData,program);
-            ProgramResult result = new ProgramResult(prediction,program,programData);
-            programResultList.add(result);
+    public List<RobotResult> execute(List<RobotData> robotDataList, Robot robot, RobotExecutor robotExecutor) {
+        List<RobotResult> robotResultList = new ArrayList<>(robotDataList.size());
+        for(RobotData robotData : robotDataList) {
+            Prediction prediction = robotExecutor.executeRobot(robotData, robot);
+            RobotResult result = new RobotResult(prediction, robot, robotData);
+            robotResultList.add(result);
         }
-        return programResultList;
+        return robotResultList;
     }
 
 }

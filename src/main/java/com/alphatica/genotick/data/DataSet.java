@@ -1,7 +1,7 @@
 package com.alphatica.genotick.data;
 
 
-import com.alphatica.genotick.genotick.ProgramData;
+import com.alphatica.genotick.genotick.RobotData;
 import com.alphatica.genotick.timepoint.TimePoint;
 
 import java.util.ArrayList;
@@ -33,10 +33,10 @@ public class DataSet {
         return name;
     }
 
-    public ProgramData getProgramData(TimePoint timePoint) {
+    public RobotData getRobotData(TimePoint timePoint) {
         int i = Arrays.binarySearch(timePoints,timePoint);
         if(i < 0) {
-            return ProgramData.createEmptyData(name);
+            return RobotData.createEmptyData(name);
         } else {
             return createDataUpToTimePoint(i);
         }
@@ -87,14 +87,14 @@ public class DataSet {
         }
     }
 
-    private ProgramData createDataUpToTimePoint(int i) {
+    private RobotData createDataUpToTimePoint(int i) {
         List<double []> list = new ArrayList<>();
         for(double[] original: values) {
             double [] copy = copyReverseArray(original, i);
             list.add(copy);
         }
         Double futureChange = calculateFutureChange(timePoints[i]);
-        return ProgramData.createData(list,name,futureChange);
+        return RobotData.createData(list,name,futureChange);
     }
 
     private double[] copyReverseArray(double[] original, int i) {

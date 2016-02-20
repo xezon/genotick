@@ -20,7 +20,7 @@ public class SimplePopulation implements Population {
 
     @Override
     public int getSize() {
-        return dao.getAvailableProgramsCount();
+        return dao.getAvailableRobotsCount();
     }
 
     @Override
@@ -29,26 +29,26 @@ public class SimplePopulation implements Population {
     }
 
     @Override
-    public void saveProgram(Program program) {
-        dao.saveProgram(program);
+    public void saveRobot(Robot robot) {
+        dao.saveRobot(robot);
     }
 
     @Override
-    public Program getProgram(ProgramName name) {
-        return dao.getProgramByName(name);
+    public Robot getRobot(RobotName name) {
+        return dao.getRobotByName(name);
     }
 
     @Override
-    public void removeProgram(ProgramName programName) {
-        dao.removeProgram(programName);
+    public void removeRobot(RobotName robotName) {
+        dao.removeRobot(robotName);
     }
 
     @Override
-    public List<ProgramInfo> getProgramInfoList() {
-        List<ProgramInfo> list = new ArrayList<>(dao.getAvailableProgramsCount());
-        for(Program program: dao.getProgramList()) {
-            ProgramInfo programInfo = new ProgramInfo(program);
-            list.add(programInfo);
+    public List<RobotInfo> getRobotInfoList() {
+        List<RobotInfo> list = new ArrayList<>(dao.getAvailableRobotsCount());
+        for(Robot robot : dao.getRobotList()) {
+            RobotInfo robotInfo = new RobotInfo(robot);
+            list.add(robotInfo);
         }
         return list;
     }
@@ -62,13 +62,13 @@ public class SimplePopulation implements Population {
     public void savePopulation(String path) {
         PopulationDAO fs = new PopulationDAOFileSystem();
         fs.setSettings(path);
-        for(Program program: dao.getProgramList()) {
-            fs.saveProgram(program);
+        for(Robot robot : dao.getRobotList()) {
+            fs.saveRobot(robot);
         }
     }
 
     @Override
-    public ProgramName[] listProgramNames() {
-        return dao.listProgramNames();
+    public RobotName[] listRobotsNames() {
+        return dao.listRobotNames();
     }
 }

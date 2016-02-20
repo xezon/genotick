@@ -4,8 +4,8 @@ import com.alphatica.genotick.data.DataUtils;
 import com.alphatica.genotick.data.YahooFixer;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.PopulationDAOFileSystem;
-import com.alphatica.genotick.population.Program;
-import com.alphatica.genotick.population.ProgramInfo;
+import com.alphatica.genotick.population.Robot;
+import com.alphatica.genotick.population.RobotInfo;
 import com.alphatica.genotick.reversal.Reversal;
 import com.alphatica.genotick.ui.Parameters;
 import com.alphatica.genotick.ui.UserInput;
@@ -33,7 +33,7 @@ public class Main {
         Parameters parameters = new Parameters(args);
         checkVersionRequest(parameters);
         checkShowPopulation(parameters);
-        checkShowProgram(parameters);
+        checkShowRobot(parameters);
         getUserIO(parameters);
         checkReverse(parameters);
         checkYahoo(parameters);
@@ -50,11 +50,11 @@ public class Main {
         }
     }
 
-    private static void checkShowProgram(Parameters parameters) {
-        String value = parameters.getValue("showProgram");
+    private static void checkShowRobot(Parameters parameters) {
+        String value = parameters.getValue("showRobot");
         if(value != null) {
             try {
-                showProgram(value);
+                showRobot(value);
             } catch (IllegalAccessException e) {
                 Debug.d(e);
             }
@@ -62,15 +62,15 @@ public class Main {
         }
     }
 
-    private static void showProgram(String value) throws IllegalAccessException {
-        String programString = getProgramString(value);
-        System.out.println(programString);
+    private static void showRobot(String value) throws IllegalAccessException {
+        String robotString = getRobotString(value);
+        System.out.println(robotString);
     }
 
-    private static String getProgramString(String path) throws IllegalAccessException {
+    private static String getRobotString(String path) throws IllegalAccessException {
         File file = new File(path);
-        Program program = PopulationDAOFileSystem.getProgramFromFile(file);
-        return program.showProgram();
+        Robot robot = PopulationDAOFileSystem.getRobotFromFile(file);
+        return robot.showRobot();
     }
 
     private static void checkShowPopulation(Parameters parameters) {
@@ -90,23 +90,23 @@ public class Main {
         dao.setSettings(value);
         Population population = PopulationFactory.getDefaultPopulation(dao);
         showHeader();
-        showPrograms(population);
+        showRobots(population);
     }
 
-    private static void showPrograms(Population population) throws IllegalAccessException {
-        for(ProgramInfo programInfo: population.getProgramInfoList()) {
-            String info = getProgramInfoString(programInfo);
+    private static void showRobots(Population population) throws IllegalAccessException {
+        for(RobotInfo robotInfo: population.getRobotInfoList()) {
+            String info = getRobotInfoString(robotInfo);
             System.out.println(info);
         }
     }
 
-    private static String getProgramInfoString(ProgramInfo programInfo) throws IllegalAccessException {
+    private static String getRobotInfoString(RobotInfo robotInfo) throws IllegalAccessException {
         StringBuilder sb = new StringBuilder();
-        Field [] fields = programInfo.getClass().getDeclaredFields();
+        Field [] fields = robotInfo.getClass().getDeclaredFields();
         for(Field field: fields) {
             field.setAccessible(true);
             if(!Modifier.isStatic(field.getModifiers())) {
-                Object object = field.get(programInfo);
+                Object object = field.get(robotInfo);
                 if(sb.length() > 0) {
                     sb.append(",");
                 }
@@ -117,7 +117,7 @@ public class Main {
     }
 
     private static void showHeader() {
-        Class infoClass = ProgramInfo.class;
+        Class infoClass = RobotInfo.class;
         List<Field> fields = buildFields(infoClass);
         String line = buildLine(fields);
         System.out.println(line);
@@ -194,7 +194,7 @@ public class Main {
 
     private static void checkSimulation(Parameters parameters) {
         if(!parameters.allConsumed()) {
-            output.errorMessage("Not all program arguments processed: " + parameters.getUnconsumed());
+            output.errorMessage("Not all arguments processed: " + parameters.getUnconsumed());
             exit(errorCodes.UNKNOWN_ARGUMENT);
         }
         Application application = new Application(input, output);

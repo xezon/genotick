@@ -40,25 +40,25 @@ ExecutionOnly – false or true. If false Genotick will do full training. If tru
 
 PopulationDesiredSize – Desired size for the population. Should be in thousands at least to get satisfactory results. The more the merrier.<br><br>
 
-ProcessorInstructionLimit 256 – This setting prevents programs (systems) to run forever. Given number is used to calculate maximum instructions that can be executed for a program on each TimePoint for each data file. Currently algorithm is simply: processorInstructionLimit * programLength<br><br>
+ProcessorInstructionLimit 256 – This setting prevents programs (systems) to run forever. Given number is used to calculate maximum instructions that can be executed for a robot on each TimePoint for each data file. Currently algorithm is simply: processorInstructionLimit * programLength<br><br>
 
-The higher the number is, the more time it takes to execute a program but also enables longer running programs before throwing in the towel.<br><br>
+The higher the number is, the more time it takes to execute a robot but also enables longer running programs before throwing in the towel.<br><br>
 
 MaximumDeathByAge 0.8 – This setting is used to calculate how many programs is considered to be killed based on their age.<br><br>
 
 MaximumDeathByWeight 0.8 – This setting is used to calculate how many programs is considered to be killed based on their weight.<br><br>
 
-ProbabilityOfDeathByAge 0.05 – Probability of killing program because it's too old. So let's go through this from the top:<br><br>
+ProbabilityOfDeathByAge 0.05 – Probability of killing robot because it's too old. So let's go through this from the top:<br><br>
 Total population is let's say 5000. 
 MaximumDeathByAge is 0.8. That means that oldest 80% of 5000 will be considered to be killed (4000). Probability is 0.05, so random 5% of those 4000 programs will be killed.<br><br>
 
-probabilityOfDeathByWeight 0.5 – Probability of a program getting killed because its weight is too close to 0. Currently, killing by weight happens only if there is no more space to breed in population.<br><br>
+probabilityOfDeathByWeight 0.5 – Probability of a robot getting killed because its weight is too close to 0. Currently, killing by weight happens only if there is no more space to breed in population.<br><br>
 
 InheritedChildWeight 0.0 – When a child is born is weight is zero because it has no predictions. This setting enables to set child's weight as percentage (in range 0.. 1) of its parents' average weight. This is done to protect young programs from getting killed when they had few predictions.<br><br>
 
-DataMaximumOffset 64 – This is how far into the past a program can read data. Set it to something reasonable, depending on your time frame.<br><br>
+DataMaximumOffset 64 – This is how far into the past a robot can read data. Set it to something reasonable, depending on your time frame.<br><br>
 
-ProtectProgramUntilOutcomes 50 – This is how long for a program is protected (i.e. cannot be killed). Number of outcomes increments by one for every data on every time point. So if you have 5 markets with 5 extra reversed (that's 10), programs will be protected for 5 days only (5*2*5).<br><br>
+ProtectProgramUntilOutcomes 50 – This is how long for a robot is protected (i.e. cannot be killed). Number of outcomes increments by one for every data on every time point. So if you have 5 markets with 5 extra reversed (that's 10), programs will be protected for 5 days only (5*2*5).<br><br>
 
 NewInstructionProbability 0.2 – Probability of new instruction when making a child.<br><br>
 
@@ -66,9 +66,9 @@ InstructionMutationProbability 0.6 – Probability of mutating existing instruct
 
 SkipInstructionProbability 0.2 – Probability of skipping an instruction when making a child. Better set it very close to newInstructionProbability, otherwise programs will either shrink (i.e. become useless) or grow uncontrollably (will execute forever).<br><br>
 
-MinimumOutcomesToAllowBreeding 25 – This settings is used to decide whether a program can have a child already.<br><br>
+MinimumOutcomesToAllowBreeding 25 – This settings is used to decide whether a robot can have a child already.<br><br>
 
-MinimumOutcomesBetweenBreeding 25 – This setting is used to decide whether a program can have a child again.<br><br>
+MinimumOutcomesBetweenBreeding 25 – This setting is used to decide whether a robot can have a child again.<br><br>
 
 KillNonPredictingPrograms true – If set to true programs that make no prediction will be removed immediately. Even if they protected by protectUntilOutcomes.<br><br>
 

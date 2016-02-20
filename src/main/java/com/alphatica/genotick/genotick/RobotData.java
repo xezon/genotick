@@ -6,33 +6,27 @@ import com.alphatica.genotick.processor.NotEnoughDataException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProgramData {
+public class RobotData {
     private final List<double[]> data;
     private final Double actualChange;
     private final DataSetName name;
 
-    public static ProgramData createData(List<double[]> newData, DataSetName name, Double actualChange) {
-        return new ProgramData(newData,name,actualChange);
+    public static RobotData createData(List<double[]> newData, DataSetName name, Double actualChange) {
+        return new RobotData(newData,name,actualChange);
     }
 
-    public static ProgramData createEmptyData(DataSetName name) {
+    public static RobotData createEmptyData(DataSetName name) {
         List<double []> list = new ArrayList<>();
         list.add(new double[0]);
         return createData(list,name,Double.NaN);
     }
 
-    private ProgramData(List<double[]> newData, DataSetName name, Double actualChange) {
+    private RobotData(List<double[]> newData, DataSetName name, Double actualChange) {
         data = newData;
         this.name = name;
         this.actualChange = actualChange;
     }
 
-    /**
-     * Gets program data
-     * @param dataTableIndex number of table to look in
-     * @param dataOffsetIndex index in table no. dataTableIndex
-     * @return data
-     */
     public double getData(int dataTableIndex, int dataOffsetIndex) {
         int tableIndex = normalize(dataTableIndex,data.size());
         assert tableIndex >= 0: "tableIndex";

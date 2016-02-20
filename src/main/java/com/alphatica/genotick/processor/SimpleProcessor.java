@@ -1,42 +1,38 @@
 package com.alphatica.genotick.processor;
 
 import com.alphatica.genotick.genotick.Prediction;
-import com.alphatica.genotick.genotick.ProgramData;
+import com.alphatica.genotick.genotick.RobotData;
 import com.alphatica.genotick.instructions.*;
-import com.alphatica.genotick.population.Program;
-import com.alphatica.genotick.population.ProgramExecutor;
-import com.alphatica.genotick.population.ProgramExecutorSettings;
+import com.alphatica.genotick.population.Robot;
+import com.alphatica.genotick.population.RobotExecutor;
+import com.alphatica.genotick.population.RobotExecutorSettings;
 
-public class SimpleProcessor extends Processor implements ProgramExecutor {
+public class SimpleProcessor extends Processor implements RobotExecutor {
 
     private static final int MAX_JUMP = 255;
     private double[] registers;
-    private Program program;
-    private ProgramData data;
-    private Double programResult;
+    private Robot robot;
+    private RobotData data;
+    private Double robotResult;
     private InstructionList instructionList;
     private boolean terminateInstructionList;
     private int changeInstructionPointer;
     private boolean newJump;
     private int totalInstructionExecuted;
     private int instructionLimitMultiplier;
-    private int programInstructionLimit;
+    private int robotInstructionLimit;
     private int dataMaximumOffset;
 
-    /**
-     * Creates SimpleProcessor instance and initializes it.
-     * @return Instance of SimpleProcessor.
-     */
     public static SimpleProcessor createProcessor() {
         return new SimpleProcessor();
     }
 
     @Override
-    public Prediction executeProgram(ProgramData programData, Program program) {
-        prepare(programData, program);
-        programInstructionLimit = program.getLength() * instructionLimitMultiplier;
+    public Prediction executeRobot(RobotData robotData, Robot robot) {
+        prepare(robotData, robot);
+        robotInstructionLimit = robot.getLength() * instructionLimitMultiplier;
         try {
-            return executeProgramMain();
+            return executeRobotMain();
         } catch (NotEnoughDataException |
                 TooManyInstructionsExecuted |
                 ArithmeticException ex) {
@@ -45,22 +41,22 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
     }
 
     @Override
-    public void setSettings(ProgramExecutorSettings settings) {
+    public void setSettings(RobotExecutorSettings settings) {
         registers = new double[totalRegisters];
-        programResult = null;
+        robotResult = null;
         instructionLimitMultiplier = settings.instructionLimit;
     }
 
-    private void prepare(ProgramData programData, Program program) {
-        this.program = program;
-        this.data = programData;
-        programResult = null;
+    private void prepare(RobotData robotData, Robot robot) {
+        this.robot = robot;
+        this.data = robotData;
+        robotResult = null;
         instructionList = null;
         terminateInstructionList = false;
         changeInstructionPointer = 0;
         newJump = false;
         totalInstructionExecuted = 0;
-        dataMaximumOffset = program.getMaximumDataOffset();
+        dataMaximumOffset = robot.getMaximumDataOffset();
         zeroOutRegisters();
     }
 
@@ -70,10 +66,10 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
         }
     }
 
-    private Prediction executeProgramMain()  {
-        executeInstructionList(program.getMainFunction());
-        if (programResult != null) {
-            return Prediction.getPrediction(programResult);
+    private Prediction executeRobotMain()  {
+        executeInstructionList(robot.getMainFunction());
+        if (robotResult != null) {
+            return Prediction.getPrediction(robotResult);
         } else {
             return Prediction.getPrediction(registers[0]);
         }
@@ -88,7 +84,7 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
             instructionList = list; /* Set this every time - it could have been changed by recursive function call */
             instruction.executeOn(this);
             totalInstructionExecuted++;
-            if(totalInstructionExecuted > programInstructionLimit) {
+            if(totalInstructionExecuted > robotInstructionLimit) {
                 throw new TooManyInstructionsExecuted();
             }
             if(newJump) {
@@ -100,7 +96,7 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
                     newPointer = 0;
                 instructionPointer = newPointer;
             }
-        } while (!terminateInstructionList && programResult == null);
+        } while (!terminateInstructionList && robotResult == null);
     }
 
 
@@ -143,7 +139,7 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
     @Override
     public void execute(ReturnRegisterAsResult ins) {
         int reg = ins.getRegister();
-        programResult = registers[reg];
+        robotResult = registers[reg];
     }
 
     @Override
@@ -237,7 +233,7 @@ public class SimpleProcessor extends Processor implements ProgramExecutor {
 
     @Override
     public void execute(ReturnVariableAsResult ins) {
-        programResult = instructionList.getVariable(ins.getVariableArgument());
+        robotResult = instructionList.getVariable(ins.getVariableArgument());
     }
 
     @Override

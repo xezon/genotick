@@ -38,18 +38,18 @@ class ConsoleInput implements UserInput {
             settings.probabilityOfDeathByAge = getDouble("Probability of death by age", settings.probabilityOfDeathByAge);
             settings.probabilityOfDeathByWeight = getDouble("Probability of death by weight", settings.probabilityOfDeathByWeight);
             settings.inheritedChildWeight = getDouble("Inherited child's weight", settings.inheritedChildWeight);
-            settings.protectProgramUntilOutcomes = getInteger("Protect programs until outcomes", settings.protectProgramUntilOutcomes);
+            settings.protectRobotsUntilOutcomes = getInteger("Protect robots until outcomes", settings.protectRobotsUntilOutcomes);
             settings.newInstructionProbability = getDouble("Probability of new instruction", settings.newInstructionProbability);
             // This looks like an error but it's not. Default value for 'skipInstruction...' is same as 'newInstruction'
-            // to keep programs more or less constant size.
+            // to keep robots more or less constant size.
             settings.skipInstructionProbability = getDouble("Probability of skipping instruction", settings.newInstructionProbability);
             settings.instructionMutationProbability = getDouble("Instruction mutation probability", settings.instructionMutationProbability);
             settings.minimumOutcomesToAllowBreeding = getLong("Minimum outcomes to allow breeding", settings.minimumOutcomesToAllowBreeding);
             settings.minimumOutcomesBetweenBreeding = getLong("Minimum outcomes between breeding", settings.minimumOutcomesBetweenBreeding);
-            settings.killNonPredictingPrograms = getBoolean("Kill non-predicting programs", settings.killNonPredictingPrograms);
-            settings.randomProgramsAtEachUpdate = getDouble("Random programs at each update", settings.randomProgramsAtEachUpdate);
-            settings.protectBestPrograms = getDouble("Protect best programs", settings.protectBestPrograms);
-            settings.requireSymmetricalPrograms = getBoolean("Require symmetrical programs", settings.requireSymmetricalPrograms);
+            settings.killNonPredictingRobots = getBoolean("Kill non-predicting robots", settings.killNonPredictingRobots);
+            settings.randomRobotsAtEachUpdate = getDouble("Random robots at each update", settings.randomRobotsAtEachUpdate);
+            settings.protectBestRobots = getDouble("Protect best robots", settings.protectBestRobots);
+            settings.requireSymmetricalRobots = getBoolean("Require symmetrical robots", settings.requireSymmetricalRobots);
         }
         application.start(settings,data);
     }

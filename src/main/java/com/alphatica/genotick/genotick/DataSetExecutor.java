@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface DataSetExecutor {
 
-    List<ProgramResult> execute(List<ProgramData> programDataList, Program program, ProgramExecutor programExecutor);
+    List<RobotResult> execute(List<RobotData> robotDataList, Robot robot, RobotExecutor robotExecutor);
 
 }

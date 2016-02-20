@@ -12,17 +12,17 @@ public interface Population {
 
     void setDao(PopulationDAO dao);
 
-    void saveProgram(Program program);
+    void saveRobot(Robot robot);
 
-    Program getProgram(ProgramName key);
+    Robot getRobot(RobotName key);
 
-    void removeProgram(ProgramName programName);
+    void removeRobot(RobotName robotName);
 
-    List<ProgramInfo> getProgramInfoList();
+    List<RobotInfo> getRobotInfoList();
 
     boolean haveSpaceToBreed();
 
     void savePopulation(String path);
 
-    ProgramName[] listProgramNames();
+    RobotName[] listRobotsNames();
 }

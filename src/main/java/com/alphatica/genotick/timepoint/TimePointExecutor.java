@@ -1,19 +1,19 @@
 package com.alphatica.genotick.timepoint;
 
 import com.alphatica.genotick.genotick.DataSetExecutor;
-import com.alphatica.genotick.genotick.ProgramData;
+import com.alphatica.genotick.genotick.RobotData;
 import com.alphatica.genotick.population.Population;
-import com.alphatica.genotick.population.ProgramInfo;
-import com.alphatica.genotick.processor.ProgramExecutorFactory;
+import com.alphatica.genotick.population.RobotInfo;
+import com.alphatica.genotick.processor.RobotExecutorFactory;
 
 import java.util.List;
 
 public interface TimePointExecutor {
-    List<ProgramInfo> getProgramInfos();
+    List<RobotInfo> getRobotInfos();
 
-    TimePointResult execute(List<ProgramData> programDataList,
+    TimePointResult execute(List<RobotData> robotDataList,
                             Population population,
-                            boolean updatePrograms);
+                            boolean updateRobots);
 
-    void setSettings(DataSetExecutor dataSetExecutor, ProgramExecutorFactory programExecutorFactory);
+    void setSettings(DataSetExecutor dataSetExecutor, RobotExecutorFactory robotExecutorFactory);
 }

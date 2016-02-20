@@ -19,16 +19,16 @@ public class MainSettings {
     public double probabilityOfDeathByWeight = 0.5;
     public double inheritedChildWeight = 0;
     public int dataMaximumOffset = 256;
-    public int protectProgramUntilOutcomes = 100;
+    public int protectRobotsUntilOutcomes = 100;
     public double newInstructionProbability = 0.01;
     public double instructionMutationProbability = 0.01;
     public double skipInstructionProbability = 0.01;
     public long minimumOutcomesToAllowBreeding = 50;
     public long minimumOutcomesBetweenBreeding = 50;
-    public boolean killNonPredictingPrograms = true;
-    public double randomProgramsAtEachUpdate = 0.02;
-    public double protectBestPrograms = 0.02;
-    public boolean requireSymmetricalPrograms = true;
+    public boolean killNonPredictingRobots = true;
+    public double randomRobotsAtEachUpdate = 0.02;
+    public double protectBestRobots = 0.02;
+    public boolean requireSymmetricalRobots = true;
     public double resultThreshold = 1;
 
     private MainSettings() {
@@ -64,14 +64,14 @@ public class MainSettings {
         ensure(checkZeroToOne(maximumDeathByWeight), zeroToOneString("Maximum Death by Weight"));
         ensure(checkZeroToOne(probabilityOfDeathByAge), zeroToOneString("Probability Death by Age"));
         ensure(checkZeroToOne(inheritedChildWeight), zeroToOneString("Inherited Child's Weight"));
-        ensure(protectProgramUntilOutcomes >= 0, atLeastZeroString("Protect Programs until Outcomes"));
+        ensure(protectRobotsUntilOutcomes >= 0, atLeastZeroString("Protect Robots until Outcomes"));
         ensure(checkZeroToOne(newInstructionProbability), zeroToOneString("New Instruction Probability"));
         ensure(checkZeroToOne(instructionMutationProbability), zeroToOneString("Instruction Mutation Probability"));
         ensure(checkZeroToOne(skipInstructionProbability), zeroToOneString("Skip Instruction Probability"));
         ensure(minimumOutcomesToAllowBreeding >= 0, atLeastZeroString("Minimum outcomes to allow breeding"));
         ensure(minimumOutcomesBetweenBreeding >= 0, atLeastZeroString("Minimum outcomes between breeding"));
-        ensure(randomProgramsAtEachUpdate >=0, zeroToOneString("Random Programs at Each Update"));
-        ensure(protectBestPrograms >= 0, zeroToOneString("Protect Best Programs"));
+        ensure(randomRobotsAtEachUpdate >=0, zeroToOneString("Random Robots at Each Update"));
+        ensure(protectBestRobots >= 0, zeroToOneString("Protect Best Robots"));
         ensure(resultThreshold >= 1,atLeastOneString("Result threshold"));
 
     }

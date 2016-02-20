@@ -2,17 +2,17 @@ package com.alphatica.genotick.population;
 
 public interface PopulationDAO {
 
-    Iterable<Program> getProgramList();
+    Iterable<Robot> getRobotList();
 
-    int getAvailableProgramsCount();
+    int getAvailableRobotsCount();
 
-    Program getProgramByName(ProgramName name);
+    Robot getRobotByName(RobotName name);
 
-    void saveProgram(Program program);
+    void saveRobot(Robot robot);
 
-    void removeProgram(ProgramName programName);
+    void removeRobot(RobotName robotName);
 
     void setSettings(String settings);
 
-    ProgramName[] listProgramNames();
+    RobotName[] listRobotNames();
 }

@@ -1,20 +1,20 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.population.Program;
-import com.alphatica.genotick.population.ProgramName;
+import com.alphatica.genotick.population.Robot;
+import com.alphatica.genotick.population.RobotName;
 
-public class ProgramResult {
+public class RobotResult {
 
     private final Prediction prediction;
-    private final ProgramName name;
-    private final ProgramData data;
+    private final RobotName name;
+    private final RobotData data;
     private final Double weight;
 
-    public ProgramResult(Prediction prediction, Program program, ProgramData data) {
+    public RobotResult(Prediction prediction, Robot robot, RobotData data) {
 
         this.prediction = prediction;
-        this.name = program.getName();
-        this.weight = program.getWeight();
+        this.name = robot.getName();
+        this.weight = robot.getWeight();
         this.data = data;
     }
 
@@ -31,7 +31,7 @@ public class ProgramResult {
         return weight;
     }
 
-    public ProgramData getData() {
+    public RobotData getData() {
         return data;
     }
 }

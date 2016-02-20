@@ -8,52 +8,52 @@ import java.util.Map;
 import java.util.Random;
 
 public class PopulationDAORAM implements PopulationDAO {
-    private final Map<ProgramName,Program> map = new HashMap<>();
+    private final Map<RobotName,Robot> map = new HashMap<>();
     private final Random random = Main.random;
 
     @Override
-    public Iterable<Program> getProgramList() {
-        return new Iterable<Program> () {
+    public Iterable<Robot> getRobotList() {
+        return new Iterable<Robot> () {
             @Override
-            public Iterator<Program> iterator() {
+            public Iterator<Robot> iterator() {
                 return map.values().iterator();
             }
         };
     }
 
     @Override
-    public int getAvailableProgramsCount() {
+    public int getAvailableRobotsCount() {
         return map.size();
     }
 
     @Override
-    public Program getProgramByName(ProgramName name) {
+    public Robot getRobotByName(RobotName name) {
         return map.get(name);
     }
 
     @Override
-    public void saveProgram(Program program) {
-        if(program.getName() == null) {
-            program.setName(getAvailableProgramName());
+    public void saveRobot(Robot robot) {
+        if(robot.getName() == null) {
+            robot.setName(getAvailableRobotName());
         }
-        map.put(program.getName(),program);
+        map.put(robot.getName(), robot);
     }
 
     @Override
-    public void removeProgram(ProgramName programName) {
-        map.remove(programName);
+    public void removeRobot(RobotName robotName) {
+        map.remove(robotName);
     }
 
 
-    private ProgramName getAvailableProgramName() {
+    private RobotName getAvailableRobotName() {
         long l;
-        ProgramName name;
+        RobotName name;
         boolean nameExist;
         do {
             l = random.nextLong();
             if(l < 0)
                 l = -l;
-            name =  new ProgramName(l);
+            name =  new RobotName(l);
             nameExist = map.containsKey(name);
         } while(nameExist);
         return name;
@@ -65,7 +65,7 @@ public class PopulationDAORAM implements PopulationDAO {
     }
 
     @Override
-    public ProgramName[] listProgramNames() {
-        return map.keySet().toArray(new ProgramName[map.size()]);
+    public RobotName[] listRobotNames() {
+        return map.keySet().toArray(new RobotName[map.size()]);
     }
 }

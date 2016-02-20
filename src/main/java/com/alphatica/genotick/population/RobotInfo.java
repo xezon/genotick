@@ -4,11 +4,11 @@ import java.text.DecimalFormat;
 import java.util.Comparator;
 import java.util.List;
 
-public class ProgramInfo {
-    public static final Comparator<ProgramInfo> comparatorByAge = new AgeComparator();
-    public static final Comparator<ProgramInfo> comparatorByAbsoluteWeight = new AbsoluteWeightComparator();
+public class RobotInfo {
+    public static final Comparator<RobotInfo> comparatorByAge = new AgeComparator();
+    public static final Comparator<RobotInfo> comparatorByAbsoluteWeight = new AbsoluteWeightComparator();
     private static final DecimalFormat format = new DecimalFormat("0.00");
-    private final ProgramName name;
+    private final RobotName name;
     private final double weight;
     private final long lastChildOutcomes;
     private final long totalChildren;
@@ -24,7 +24,7 @@ public class ProgramInfo {
                 " totalChildren: " + String.valueOf(totalChildren);
     }
 
-    public ProgramName getName() {
+    public RobotName getName() {
         return name;
     }
 
@@ -36,15 +36,15 @@ public class ProgramInfo {
         return totalPredictions;
     }
 
-    public ProgramInfo(Program program) {
-        name = new ProgramName(program.getName().getName());
-        weight = program.getWeight();
-        lastChildOutcomes = program.getOutcomesAtLastChild();
-        totalChildren = program.getTotalChildren();
-        length = program.getLength();
-        totalPredictions = program.getTotalPredictions();
-        totalOutcomes = program.getTotalOutcomes();
-        bias = program.getBias();
+    public RobotInfo(Robot robot) {
+        name = new RobotName(robot.getName().getName());
+        weight = robot.getWeight();
+        lastChildOutcomes = robot.getOutcomesAtLastChild();
+        totalChildren = robot.getTotalChildren();
+        length = robot.getLength();
+        totalPredictions = robot.getTotalPredictions();
+        totalOutcomes = robot.getTotalOutcomes();
+        bias = robot.getBias();
     }
 
 
@@ -64,15 +64,15 @@ public class ProgramInfo {
         return bias;
     }
 
-    private static double getTotalWeight(List<ProgramInfo> list) {
+    private static double getTotalWeight(List<RobotInfo> list) {
         double weight = 0;
-        for(ProgramInfo programInfo: list) {
-            weight += Math.abs(programInfo.getWeight());
+        for(RobotInfo robotInfo: list) {
+            weight += Math.abs(robotInfo.getWeight());
         }
         return weight;
     }
 
-    public static double getAverageWeight(List<ProgramInfo> list) {
+    public static double getAverageWeight(List<RobotInfo> list) {
         if(list.isEmpty()) {
             return 0;
         } else {

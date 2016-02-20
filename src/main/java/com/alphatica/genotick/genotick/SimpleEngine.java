@@ -1,20 +1,19 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.population.ProgramInfo;
+import com.alphatica.genotick.population.RobotInfo;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointResult;
 import com.alphatica.genotick.timepoint.TimePointStats;
-import com.alphatica.genotick.breeder.ProgramBreeder;
+import com.alphatica.genotick.breeder.RobotBreeder;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.DataUtils;
 import com.alphatica.genotick.data.MainAppData;
-import com.alphatica.genotick.killer.ProgramKiller;
+import com.alphatica.genotick.killer.RobotKiller;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +21,8 @@ import java.util.List;
 public class SimpleEngine implements Engine {
     private EngineSettings engineSettings;
     private TimePointExecutor timePointExecutor;
-    private ProgramKiller killer;
-    private ProgramBreeder breeder;
+    private RobotKiller killer;
+    private RobotBreeder breeder;
     private Population population;
     private MainAppData data;
     private ProfitRecorder profitRecorder;
@@ -81,8 +80,8 @@ public class SimpleEngine implements Engine {
     public void setSettings(EngineSettings engineSettings,
                             TimePointExecutor timePointExecutor,
                             MainAppData data,
-                            ProgramKiller killer,
-                            ProgramBreeder breeder,
+                            RobotKiller killer,
+                            RobotBreeder breeder,
                             Population population) {
         this.engineSettings = engineSettings;
         this.timePointExecutor = timePointExecutor;
@@ -98,15 +97,15 @@ public class SimpleEngine implements Engine {
 
     private void initPopulation() {
         if(population.getSize() == 0 && !engineSettings.executionOnly)
-            breeder.breedPopulation(population, timePointExecutor.getProgramInfos());
+            breeder.breedPopulation(population, timePointExecutor.getRobotInfos());
     }
 
     private TimePointStats executeTimePoint(TimePoint timePoint, UserOutput output) {
-        List<ProgramData> programDataList = data.prepareProgramDataList(timePoint);
-        if(programDataList.isEmpty())
+        List<RobotData> robotDataList = data.prepareRobotDataList(timePoint);
+        if(robotDataList.isEmpty())
             return null;
         Debug.d("Starting TimePoint:", timePoint);
-        TimePointResult timePointResult = timePointExecutor.execute(programDataList, population, !engineSettings.executionOnly);
+        TimePointResult timePointResult = timePointExecutor.execute(robotDataList, population, !engineSettings.executionOnly);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction();
@@ -140,8 +139,8 @@ public class SimpleEngine implements Engine {
     }
 
     private void updatePopulation() {
-        List<ProgramInfo> list = timePointExecutor.getProgramInfos();
-        killer.killPrograms(population,list);
+        List<RobotInfo> list = timePointExecutor.getRobotInfos();
+        killer.killRobots(population,list);
         breeder.breedPopulation(population,list);
     }
 }

@@ -1,6 +1,6 @@
 package com.alphatica.genotick.data;
 
-import com.alphatica.genotick.genotick.ProgramData;
+import com.alphatica.genotick.genotick.RobotData;
 import com.alphatica.genotick.timepoint.TimePoint;
 
 import java.util.ArrayList;
@@ -17,13 +17,13 @@ public class MainAppData {
         sets.add(set);
     }
 
-    public List<ProgramData> prepareProgramDataList(TimePoint timePoint) {
-        List<ProgramData> list = new ArrayList<>();
+    public List<RobotData> prepareRobotDataList(TimePoint timePoint) {
+        List<RobotData> list = new ArrayList<>();
         for (DataSet set : sets) {
-            ProgramData programData = set.getProgramData(timePoint);
-            if (programData.isEmpty())
+            RobotData robotData = set.getRobotData(timePoint);
+            if (robotData.isEmpty())
                 continue;
-            list.add(programData);
+            list.add(robotData);
         }
         return list;
     }

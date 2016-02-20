@@ -13,12 +13,12 @@ import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
 import java.util.List;
 
-public class Program implements Serializable {
+public class Robot implements Serializable {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -32164662984L;
     private static final DecimalFormat weightFormat = new DecimalFormat("0.00");
 
-    private ProgramName name;
+    private RobotName name;
     private final int maximumDataOffset;
     private InstructionList mainFunction;
     private int totalChildren;
@@ -29,15 +29,15 @@ public class Program implements Serializable {
     private long outcomesAtLastChild;
     private int bias;
 
-    public static Program createEmptyProgram(int maximumDataOffset) {
-        return new Program(maximumDataOffset);
+    public static Robot createEmptyRobot(int maximumDataOffset) {
+        return new Robot(maximumDataOffset);
     }
 
     public int getLength() {
         return mainFunction.getSize();
     }
 
-    public ProgramName getName() {
+    public RobotName getName() {
         return name;
     }
 
@@ -45,7 +45,7 @@ public class Program implements Serializable {
         this.inheritedWeight = inheritedWeight;
     }
 
-    private Program(int maximumDataOffset) {
+    private Robot(int maximumDataOffset) {
         mainFunction = InstructionList.createInstructionList();
         this.maximumDataOffset = maximumDataOffset;
     }
@@ -125,11 +125,11 @@ public class Program implements Serializable {
         return bias;
     }
 
-    public void setName(ProgramName name) {
+    public void setName(RobotName name) {
         this.name = name;
     }
 
-    public String showProgram() throws IllegalAccessException {
+    public String showRobot() throws IllegalAccessException {
         StringBuilder sb = new StringBuilder();
         addFields(sb);
         addMainFunction(sb);

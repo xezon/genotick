@@ -2,9 +2,6 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.data.DataSetName;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DataSetResult {
     private static double threshold = 1;
 
@@ -24,26 +21,26 @@ public class DataSetResult {
         DataSetResult.threshold = threshold;
     }
 
-    public void addResult(ProgramResult programResult) {
-        Double weight = programResult.getWeight();
+    public void addResult(RobotResult robotResult) {
+        Double weight = robotResult.getWeight();
         if(weight.isNaN())
             return;
-        processWeight(programResult);
+        processWeight(robotResult);
     }
 
-    private void processWeight(ProgramResult programResult) {
-        if(programResult.getWeight() > 0) {
-            switch (programResult.getPrediction()) {
-                case UP: recordUp(programResult.getWeight()); break;
-                case DOWN: recordDown(programResult.getWeight()); break;
-                case OUT: recordOut(programResult.getWeight());
+    private void processWeight(RobotResult robotResult) {
+        if(robotResult.getWeight() > 0) {
+            switch (robotResult.getPrediction()) {
+                case UP: recordUp(robotResult.getWeight()); break;
+                case DOWN: recordDown(robotResult.getWeight()); break;
+                case OUT: recordOut(robotResult.getWeight());
             }
         }
-        if(programResult.getWeight() < 0) {
-            switch (programResult.getPrediction()) {
-                case UP: recordDown(-programResult.getWeight()); break;
-                case DOWN: recordUp(-programResult.getWeight()); break;
-                case OUT: recordOut(programResult.getWeight());
+        if(robotResult.getWeight() < 0) {
+            switch (robotResult.getPrediction()) {
+                case UP: recordDown(-robotResult.getWeight()); break;
+                case DOWN: recordUp(-robotResult.getWeight()); break;
+                case OUT: recordOut(robotResult.getWeight());
             }
         }
     }

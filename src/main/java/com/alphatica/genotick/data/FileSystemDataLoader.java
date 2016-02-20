@@ -16,7 +16,7 @@ public class FileSystemDataLoader implements DataLoader {
     }
 
     @Override
-    public MainAppData createProgramData() throws DataException {
+    public MainAppData createRobotData() throws DataException {
         return loadData();
     }
 
