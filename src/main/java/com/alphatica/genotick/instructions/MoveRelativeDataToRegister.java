@@ -10,7 +10,7 @@ public class MoveRelativeDataToRegister extends DataRegInstruction  implements S
 
     private MoveRelativeDataToRegister(MoveRelativeDataToRegister i) {
         this.setDataOffsetIndex(i.getDataOffsetIndex());
-        this.setDataTableIndex(i.getDataTableIndex());
+        this.setDataTableIndex(i.getDataColumnIndex());
         this.setRegister(i.getRegister());
     }
 

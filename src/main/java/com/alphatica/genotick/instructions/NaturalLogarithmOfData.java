@@ -10,7 +10,7 @@ public class NaturalLogarithmOfData extends DataRegInstruction  implements Seria
 
     private NaturalLogarithmOfData(NaturalLogarithmOfData i) {
         this.setDataOffsetIndex(i.getDataOffsetIndex());
-        this.setDataTableIndex(i.getDataTableIndex());
+        this.setDataTableIndex(i.getDataColumnIndex());
         this.setRegister(i.getRegister());
     }
 

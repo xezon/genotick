@@ -13,6 +13,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     private double[] registers;
     private Robot robot;
     private RobotData data;
+    private int dataColumns;
     private Double robotResult;
     private InstructionList instructionList;
     private boolean terminateInstructionList;
@@ -50,6 +51,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     private void prepare(RobotData robotData, Robot robot) {
         this.robot = robot;
         this.data = robotData;
+        dataColumns = data.getColumns();
         robotResult = null;
         instructionList = null;
         terminateInstructionList = false;
@@ -254,14 +256,16 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     public void execute(MoveDataToRegister ins) {
         int reg = ins.getRegister();
         int offset = fixOffset(ins.getDataOffsetIndex());
-        registers[reg] = data.getData(ins.getDataTableIndex(), offset);
+        int column = fixColumn(ins.getDataColumnIndex());
+        registers[reg] = data.getData(column, offset);
     }
 
 
     @Override
     public void execute(MoveDataToVariable ins) {
-        int offset = Math.abs(ins.getDataOffsetIndex() % dataMaximumOffset);
-        double value = data.getData(ins.getDataTableIndex(), offset);
+        int offset = fixOffset(ins.getDataOffsetIndex());
+        int column = fixColumn(ins.getDataColumnIndex());
+        double value = data.getData(column, offset);
         instructionList.setVariable(ins.getVariableArgument(),value);
     }
 
@@ -269,13 +273,15 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     public void execute(MoveRelativeDataToRegister ins)  {
         int reg = ins.getRegister();
         int varOffset = getRelativeOffset(ins);
-        registers[reg] = data.getData(ins.getDataTableIndex(), varOffset);
+        int column = fixColumn(ins.getDataColumnIndex());
+        registers[reg] = data.getData(column, varOffset);
     }
 
     @Override
     public void execute(MoveRelativeDataToVariable ins) {
         int varOffset = getRelativeOffset(ins);
-        double value = data.getData(ins.getDataTableIndex(), varOffset);
+        int column = fixColumn(ins.getDataColumnIndex());
+        double value = data.getData(column, varOffset);
         instructionList.setVariable(ins.getVariableArgument(), value);
     }
 
@@ -521,9 +527,9 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     @Override
     public void execute(NaturalLogarithmOfData ins) {
-        int tableIndex = ins.getDataTableIndex();
-        int tableOffset = Math.abs(ins.getDataOffsetIndex() % dataMaximumOffset);
-        double value = Math.log(data.getData(tableIndex,tableOffset));
+        int column = fixColumn(ins.getDataColumnIndex());
+        int offset = fixOffset(ins.getDataOffsetIndex());
+        double value = Math.log(data.getData(column,offset));
         registers[ins.getRegister()] = value;
     }
 
@@ -560,7 +566,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     @Override
     public void execute(AverageOfColumn ins) {
-        int column = ins.getRegister1();
+        int column = fixColumn(ins.getRegister1());
         int length = fixOffset(registers[ins.getRegister2()]);
         double sum = getSum(column, length);
         registers[0] = sum / length;
@@ -688,7 +694,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     @Override
     public void execute(HighestOfColumn ins) {
-        int column = ins.getRegister1();
+        int column = fixColumn(ins.getRegister1());
         int length = fixOffset(registers[ins.getRegister2()]);
         double highest = data.getData(column,0);
         for(int i = 1; i < length; i++) {
@@ -702,7 +708,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     @Override
     public void execute(LowestOfColumn ins) {
-        int column = ins.getRegister1();
+        int column = fixColumn(ins.getRegister1());
         int length = fixOffset(registers[ins.getRegister2()]);
         double lowest = data.getData(column,0);
         for(int i = 1; i < length; i++) {
@@ -721,6 +727,9 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     private int fixOffset(double value) {
         return (int)Math.abs(value % dataMaximumOffset);
+    }
+    private int fixColumn(double value) {
+        return (int)Math.abs(value % dataColumns);
     }
 
 

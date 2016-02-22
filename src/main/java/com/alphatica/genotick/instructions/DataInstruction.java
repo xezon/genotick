@@ -18,7 +18,7 @@ abstract public class DataInstruction extends Instruction implements Serializabl
         this.dataOffsetIndex = dataOffsetIndex;
     }
 
-    public int getDataTableIndex() {
+    public int getDataColumnIndex() {
         return dataTableIndex;
     }
 

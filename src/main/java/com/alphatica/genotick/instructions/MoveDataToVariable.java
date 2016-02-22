@@ -9,7 +9,7 @@ public class MoveDataToVariable extends DataVarInstruction  implements Serializa
     private static final long serialVersionUID = 3017704625520415010L;
 
     private MoveDataToVariable(MoveDataToVariable i) {
-        this.setDataTableIndex(i.getDataTableIndex());
+        this.setDataTableIndex(i.getDataColumnIndex());
         this.setDataOffsetIndex(i.getDataOffsetIndex());
         this.setVariableArgument(i.getVariableArgument());
     }

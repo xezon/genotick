@@ -10,7 +10,7 @@ public class MoveDataToRegister extends DataRegInstruction implements Serializab
 
     private MoveDataToRegister(MoveDataToRegister i) {
         this.setDataOffsetIndex(i.getDataOffsetIndex());
-        this.setDataTableIndex(i.getDataTableIndex());
+        this.setDataTableIndex(i.getDataColumnIndex());
         this.setRegister(i.getRegister());
     }
 

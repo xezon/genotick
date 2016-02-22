@@ -27,18 +27,20 @@ public class RobotData {
         this.actualChange = actualChange;
     }
 
-    public double getData(int dataTableIndex, int dataOffsetIndex) {
-        int tableIndex = normalize(dataTableIndex,data.size());
+    public double getData(int dataColumn, int dataOffset) {
+/*
+        int tableIndex = dataColumn; // normalize(dataColumn,data.size());
         assert tableIndex >= 0: "tableIndex";
         if(tableIndex < 0 || tableIndex >= data.size()) {
             System.out.println("TableIndex is " + tableIndex + " data.size = " + data.size() +
-                    " normalize: " + normalize(dataTableIndex,data.size()));
+                    " normalize: " + normalize(dataColumn,data.size()));
             System.exit(0);
         }
-        if (dataOffsetIndex >= data.get(tableIndex).length)
+  */
+        if (dataOffset >= data.get(dataColumn).length)
             throw new NotEnoughDataException();
         else
-            return data.get(tableIndex)[dataOffsetIndex];
+            return data.get(dataColumn)[dataOffset];
     }
 
     private int normalize(long number, int max) {
@@ -58,5 +60,9 @@ public class RobotData {
 
     public Double getActualChange() {
         return actualChange;
+    }
+
+    public int getColumns() {
+        return data.size();
     }
 }
