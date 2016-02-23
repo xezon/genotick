@@ -50,6 +50,7 @@ class ConsoleInput implements UserInput {
             settings.randomRobotsAtEachUpdate = getDouble("Random robots at each update", settings.randomRobotsAtEachUpdate);
             settings.protectBestRobots = getDouble("Protect best robots", settings.protectBestRobots);
             settings.requireSymmetricalRobots = getBoolean("Require symmetrical robots", settings.requireSymmetricalRobots);
+            settings.ignoreColumns = getInteger("Ignore columns for training",settings.ignoreColumns);
         }
         application.start(settings,data);
     }

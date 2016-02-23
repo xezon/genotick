@@ -23,6 +23,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     private int instructionLimitMultiplier;
     private int robotInstructionLimit;
     private int dataMaximumOffset;
+    private int ignoreColumns;
 
     public static SimpleProcessor createProcessor() {
         return new SimpleProcessor();
@@ -59,6 +60,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         newJump = false;
         totalInstructionExecuted = 0;
         dataMaximumOffset = robot.getMaximumDataOffset();
+        ignoreColumns = robot.getIgnoreColumns();
         zeroOutRegisters();
     }
 
@@ -729,7 +731,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         return (int)Math.abs(value % dataMaximumOffset);
     }
     private int fixColumn(double value) {
-        return (int)Math.abs(value % dataColumns);
+        return ignoreColumns + (int)Math.abs(value % (dataColumns - ignoreColumns));
     }
 
 

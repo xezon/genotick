@@ -20,6 +20,7 @@ public class Robot implements Serializable {
 
     private RobotName name;
     private final int maximumDataOffset;
+    private final int ignoreColumns;
     private InstructionList mainFunction;
     private int totalChildren;
     private int totalPredictions;
@@ -29,8 +30,8 @@ public class Robot implements Serializable {
     private long outcomesAtLastChild;
     private int bias;
 
-    public static Robot createEmptyRobot(int maximumDataOffset) {
-        return new Robot(maximumDataOffset);
+    public static Robot createEmptyRobot(int maximumDataOffset, int ignoreColumns) {
+        return new Robot(maximumDataOffset, ignoreColumns);
     }
 
     public int getLength() {
@@ -41,13 +42,18 @@ public class Robot implements Serializable {
         return name;
     }
 
+    public int getIgnoreColumns() {
+        return ignoreColumns;
+    }
+
     public void setInheritedWeight(double inheritedWeight) {
         this.inheritedWeight = inheritedWeight;
     }
 
-    private Robot(int maximumDataOffset) {
+    private Robot(int maximumDataOffset, int ignoreColumns) {
         mainFunction = InstructionList.createInstructionList();
         this.maximumDataOffset = maximumDataOffset;
+        this.ignoreColumns = ignoreColumns;
     }
 
     public void recordPrediction(Prediction prediction) {

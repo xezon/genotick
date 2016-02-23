@@ -91,7 +91,8 @@ public class Application {
                 settings.inheritedChildWeight,
                 settings.minimumOutcomesToAllowBreeding,
                 settings.randomRobotsAtEachUpdate,
-                settings.dataMaximumOffset);
+                settings.dataMaximumOffset,
+                settings.ignoreColumns);
         return RobotBreederFactory.getDefaultBreeder(breederSettings, mutator);
     }
 

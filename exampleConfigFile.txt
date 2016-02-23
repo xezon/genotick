@@ -97,3 +97,11 @@ requireSymmetricalRobots	true
 # than minority. Numbers below 1 make no sense.
 resultThreshold 1
 
+
+# This tells Genotick to ignore first N columns for learning. It still uses first column (second if
+# you count TimePoint column) for trading. 
+# Example column count:
+# 20160222, 100, 101, 99, 103
+# 0         1    2    3   4
+# If 'ignoreColumns' is 3 then only 4th column will be used for learning.
+ignoreColumns 0

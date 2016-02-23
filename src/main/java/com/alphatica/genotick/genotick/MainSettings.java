@@ -30,6 +30,7 @@ public class MainSettings {
     public double protectBestRobots = 0.02;
     public boolean requireSymmetricalRobots = true;
     public double resultThreshold = 1;
+    public int ignoreColumns = 0;
 
     private MainSettings() {
         /* Empty */
@@ -73,6 +74,7 @@ public class MainSettings {
         ensure(randomRobotsAtEachUpdate >=0, zeroToOneString("Random Robots at Each Update"));
         ensure(protectBestRobots >= 0, zeroToOneString("Protect Best Robots"));
         ensure(resultThreshold >= 1,atLeastOneString("Result threshold"));
+        ensure(ignoreColumns >= 0, atLeastZeroString("Ignore columns"));
 
     }
     private String atLeastZeroString(String s) {
