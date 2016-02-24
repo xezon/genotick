@@ -561,7 +561,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     @Override
     public void execute(SumOfColumn ins) {
-        int column = ins.getRegister1();
+        int column = fixColumn(ins.getRegister1());
         int length = fixOffset(registers[ins.getRegister2()]);
         registers[0] = getSum(column,length);
     }
