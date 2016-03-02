@@ -11,7 +11,7 @@ public class MainSettings {
     public String populationDAO = "RAM";
     public boolean executionOnly = false;
 
-    public int populationDesiredSize = 5_000;
+    public int populationDesiredSize = 1_000;
     public int processorInstructionLimit = 256;
     public double maximumDeathByAge = 0.01;
     public double maximumDeathByWeight = 0.1;
