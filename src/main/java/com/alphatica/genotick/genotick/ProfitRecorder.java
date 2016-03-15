@@ -3,8 +3,8 @@ package com.alphatica.genotick.genotick;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfitRecorder {
-    private List<Double> profits = new ArrayList<>();
+class ProfitRecorder {
+    private final List<Double> profits = new ArrayList<>();
 
     public double getProfit() {
         return calculateProfit(profits);
