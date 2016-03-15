@@ -85,9 +85,8 @@ public class Main {
         }
     }
 
-    private static void showPopulation(String value) throws IllegalAccessException {
-        PopulationDAOFileSystem dao = new PopulationDAOFileSystem();
-        dao.setSettings(value);
+    private static void showPopulation(String path) throws IllegalAccessException {
+        PopulationDAOFileSystem dao = new PopulationDAOFileSystem(path);
         Population population = PopulationFactory.getDefaultPopulation(dao);
         showHeader();
         showRobots(population);

@@ -10,12 +10,12 @@ import java.util.Random;
 
 public class PopulationDAOFileSystem implements PopulationDAO {
     private static final String FILE_EXTENSION = ".prg";
-    private String robotsPath = "population";
+    private final String robotsPath;
     private final Random random = Main.random;
 
-    @Override
-    public void setSettings(String pathToDir) {
-        this.robotsPath = pathToDir;
+    public PopulationDAOFileSystem(String dao) {
+        checkPath(dao);
+        robotsPath = dao;
     }
 
     @Override
@@ -94,6 +94,16 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         } catch (ClassNotFoundException | IOException e) {
             throw new DAOException(e);
         }
+    }
+
+    private void checkPath(String dao) {
+        File file = new File(dao);
+        if(!file.exists())
+            throw new DAOException(String.format("Path '%s' does not exist.",dao));
+        if(!file.isDirectory())
+            throw new DAOException(String.format("Path '%s' is not a directory.",dao));
+        if(!file.canRead())
+            throw new DAOException(String.format("Path '%s' is not readable.",dao));
     }
 
     private List<RobotName> getAllRobotsNames() {

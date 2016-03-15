@@ -60,11 +60,6 @@ public class PopulationDAORAM implements PopulationDAO {
     }
 
     @Override
-    public void setSettings(String settings) {
-        /* Empty, Ram dao doesn't need settings */
-    }
-
-    @Override
     public RobotName[] listRobotNames() {
         return map.keySet().toArray(new RobotName[map.size()]);
     }

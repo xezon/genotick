@@ -60,8 +60,7 @@ public class SimplePopulation implements Population {
 
     @Override
     public void savePopulation(String path) {
-        PopulationDAO fs = new PopulationDAOFileSystem();
-        fs.setSettings(path);
+        PopulationDAO fs = new PopulationDAOFileSystem(path);
         for(Robot robot : dao.getRobotList()) {
             fs.saveRobot(robot);
         }

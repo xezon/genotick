@@ -8,7 +8,7 @@ public class MainSettings {
 
     public TimePoint startTimePoint;
     public TimePoint endTimePoint;
-    public String populationDAO = "RAM";
+    public String populationDAO = "";
     public boolean executionOnly = false;
 
     public int populationDesiredSize = 1_000;

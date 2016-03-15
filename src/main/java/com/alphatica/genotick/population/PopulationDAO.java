@@ -12,7 +12,5 @@ public interface PopulationDAO {
 
     void removeRobot(RobotName robotName);
 
-    void setSettings(String settings);
-
     RobotName[] listRobotNames();
 }

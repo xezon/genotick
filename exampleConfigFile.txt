@@ -1,4 +1,4 @@
-########################################################################################
+#######################################################################################
 ########################	Example config file   ##################################
 ####################### Lines starting at # are ignored ################################
 ########################################################################################
@@ -15,10 +15,12 @@ startTimePoint	20000101
 # end when data ends
 endTimePoint	20150101
 
-# Two possible options: RAM and FileSystem. Use RAM to keep population in... (guess!). 
-# Use “FileSystem” to keep population in files (they will be stored in directory “population” 
-# relative to your current directory. FileSystem is much slower but will allow for large population.
-populationDAO	FileSystem
+# This tells Genotick where robots' files should be. It must be a directory, must exist and 
+# has to be readable. If commented out then training will be done in RAM, so obviously 
+# no prediction is possible in this mode (you need a population to make a prediction).  
+# Using path to a directory while training will make Genotick a lot slower but will 
+# allow for much larger population.  
+#populationDAO	/change/this/path
 
 # false or true. If false Genotick will do full training. If true, only prediction is given. 
 # No training or updating population / robots' weight.
