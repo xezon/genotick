@@ -27,8 +27,8 @@ public class Main {
     private static UserOutput output;
 
     public static void main(String... args) {
-        assignRandom();
         setupDebug();
+        assignRandom();
         setupExceptionHandler();
         Parameters parameters = new Parameters(args);
         checkVersionRequest(parameters);
