@@ -52,7 +52,7 @@ public class SimpleEngine implements Engine {
             }
             timePoint = timePoint.next();
         }
-        if(!engineSettings.executionOnly) {
+        if(engineSettings.performTraining) {
             savePopulation();
         }
         showSummary();
@@ -96,7 +96,7 @@ public class SimpleEngine implements Engine {
     }
 
     private void initPopulation() {
-        if(population.getSize() == 0 && !engineSettings.executionOnly)
+        if(population.getSize() == 0 && engineSettings.performTraining)
             breeder.breedPopulation(population, timePointExecutor.getRobotInfos());
     }
 
@@ -105,7 +105,7 @@ public class SimpleEngine implements Engine {
         if(robotDataList.isEmpty())
             return null;
         Debug.d("Starting TimePoint:", timePoint);
-        TimePointResult timePointResult = timePointExecutor.execute(robotDataList, population, !engineSettings.executionOnly);
+        TimePointResult timePointResult = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction();
@@ -118,7 +118,7 @@ public class SimpleEngine implements Engine {
                 timePointStats.update(dataSetResult.getName(), actualChange, prediction);
             }
         }
-        if(!engineSettings.executionOnly) {
+        if(engineSettings.performTraining) {
             updatePopulation();
         }
         Debug.d("Finished TimePoint:",timePoint);

@@ -23,14 +23,13 @@ class ConsoleInput implements UserInput {
         String dataDirectory = getString("Data directory", Main.DEFAULT_DATA_DIR);
         MainAppData data = application.createData(dataDirectory);
         MainSettings settings = MainSettings.getSettings(data.getFirstTimePoint(), data.getLastTimePoint());
+        settings.performTraining = getBoolean("Perform training", settings.performTraining);
         settings.startTimePoint = new TimePoint(getLong("Start time point",settings.startTimePoint.getValue()));
         settings.endTimePoint = new TimePoint(getLong("End time point", settings.endTimePoint.getValue()));
         settings.populationDAO = getString("Population storage", settings.populationDAO);
-        settings.executionOnly = getBoolean("Prediction only", settings.executionOnly);
         settings.processorInstructionLimit = getInteger("Processor instruction limit", settings.processorInstructionLimit);
         settings.resultThreshold = getDouble("Result threshold",settings.resultThreshold);
-
-        if (!settings.executionOnly) {
+        if (settings.performTraining) {
             settings.dataMaximumOffset = getInteger("Data maximum offset", settings.dataMaximumOffset);
             settings.populationDesiredSize = getInteger("Population desired size", settings.populationDesiredSize);
             settings.maximumDeathByAge = getDouble("Maximum death rate by age", settings.maximumDeathByAge);

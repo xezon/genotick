@@ -122,7 +122,7 @@ public class Application {
         EngineSettings engineSettings = new EngineSettings();
         engineSettings.startTimePoint = settings.startTimePoint;
         engineSettings.endTimePoint = settings.endTimePoint;
-        engineSettings.executionOnly = settings.executionOnly;
+        engineSettings.performTraining = settings.performTraining;
         return engineSettings;
     }
 

@@ -5,5 +5,5 @@ import com.alphatica.genotick.timepoint.TimePoint;
 class EngineSettings {
     public TimePoint startTimePoint;
     public TimePoint endTimePoint;
-    public boolean executionOnly;
+    public boolean performTraining;
 }

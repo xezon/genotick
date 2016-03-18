@@ -22,9 +22,9 @@ endTimePoint	20150101
 # allow for much larger population.  
 #populationDAO	/change/this/path
 
-# false or true. If false Genotick will do full training. If true, only prediction is given. 
-# No training or updating population / robots' weight.
-executionOnly	false
+# false or true. If true Genotick will do full training. If false, only prediction is given - 
+# no training or updating population / robots' weights.
+performTraining true
 
 # Desired size for the population. Should be in thousands at least to get satisfactory results. 
 # The more the merrier.

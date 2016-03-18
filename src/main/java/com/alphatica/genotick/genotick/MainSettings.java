@@ -9,7 +9,7 @@ public class MainSettings {
     public TimePoint startTimePoint;
     public TimePoint endTimePoint;
     public String populationDAO = "";
-    public boolean executionOnly = false;
+    public boolean performTraining = true;
 
     public int populationDesiredSize = 1_000;
     public int processorInstructionLimit = 256;

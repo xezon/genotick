@@ -45,7 +45,7 @@ class RandomParametersInput implements UserInput {
         defaults.populationDAO = "RAM";
         defaults.requireSymmetricalRobots = true;
         defaults.killNonPredictingRobots = true;
-        defaults.executionOnly = false;
+        defaults.performTraining = true;
         return assignRandom(defaults);
     }
 
