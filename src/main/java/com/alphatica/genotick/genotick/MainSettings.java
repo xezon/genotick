@@ -35,6 +35,9 @@ public class MainSettings {
     private MainSettings() {
         /* Empty */
     }
+    public static MainSettings getSettings() {
+        return getSettings(new TimePoint(0),new TimePoint(Long.MAX_VALUE));
+    }
     public static MainSettings getSettings(TimePoint startTimePoint, TimePoint endTimePoint) {
         MainSettings settings = new MainSettings();
         settings.startTimePoint = startTimePoint;

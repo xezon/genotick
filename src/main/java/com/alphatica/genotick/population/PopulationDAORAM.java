@@ -1,6 +1,7 @@
 package com.alphatica.genotick.population;
 
 import com.alphatica.genotick.genotick.Main;
+import com.alphatica.genotick.genotick.RandomGenerator;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,7 +10,7 @@ import java.util.Random;
 
 public class PopulationDAORAM implements PopulationDAO {
     private final Map<RobotName,Robot> map = new HashMap<>();
-    private final Random random = Main.random;
+    private final Random random = RandomGenerator.assignRandom();
 
     @Override
     public Iterable<Robot> getRobotList() {

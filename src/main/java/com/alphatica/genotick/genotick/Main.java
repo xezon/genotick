@@ -21,14 +21,12 @@ import java.util.Random;
 
 public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
-    public static Random random;
     private static final String VERSION = "Genotick version 0.11.0 (copyleft 2016)";
     private static UserInput input;
     private static UserOutput output;
 
     public static void main(String... args) {
         setupDebug();
-        assignRandom();
         setupExceptionHandler();
         Parameters parameters = new Parameters(args);
         checkVersionRequest(parameters);
@@ -40,15 +38,6 @@ public class Main {
         checkSimulation(parameters);
     }
 
-    private static void assignRandom() {
-        random = new Random();
-        String seedString = System.getenv("GENOTICK_RANDOM_SEED");
-        if( seedString != null) {
-            long seed = Long.parseLong(seedString);
-            random.setSeed(seed);
-            Debug.d("Assigning",seed,"to random seed. Testing only!");
-        }
-    }
 
     private static void checkShowRobot(Parameters parameters) {
         String value = parameters.getValue("showRobot");

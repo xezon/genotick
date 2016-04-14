@@ -2,6 +2,7 @@ package com.alphatica.genotick.killer;
 
 import com.alphatica.genotick.genotick.Debug;
 import com.alphatica.genotick.genotick.Main;
+import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.RobotInfo;
 
@@ -16,7 +17,7 @@ class SimpleRobotKiller implements RobotKiller {
         return new SimpleRobotKiller();
     }
     private SimpleRobotKiller() {
-        random = Main.random;
+        random = RandomGenerator.assignRandom();
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.Application;
 import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
+import com.alphatica.genotick.genotick.RandomGenerator;
 
 import java.util.Random;
 
@@ -20,7 +21,7 @@ class RandomParametersInput implements UserInput {
     }
 
     public MainSettings assignRandom(MainSettings settings) {
-        Random r = Main.random;
+        Random r = RandomGenerator.assignRandom();
         settings.populationDesiredSize = r.nextInt(5000);
         settings.dataMaximumOffset = r.nextInt(256);
         settings.processorInstructionLimit = r.nextInt(256)+1;
