@@ -1,7 +1,6 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.MainAppData;
-import com.alphatica.genotick.genotick.Application;
 import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.genotick.RandomGenerator;
@@ -9,18 +8,10 @@ import com.alphatica.genotick.genotick.RandomGenerator;
 import java.util.Random;
 
 @SuppressWarnings("unused")
-class RandomParametersInput implements UserInput {
+class RandomParametersInput extends BasicUserInput {
 
 
-    @Override
-    public void show(Application application) {
-        MainAppData data = application.createData(Main.DEFAULT_DATA_DIR);
-        MainSettings defaults = MainSettings.getSettings(data.getFirstTimePoint(),data.getLastTimePoint());
-        MainSettings appSettings = getSettings(defaults);
-        application.start(appSettings, data);
-    }
-
-    public MainSettings assignRandom(MainSettings settings) {
+    private MainSettings assignRandom(MainSettings settings) {
         Random r = RandomGenerator.assignRandom();
         settings.populationDesiredSize = r.nextInt(5000);
         settings.dataMaximumOffset = r.nextInt(256);
@@ -42,11 +33,16 @@ class RandomParametersInput implements UserInput {
         return settings;
     }
 
-    private  MainSettings getSettings(MainSettings defaults) {
-        defaults.populationDAO = "RAM";
+    @Override
+    public MainSettings getSettings() {
+        MainSettings defaults = MainSettings.getSettings();
+        defaults.populationDAO = "";
         defaults.requireSymmetricalRobots = true;
         defaults.killNonPredictingRobots = true;
         defaults.performTraining = true;
+        MainAppData data = getData(Main.DEFAULT_DATA_DIR);
+        defaults.startTimePoint = data.getFirstTimePoint();
+        defaults.endTimePoint = data.getLastTimePoint();
         return assignRandom(defaults);
     }
 

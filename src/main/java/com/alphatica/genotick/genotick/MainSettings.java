@@ -6,11 +6,11 @@ import java.lang.reflect.Field;
 
 public class MainSettings {
 
-    public TimePoint startTimePoint;
-    public TimePoint endTimePoint;
+    public TimePoint startTimePoint = new TimePoint(0);
+    public TimePoint endTimePoint = new TimePoint(Long.MAX_VALUE);
     public String populationDAO = "";
     public boolean performTraining = true;
-
+    public String dataSettings = Main.DEFAULT_DATA_DIR;
     public int populationDesiredSize = 1_000;
     public int processorInstructionLimit = 256;
     public double maximumDeathByAge = 0.01;
@@ -36,14 +36,9 @@ public class MainSettings {
         /* Empty */
     }
     public static MainSettings getSettings() {
-        return getSettings(new TimePoint(0),new TimePoint(Long.MAX_VALUE));
+        return new MainSettings();
     }
-    public static MainSettings getSettings(TimePoint startTimePoint, TimePoint endTimePoint) {
-        MainSettings settings = new MainSettings();
-        settings.startTimePoint = startTimePoint;
-        settings.endTimePoint = endTimePoint;
-        return settings;
-    }
+
     public String getString() {
         StringBuilder sb = new StringBuilder();
         Field [] fields = this.getClass().getDeclaredFields();

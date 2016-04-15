@@ -8,8 +8,6 @@ import com.alphatica.genotick.timepoint.TimePointStats;
 import com.alphatica.genotick.breeder.BreederSettings;
 import com.alphatica.genotick.breeder.RobotBreeder;
 import com.alphatica.genotick.breeder.RobotBreederFactory;
-import com.alphatica.genotick.data.DataFactory;
-import com.alphatica.genotick.data.DataLoader;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.killer.RobotKiller;
 import com.alphatica.genotick.killer.RobotKillerFactory;
@@ -19,21 +17,20 @@ import com.alphatica.genotick.mutator.MutatorFactory;
 import com.alphatica.genotick.mutator.MutatorSettings;
 import com.alphatica.genotick.population.*;
 import com.alphatica.genotick.processor.RobotExecutorFactory;
-import com.alphatica.genotick.ui.UserInput;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Application {
+public class Simulation {
     private final UserOutput output;
-    private final UserInput input;
 
-    public Application(UserInput input, UserOutput output) {
-        this.input = input;
+    @SuppressWarnings("WeakerAccess")
+    public Simulation(UserOutput output) {
         this.output = output;
     }
+
 
     public void start(MainSettings mainSettings, MainAppData data) {
         if(!validateSettings(mainSettings))
@@ -49,10 +46,6 @@ public class Application {
         showSummary(results);
     }
 
-    public MainAppData createData(String dataSettings) {
-        DataLoader dataLoader = DataFactory.getDefaultLoader(dataSettings);
-        return dataLoader.createRobotData();
-    }
 
     private boolean validateSettings(MainSettings settings) {
         try {
@@ -163,5 +156,4 @@ public class Application {
             Debug.d("Profit for",entry.getKey(),":",entry.getValue());
         }
     }
-
 }

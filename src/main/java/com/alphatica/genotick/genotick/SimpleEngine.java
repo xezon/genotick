@@ -25,7 +25,7 @@ public class SimpleEngine implements Engine {
     private RobotBreeder breeder;
     private Population population;
     private MainAppData data;
-    private ProfitRecorder profitRecorder;
+    private final ProfitRecorder profitRecorder;
 
     private SimpleEngine() {
         profitRecorder = new ProfitRecorder();

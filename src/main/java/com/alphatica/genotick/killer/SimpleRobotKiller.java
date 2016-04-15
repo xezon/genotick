@@ -1,7 +1,6 @@
 package com.alphatica.genotick.killer;
 
 import com.alphatica.genotick.genotick.Debug;
-import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.RobotInfo;

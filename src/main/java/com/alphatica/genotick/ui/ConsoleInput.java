@@ -1,7 +1,6 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.MainAppData;
-import com.alphatica.genotick.genotick.Application;
 import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.timepoint.TimePoint;
@@ -9,9 +8,10 @@ import com.alphatica.genotick.timepoint.TimePoint;
 import java.io.Console;
 
 @SuppressWarnings("unused")
-class ConsoleInput implements UserInput {
+class ConsoleInput extends BasicUserInput {
     private final Console console;
-    public ConsoleInput() {
+
+    ConsoleInput() {
         console = System.console();
         if(console == null) {
             throw new RuntimeException("Unable to create system console");
@@ -19,13 +19,14 @@ class ConsoleInput implements UserInput {
     }
 
     @Override
-    public void show(Application application) {
+    public MainSettings getSettings() {
         String dataDirectory = getString("Data directory", Main.DEFAULT_DATA_DIR);
-        MainAppData data = application.createData(dataDirectory);
-        MainSettings settings = MainSettings.getSettings(data.getFirstTimePoint(), data.getLastTimePoint());
+        MainAppData data = getData(dataDirectory);
+        MainSettings settings = MainSettings.getSettings();
+        settings.dataSettings = dataDirectory;
         settings.performTraining = getBoolean("Perform training", settings.performTraining);
-        settings.startTimePoint = new TimePoint(getLong("Start time point",settings.startTimePoint.getValue()));
-        settings.endTimePoint = new TimePoint(getLong("End time point", settings.endTimePoint.getValue()));
+        settings.startTimePoint = new TimePoint(getLong("Start time point",data.getFirstTimePoint().getValue()));
+        settings.endTimePoint = new TimePoint(getLong("End time point", data.getLastTimePoint().getValue()));
         settings.populationDAO = getString("Population storage", settings.populationDAO);
         settings.processorInstructionLimit = getInteger("Processor instruction limit", settings.processorInstructionLimit);
         settings.resultThreshold = getDouble("Result threshold",settings.resultThreshold);
@@ -51,7 +52,7 @@ class ConsoleInput implements UserInput {
             settings.requireSymmetricalRobots = getBoolean("Require symmetrical robots", settings.requireSymmetricalRobots);
             settings.ignoreColumns = getInteger("Ignore columns for training",settings.ignoreColumns);
         }
-        application.start(settings,data);
+        return settings;
     }
 
     private double getDouble(String s, double value) {

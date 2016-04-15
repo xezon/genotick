@@ -1,7 +1,6 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.data.DataUtils;
-import com.alphatica.genotick.data.YahooFixer;
+import com.alphatica.genotick.data.*;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.PopulationDAOFileSystem;
 import com.alphatica.genotick.population.Robot;
@@ -17,7 +16,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
@@ -185,8 +183,11 @@ public class Main {
             output.errorMessage("Not all arguments processed: " + parameters.getUnconsumed());
             exit(errorCodes.UNKNOWN_ARGUMENT);
         }
-        Application application = new Application(input, output);
-        input.show(application);
+        Simulation simulation = new Simulation(output);
+        input.setSimulation(simulation);
+        MainSettings settings = input.getSettings();
+        MainAppData data = input.getData(settings.dataSettings);
+        simulation.start(settings,data);
     }
 
     private static void exit(errorCodes code) {

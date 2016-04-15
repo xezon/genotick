@@ -1,64 +1,68 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.MainAppData;
-import com.alphatica.genotick.genotick.Application;
 import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.timepoint.TimePoint;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FileInput implements UserInput {
-    public  static final String delimiter = ":";
+class FileInput extends BasicUserInput {
+    static final String delimiter = ":";
     private static final String DATA_DIRECTORY_KEY = "dataDirectory";
     private String fileName;
 
-    public FileInput(String input) {
+    FileInput(String input) {
         if(!input.contains(delimiter))
             throw new RuntimeException(String.format("Config file input format is: '%s'","input=file:/path/to/file"));
         int pos = input.indexOf(delimiter);
         fileName = input.substring(pos+1);
     }
-
     @Override
-    public void show(Application application) {
+    public MainSettings getSettings() {
+        Set<String> parsedKeys = new HashSet<>();
         try {
             Map<String,String> map = buildFileMap();
-            MainAppData data = createData(map,application);
-            MainSettings settings = MainSettings.getSettings(data.getFirstTimePoint(),data.getLastTimePoint());
-            applySettingsFromMap(settings,map);
-            checkAllSettingsParsed(map);
-            application.start(settings,data);
+            MainSettings settings = MainSettings.getSettings();
+            MainAppData data = createData(map,parsedKeys);
+            settings.startTimePoint = data.getFirstTimePoint();
+            settings.endTimePoint = data.getLastTimePoint();
+            settings.dataSettings = getDataDir(map,parsedKeys);
+            applySettingsFromMap(settings,map,parsedKeys);
+            checkAllSettingsParsed(map,parsedKeys);
+            return settings;
         } catch (IOException e) {
-            RuntimeException re = new RuntimeException("Unable to read file " + fileName);
-            re.initCause(e);
-            throw re;
+            throw new RuntimeException("Unable to read file " + fileName, e);
         } catch (IllegalAccessException e) {
-            throw  new RuntimeException(e);
+            throw new RuntimeException(e);
         }
+
     }
 
-    private void checkAllSettingsParsed(Map<String, String> map) {
-        if(map.isEmpty())
+    private void checkAllSettingsParsed(Map<String, String> map, Set<String> parsedKeys) {
+        if(map.size() == parsedKeys.size())
             return;
         throw new RuntimeException("Unable to match setting from config file: " + map.keySet().toArray()[0]);
     }
 
-    private void applySettingsFromMap(MainSettings settings, Map<String, String> map) throws IllegalAccessException {
+    private void applySettingsFromMap(MainSettings settings, Map<String, String> map, Set<String> parsedKeys) throws IllegalAccessException {
         Field[] fields = settings.getClass().getFields();
         for(Field field: fields) {
-            applySettingFromField(settings,map,field);
+            applySettingFromField(settings,map,field,parsedKeys);
         }
     }
 
-    private void applySettingFromField(MainSettings settings, Map<String, String> map, Field field) throws IllegalAccessException {
+    private void applySettingFromField(MainSettings settings, Map<String, String> map, Field field, Set<String> parsedKeys) throws IllegalAccessException {
         if(map.containsKey(field.getName())) {
             String value = map.get(field.getName());
-            map.remove(field.getName());
+            parsedKeys.add(field.getName());
             field.setAccessible(true);
             switch(field.getType().getName()) {
                 case "java.lang.String": setString(field,settings,value); break;
@@ -104,13 +108,18 @@ public class FileInput implements UserInput {
     }
 
 
-    private MainAppData createData(Map<String, String> map, Application application) {
+    private MainAppData createData(Map<String, String> map, Set<String> parsedKeys) {
+        String dataDir = getDataDir(map,parsedKeys);
+        return getData(dataDir);
+    }
+
+    private String getDataDir(Map<String, String> map, Set<String> parsedKeys) {
         String dataDir = Main.DEFAULT_DATA_DIR;
         if(map.containsKey(DATA_DIRECTORY_KEY)) {
             dataDir = map.get(DATA_DIRECTORY_KEY);
-            map.remove(DATA_DIRECTORY_KEY);
+            parsedKeys.add(DATA_DIRECTORY_KEY);
         }
-        return application.createData(dataDir);
+        return dataDir;
     }
 
     private Map<String, String> buildFileMap() throws IOException {

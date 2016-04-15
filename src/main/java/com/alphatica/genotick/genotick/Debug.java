@@ -419,8 +419,7 @@ public class Debug {
                 bos.write(bytes);
                 bos.close();
             } catch (IOException e) {
-                RuntimeException ex = new RuntimeException("Unable to write to file " + file.getAbsolutePath());
-                ex.initCause(e);
+                RuntimeException ex = new RuntimeException("Unable to write to file " + file.getAbsolutePath(), e);
                 throw ex;
             }
         }

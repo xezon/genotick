@@ -35,13 +35,11 @@ class SimpleMutator implements Mutator {
         totalInstructions = instructionList.size();
     }
 
-    public static Mutator getInstance() {
+    static Mutator getInstance() {
         try {
             return new SimpleMutator();
         } catch(ClassNotFoundException ex) {
-            RuntimeException re = new RuntimeException("Unable to get Class");
-            re.initCause(ex);
-            throw  re;
+            throw new RuntimeException("Unable to get Class", ex);
         }
     }
 
