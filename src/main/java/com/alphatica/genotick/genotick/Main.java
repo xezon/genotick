@@ -187,8 +187,10 @@ public class Main {
         input.setSimulation(simulation);
         MainSettings settings = input.getSettings();
         MainAppData data = input.getData(settings.dataSettings);
+        settings.validateTimePoints(data);
         simulation.start(settings,data);
     }
+
 
     private static void exit(errorCodes code) {
         System.exit(code.getValue());

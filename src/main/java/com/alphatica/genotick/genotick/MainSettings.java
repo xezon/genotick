@@ -1,5 +1,6 @@
 package com.alphatica.genotick.genotick;
 
+import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.timepoint.TimePoint;
 
 import java.lang.reflect.Field;
@@ -53,6 +54,19 @@ public class MainSettings {
         return sb.toString();
     }
 
+    @SuppressWarnings("WeakerAccess")
+    public void validateTimePoints(MainAppData data) {
+        TimePoint first = data.getFirstTimePoint();
+        TimePoint last = data.getLastTimePoint();
+        if(startTimePoint.compareTo(first) < 0) {
+            startTimePoint = first;
+        }
+        if(endTimePoint.compareTo(last) > 0) {
+            endTimePoint = last;
+        }
+    }
+
+    @SuppressWarnings("WeakerAccess")
     public void validate() {
         ensure(startTimePoint.compareTo(endTimePoint) <= 0,
                 "End Time Point must be higher or equal Start Time Point");
@@ -94,5 +108,4 @@ public class MainSettings {
             throw new IllegalArgumentException(message);
         }
     }
-
 }
