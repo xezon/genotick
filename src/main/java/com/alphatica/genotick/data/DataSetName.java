@@ -1,6 +1,9 @@
 package com.alphatica.genotick.data;
 
-public class DataSetName {
+import java.io.Serializable;
+
+public class DataSetName implements Serializable{
+    private static final long serialVersionUID = -7504682119928833833L;
     private final String name;
     public DataSetName(String name) {
         this.name = name;

@@ -1,8 +1,10 @@
 package com.alphatica.genotick.timepoint;
 
-public class TimePoint implements Comparable<TimePoint> {
+import java.io.Serializable;
 
+public class TimePoint implements Comparable<TimePoint>, Serializable {
 
+    private static final long serialVersionUID = -6541300869299964665L;
     private final long value;
     public TimePoint(long i) {
         this.value = i;

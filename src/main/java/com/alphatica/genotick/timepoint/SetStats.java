@@ -3,7 +3,10 @@ package com.alphatica.genotick.timepoint;
 import com.alphatica.genotick.genotick.Outcome;
 import com.alphatica.genotick.genotick.Prediction;
 
-public class SetStats {
+import java.io.Serializable;
+
+public class SetStats implements Serializable{
+    private static final long serialVersionUID = 4443286273783452188L;
     private double totalPercentPredicted;
     private double totalPercentMispredicted;
 

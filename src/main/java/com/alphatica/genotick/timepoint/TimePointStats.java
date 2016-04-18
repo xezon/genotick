@@ -3,11 +3,14 @@ package com.alphatica.genotick.timepoint;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Prediction;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class TimePointStats {
+public class TimePointStats implements Serializable {
+
+    private static final long serialVersionUID = -5355094455686373969L;
     private final HashMap<DataSetName, SetStats> stats;
     private final TimePoint timePoint;
 
