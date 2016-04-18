@@ -32,9 +32,9 @@ public class Simulation {
     }
 
 
-    public void start(MainSettings mainSettings, MainAppData data) {
+    public List<TimePointStats> start(MainSettings mainSettings, MainAppData data) {
         if(!validateSettings(mainSettings))
-            return;
+            return null;
         logSettings(mainSettings);
         RobotKiller killer = getRobotKiller(mainSettings);
         Mutator mutator = getMutator(mainSettings);
@@ -44,6 +44,7 @@ public class Simulation {
         DataSetResult.setThreshold(mainSettings.resultThreshold);
         List<TimePointStats> results = engine.start(output);
         showSummary(results);
+        return results;
     }
 
 
