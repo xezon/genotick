@@ -108,7 +108,7 @@ public class SimpleEngine implements Engine {
         TimePointResult timePointResult = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
-            Prediction prediction = dataSetResult.getCumulativePrediction();
+            Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
             Debug.d(timePoint,"Prediction for:",dataSetResult.getName(),prediction);
             output.showPrediction(timePoint,dataSetResult.getName(),prediction);
             Double actualChange = data.getActualChange(dataSetResult.getName(),timePoint);

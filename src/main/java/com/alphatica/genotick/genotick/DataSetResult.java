@@ -3,8 +3,6 @@ package com.alphatica.genotick.genotick;
 import com.alphatica.genotick.data.DataSetName;
 
 public class DataSetResult {
-    private static double threshold = 1;
-
     private final DataSetName name;
     private double weightUp;
     private double weightOut;
@@ -17,15 +15,15 @@ public class DataSetResult {
         this.name = name;
     }
 
-    public static void setThreshold(double threshold) {
-        DataSetResult.threshold = threshold;
-    }
-
     public void addResult(RobotResult robotResult) {
         Double weight = robotResult.getWeight();
         if(weight.isNaN())
             return;
         processWeight(robotResult);
+    }
+
+    public DataSetName getName() {
+        return name;
     }
 
     private void processWeight(RobotResult robotResult) {
@@ -60,11 +58,11 @@ public class DataSetResult {
         countUp++;
     }
 
-    public Prediction getCumulativePrediction() {
+    Prediction getCumulativePrediction(double threshold) {
         double direction = weightUp - weightDown;
         Debug.d("Before threshold: Up:",weightUp,countUp,"Down:",weightDown,countDown,"Out:",weightOut,countOut,
                 "Direction:",direction);
-        double directionAfterThreshold = applyThreshold(direction);
+        double directionAfterThreshold = applyThreshold(direction,threshold);
         if(direction * directionAfterThreshold < 0) {
             Debug.d("Not enough to pass threshold (",threshold,"): Up:",weightUp,"Down:",weightDown);
             return Prediction.OUT;
@@ -74,7 +72,7 @@ public class DataSetResult {
         return Prediction.getPrediction(directionAfterThreshold);
     }
 
-    private double applyThreshold(double direction) {
+    private double applyThreshold(double direction, double threshold) {
         if(threshold == 1) {
             return direction;
         }
@@ -87,10 +85,6 @@ public class DataSetResult {
             localWeightDown /= threshold;
         }
         return localWeightUp - localWeightDown;
-    }
-
-    public DataSetName getName() {
-        return name;
     }
 
 }

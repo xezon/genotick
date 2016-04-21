@@ -41,7 +41,6 @@ public class Simulation {
         RobotBreeder breeder = wireBreeder(mainSettings, mutator);
         Population population = wirePopulation(mainSettings);
         Engine engine = wireEngine(mainSettings, data, killer, breeder, population);
-        DataSetResult.setThreshold(mainSettings.resultThreshold);
         List<TimePointStats> results = engine.start(output);
         showSummary(results);
         return results;
@@ -117,6 +116,7 @@ public class Simulation {
         engineSettings.startTimePoint = settings.startTimePoint;
         engineSettings.endTimePoint = settings.endTimePoint;
         engineSettings.performTraining = settings.performTraining;
+        engineSettings.resultThreshold = settings.resultThreshold;
         return engineSettings;
     }
 
