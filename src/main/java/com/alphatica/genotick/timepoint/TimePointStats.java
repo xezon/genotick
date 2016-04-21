@@ -24,6 +24,11 @@ public class TimePointStats implements Serializable {
         return percent / stats.size();
     }
 
+    @SuppressWarnings("unused")
+    public TimePoint getTimePoint() {
+        return timePoint;
+    }
+
     public static TimePointStats getNewStats(TimePoint timePoint) {
         return new TimePointStats(timePoint);
     }
