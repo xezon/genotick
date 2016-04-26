@@ -32,6 +32,7 @@ public class Simulation {
     }
 
 
+    @SuppressWarnings("UnusedReturnValue")
     public List<TimePointStats> start(MainSettings mainSettings, MainAppData data) {
         if(!validateSettings(mainSettings))
             return null;
