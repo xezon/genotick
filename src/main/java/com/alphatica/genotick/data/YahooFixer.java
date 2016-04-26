@@ -17,7 +17,7 @@ public class YahooFixer {
 
     public void fixFiles() {
         String extension = ".csv";
-        String [] names = DataUtils.listFiles(path, extension);
+        List<String> names = DataUtils.listFiles(extension);
         if(names == null) {
             throw new DataException("Unable to list files in " + path);
         }

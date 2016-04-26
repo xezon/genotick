@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.util.List;
 
 public class FileSystemDataLoader implements DataLoader {
-    private final String path;
+    private final String [] paths;
 
-    public FileSystemDataLoader(String args) {
-        path = args;
+    public FileSystemDataLoader(String... args) {
+        paths = args;
     }
 
     @Override
@@ -23,22 +23,22 @@ public class FileSystemDataLoader implements DataLoader {
     private MainAppData loadData() {
         MainAppData data = new MainAppData();
         String extension = ".csv";
-        String[] names = DataUtils.listFiles(path, extension);
+        List<String> names = DataUtils.listFiles(extension,paths);
         if(names == null) {
-            throw new DataException("Unable to list files in " + path);
+            throw new DataException("Unable to list files");
         }
         for (String name : names) {
             Debug.d("Reading file", name);
             data.addDataSet(createDataSet(name));
         }
         if(data.isEmpty()) {
-            throw new DataException("Directory " + path + " is empty!");
+            throw new DataException("No files to read!");
         }
         return data;
 
     }
     private DataSet createDataSet(String name) {
-        try(BufferedReader br = new BufferedReader(new FileReader(new File(path + File.separator + name)))) {
+        try(BufferedReader br = new BufferedReader(new FileReader(new File(name)))) {
             List<List<Number>> lines = DataUtils.createLineList(br);
             Debug.d("Got",lines.size(),"lines");
             return new DataSet(lines,name);

@@ -6,20 +6,43 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("WeakerAccess")
 public class DataUtils {
 
-    public static String[] listFiles(final String path, final String extension) {
-        return new File(path).list(new FilenameFilter() {
+    public static List<String> listFiles(final String extension, final String... paths) {
+        List<String> list = new ArrayList<>();
+        for(String path: paths) {
+            list.addAll(namesFromPath(path,extension));
+        }
+        return list;
+    }
+
+    private static List<String> namesFromPath(String path, final String extension) {
+        List<String> list = new ArrayList<>();
+        File file = new File(path);
+        if(file.isDirectory()) {
+            list.addAll(getFullPaths(path,extension));
+        } else {
+            list.add(path);
+        }
+        return list;
+    }
+
+    private static List<String> getFullPaths(String path, final String extension) {
+        File file = new File(path);
+        String [] names = file.list(new FilenameFilter() {
             @Override
             public boolean accept(File file, String name) {
                 return name.endsWith(extension);
             }
         });
+        List<String> list = new ArrayList<>();
+        for(String name: names) {
+            list.add(path + File.separator + name);
+        }
+        return list;
     }
 
     public static List<List<Number>> createLineList(BufferedReader br) {
