@@ -25,6 +25,7 @@ import java.util.Map;
 
 public class Simulation {
     private final UserOutput output;
+    private Population population;
 
     @SuppressWarnings("WeakerAccess")
     public Simulation(UserOutput output) {
@@ -40,13 +41,16 @@ public class Simulation {
         RobotKiller killer = getRobotKiller(mainSettings);
         Mutator mutator = getMutator(mainSettings);
         RobotBreeder breeder = wireBreeder(mainSettings, mutator);
-        Population population = wirePopulation(mainSettings);
+        population = wirePopulation(mainSettings);
         Engine engine = wireEngine(mainSettings, data, killer, breeder, population);
         List<TimePointStats> results = engine.start(output);
         showSummary(results);
         return results;
     }
 
+    public Population getPopulation() {
+        return population;
+    }
 
     private boolean validateSettings(MainSettings settings) {
         try {
