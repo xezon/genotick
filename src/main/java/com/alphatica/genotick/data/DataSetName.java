@@ -14,6 +14,10 @@ public class DataSetName implements Serializable{
         return name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

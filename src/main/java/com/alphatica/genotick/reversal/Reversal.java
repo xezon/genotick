@@ -43,7 +43,18 @@ public class Reversal {
     }
 
     private String getReverseFileName(DataSetName name) {
-        return reverseValue + File.separator + "reverse_" + name;
+        String [] pathParts = name.getName().split(File.separator);
+        int lastPart = pathParts.length - 1;
+        String newName = "reverse_" + pathParts[lastPart];
+        pathParts[lastPart] = newName;
+        StringBuilder sb = new StringBuilder();
+        for(String part: pathParts) {
+            sb.append(part);
+            if(!part.equals(pathParts[lastPart])) {
+                sb.append(File.separator);
+            }
+        }
+        return sb.toString();
     }
 
     private List<Number[]> reverseList(List<Number[]> original) {
