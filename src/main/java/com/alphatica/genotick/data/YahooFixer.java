@@ -17,7 +17,7 @@ public class YahooFixer {
 
     public void fixFiles() {
         String extension = ".csv";
-        List<String> names = DataUtils.listFiles(extension);
+        List<String> names = DataUtils.listFiles(extension,path);
         if(names == null) {
             throw new DataException("Unable to list files in " + path);
         }
@@ -35,11 +35,10 @@ public class YahooFixer {
     }
 
     private void saveListToFile(List<List<Number>> newList, String name) {
-        String filePath = path + File.separator + name;
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filePath)))) {
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File(name)))) {
             writeList(newList,bw);
         } catch (IOException e) {
-            DataException dataException = new DataException("Unable to write file " + filePath);
+            DataException dataException = new DataException("Unable to write file " + name);
             dataException.initCause(e);
             throw dataException;
         }
@@ -74,12 +73,11 @@ public class YahooFixer {
     }
 
     private List<List<Number>> buildOriginalList(String name) {
-        String filePath = path + File.separator + name;
-        try(BufferedReader br = new BufferedReader(new FileReader(new File(filePath)))) {
+        try(BufferedReader br = new BufferedReader(new FileReader(new File(name)))) {
             ignoreFirstLine(br);
             return DataUtils.createLineList(br);
         } catch (IOException e) {
-            DataException dataException = new DataException("Unable to read file " + filePath);
+            DataException dataException = new DataException("Unable to read file " + name);
             dataException.initCause(e);
             throw dataException;
         }
