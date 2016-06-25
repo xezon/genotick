@@ -25,7 +25,7 @@ public class Reversal {
     }
 
     @SuppressWarnings("unused")
-    public MainAppData reverse(MainAppData data) {
+    public static MainAppData reverse(MainAppData data) {
         MainAppData reversedData = new MainAppData();
         for(DataSet set: data.listSets()) {
             List<Number []> originalNumbers = getOriginalNumbers(set);
@@ -54,7 +54,7 @@ public class Reversal {
         writeReverseToFile(reverse, reverseFileName);
     }
 
-    private String getReverseFileName(DataSetName name) {
+    private static String getReverseFileName(DataSetName name) {
         String [] pathParts = name.getName().split(File.separator);
         int lastPart = pathParts.length - 1;
         String newName = "reverse_" + pathParts[lastPart];
@@ -69,7 +69,7 @@ public class Reversal {
         return sb.toString();
     }
 
-    private List<Number[]> reverseList(List<Number[]> original) {
+    private static List<Number[]> reverseList(List<Number[]> original) {
         List<Number []> reverse = new ArrayList<>();
         Number [] lastOriginal = null;
         Number [] lastReversed = null;
@@ -96,7 +96,7 @@ public class Reversal {
      * 5 and more - Volume, open interest or whatever. These don't change.
      */
 
-    private Number[] reverseLineOHLCV(Number[] table, Number[] lastOriginal, Number[] lastReversed) {
+    private static Number[] reverseLineOHLCV(Number[] table, Number[] lastOriginal, Number[] lastReversed) {
         Number [] reversed = new Number[table.length];
         // Column 0 is unchanged
         reversed[0] = table[0];
@@ -125,7 +125,7 @@ public class Reversal {
         return reversed;
     }
 
-    private Number getReverseValue(Number from, Number to, Number compare) {
+    private static Number getReverseValue(Number from, Number to, Number compare) {
         double diff = Math.abs((from.doubleValue() / to.doubleValue()) -2);
         return diff * compare.doubleValue();
     }
@@ -154,7 +154,7 @@ public class Reversal {
         return sb.toString();
     }
 
-    private List<Number[]> getOriginalNumbers(DataSet set) {
+    private static List<Number[]> getOriginalNumbers(DataSet set) {
         List<Number[]> list = new ArrayList<>();
         for (int i = 0; i < set.getLinesCount(); i++) {
             list.add(set.getLine(i));
