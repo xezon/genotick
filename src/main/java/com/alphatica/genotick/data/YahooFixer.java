@@ -28,7 +28,7 @@ public class YahooFixer {
 
     private void fixFile(String name) {
         Debug.d("Fixing file", name);
-        List<List<Number>> originalList = buildOriginalList(name);
+        List<Number[]> originalList = buildOriginalList(name);
         Collections.reverse(originalList);
         List<List<Number>> newList = fixList(originalList);
         saveListToFile(newList,name);
@@ -63,16 +63,16 @@ public class YahooFixer {
         bw.append(stringBuilder.toString());
     }
 
-    private List<List<Number>> fixList(List<List<Number>> originalList) {
+    private List<List<Number>> fixList(List<Number[]> originalList) {
         List<List<Number>> newList = new ArrayList<>(originalList.size());
-        for (List<Number> line : originalList) {
+        for (Number[] line : originalList) {
             List<Number> fixedLine = fixLine(line);
             newList.add(fixedLine);
         }
         return newList;
     }
 
-    private List<List<Number>> buildOriginalList(String name) {
+    private List<Number []> buildOriginalList(String name) {
         try(BufferedReader br = new BufferedReader(new FileReader(new File(name)))) {
             ignoreFirstLine(br);
             return DataUtils.createLineList(br);
@@ -92,22 +92,22 @@ public class YahooFixer {
     4th number - replace with adjusted close
     5th number - volume. Recalcute according to adjusted close
      */
-    private List<Number> fixLine(List<Number> line) {
-        List<Number> newLine = new ArrayList<>(line.size());
-        double originalClose = line.get(4).doubleValue();
-        double adjustedClose = line.get(6).doubleValue();
+    private List<Number> fixLine(Number[] line) {
+        List<Number> newLine = new ArrayList<>(line.length);
+        double originalClose = line[4].doubleValue();
+        double adjustedClose = line[6].doubleValue();
         // Nothing with to do be done with Date
-        newLine.add(line.get(0));
-        double open = calculateNew(line.get(1),originalClose,adjustedClose);
+        newLine.add(line[0]);
+        double open = calculateNew(line[1],originalClose,adjustedClose);
         newLine.add(open);
-        double high = calculateNew(line.get(2),originalClose,adjustedClose);
+        double high = calculateNew(line[2],originalClose,adjustedClose);
         newLine.add(high);
-        double low = calculateNew(line.get(3),originalClose,adjustedClose);
+        double low = calculateNew(line[3],originalClose,adjustedClose);
         newLine.add(low);
         // add adjusted close as 'close'
         newLine.add(adjustedClose);
         // recalcute volume
-        double volumeValue = originalClose * line.get(5).doubleValue();
+        double volumeValue = originalClose * line[5].doubleValue();
         double volumeCount = volumeValue / adjustedClose;
         newLine.add(volumeCount);
         return newLine;

@@ -39,7 +39,7 @@ public class FileSystemDataLoader implements DataLoader {
     }
     private DataSet createDataSet(String name) {
         try(BufferedReader br = new BufferedReader(new FileReader(new File(name)))) {
-            List<List<Number>> lines = DataUtils.createLineList(br);
+            List<Number []> lines = DataUtils.createLineList(br);
             Debug.d("Got",lines.size(),"lines");
             return new DataSet(lines,name);
         } catch (IOException  | DataException e) {

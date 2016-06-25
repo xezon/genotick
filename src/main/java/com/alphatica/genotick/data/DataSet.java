@@ -13,15 +13,15 @@ public class DataSet {
     private final List<double []> values;
     private final DataSetName name;
 
-    public DataSet(List<List<Number>> lines, String name) {
+    public DataSet(List<Number []> lines, String name) {
         this.name = new DataSetName(name);
         timePoints = new TimePoint[lines.size()];
         values = new ArrayList<>();
 
-        final int firstLineCount = lines.get(0).size();
+        final int firstLineCount = lines.get(0).length;
         createValuesArrays(lines.size(),firstLineCount);
         int lineNumber = 0;
-        for(List<Number> line: lines) {
+        for(Number[] line: lines) {
             lineNumber++;
             checkNumberOfFieldsInLine(lineNumber,line,firstLineCount);
             fillFirstNumberAsTimePoint(lineNumber, line);
@@ -61,13 +61,13 @@ public class DataSet {
         return 100.0 *(endValue - startValue) / startValue;
     }
 
-    private void fillValuesArrays(int lineNumber, List<Number> line, int firstLineCount) {
+    private void fillValuesArrays(int lineNumber, Number[] line, int firstLineCount) {
         for(int j = 1; j < firstLineCount; j++)
-            values.get(j-1)[lineNumber -1] = line.get(j).doubleValue();
+            values.get(j-1)[lineNumber -1] = line[j].doubleValue();
     }
 
-    private void fillFirstNumberAsTimePoint(int lineNumber, List<Number> line) {
-        TimePoint timePoint = new TimePoint(line.get(0).longValue());
+    private void fillFirstNumberAsTimePoint(int lineNumber, Number [] line) {
+        TimePoint timePoint = new TimePoint(line[0].longValue());
         // Arrays start indexing from 0, but humans count text lines starting from 1.
         // New timePoint will be assigned to index = lineNumber -1, so
         // we have to check what happened two lines ago!
@@ -76,8 +76,8 @@ public class DataSet {
         timePoints[lineNumber - 1] = timePoint;
     }
 
-    private void checkNumberOfFieldsInLine(int lineNumber, List<Number> line, int firstLineCount) {
-        if(line.size() != firstLineCount)
+    private void checkNumberOfFieldsInLine(int lineNumber, Number [] line, int firstLineCount) {
+        if(line.length != firstLineCount)
             throw new DataException("Invalid number of fields in line: " + lineNumber);
     }
 

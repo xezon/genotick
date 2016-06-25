@@ -45,14 +45,14 @@ public class DataUtils {
         return list;
     }
 
-    public static List<List<Number>> createLineList(BufferedReader br) {
-        List<List<Number>> list = new ArrayList<>();
+    public static List<Number []> createLineList(BufferedReader br) {
+        List<Number []> list = new ArrayList<>();
         int linesRead = 1;
         try {
             String line;
             while ((line = br.readLine())!=null){
-                List<Number> lineList = processLine(line);
-                list.add(lineList);
+                Number [] row = processLine(line);
+                list.add(row);
                 linesRead++;
             }
             return list;
@@ -64,16 +64,16 @@ public class DataUtils {
     }
 
 
-    public static List<Number> processLine(String line) {
+    public static Number[] processLine(String line) {
         String separator = ",";
         String[] fields = line.split(separator);
-        List<Number> list = new ArrayList<>(fields.length);
+        Number [] array = new Number[fields.length];
         String timePointString = getTimePointString(fields[0]);
-        list.add(Long.valueOf(timePointString));
+        array[0] = Long.valueOf(timePointString);
         for(int i = 1; i < fields.length; i++) {
-            list.add(Double.valueOf(fields[i]));
+            array[i] = Double.valueOf(fields[i]);
         }
-        return list;
+        return array;
     }
 
     public static String getTimePointString(String field) {
