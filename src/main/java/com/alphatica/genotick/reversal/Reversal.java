@@ -24,6 +24,18 @@ public class Reversal {
         reverseData(data);
     }
 
+    @SuppressWarnings("unused")
+    public MainAppData reverse(MainAppData data) {
+        MainAppData reversedData = new MainAppData();
+        for(DataSet set: data.listSets()) {
+            List<Number []> originalNumbers = getOriginalNumbers(set);
+            List<Number []> reversedNumbers = reverseList(originalNumbers);
+            String reverseName = getReverseFileName(set.getName());
+            DataSet reversedSet = new DataSet(reversedNumbers,reverseName);
+            reversedData.addDataSet(reversedSet);
+        }
+        return reversedData;
+    }
     private void reverseData(MainAppData data) {
         for (DataSet set : data.listSets()) {
             reverseSet(set);
