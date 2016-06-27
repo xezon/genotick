@@ -34,7 +34,7 @@ public class Simulation {
 
 
     @SuppressWarnings("UnusedReturnValue")
-    public List<TimePointStats> start(MainSettings mainSettings, MainAppData data) {
+    public List<TimePointStats> start(MainSettings mainSettings, MainAppData data) throws IllegalAccessException {
         if(!validateSettings(mainSettings))
             return null;
         logSettings(mainSettings);
@@ -125,8 +125,8 @@ public class Simulation {
         return engineSettings;
     }
 
-    private void logSettings(MainSettings settings) {
-        String settingsString = settings.getString(output);
+    private void logSettings(MainSettings settings) throws IllegalAccessException {
+        String settingsString = settings.getString();
         output.infoMessage(settingsString);
     }
 

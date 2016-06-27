@@ -41,16 +41,11 @@ public class MainSettings {
         return new MainSettings();
     }
 
-    public String getString(UserOutput output) {
+    public String getString() throws IllegalAccessException {
         StringBuilder sb = new StringBuilder();
         Field [] fields = this.getClass().getDeclaredFields();
         for(Field field: fields) {
-
-            try {
-                sb.append(field.getName()).append(" ").append(field.get(this)).append("\n");
-            } catch (IllegalAccessException e) {
-                output.errorMessage("Unable to print field " + field.getName());
-            }
+            sb.append(field.getName()).append(" ").append(field.get(this)).append("\n");
         }
         return sb.toString();
     }

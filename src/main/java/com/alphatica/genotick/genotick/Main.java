@@ -23,7 +23,7 @@ public class Main {
     private static UserInput input;
     private static UserOutput output;
 
-    public static void main(String... args) throws IOException {
+    public static void main(String... args) throws IOException, IllegalAccessException {
         Parameters parameters = new Parameters(args);
         checkVersionRequest(parameters);
         checkShowPopulation(parameters);
@@ -171,7 +171,7 @@ public class Main {
         System.exit(0);
     }
 
-    private static void checkSimulation(Parameters parameters) {
+    private static void checkSimulation(Parameters parameters) throws IllegalAccessException {
         if(!parameters.allConsumed()) {
             output.errorMessage("Not all arguments processed: " + parameters.getUnconsumed());
             exit(errorCodes.UNKNOWN_ARGUMENT);
