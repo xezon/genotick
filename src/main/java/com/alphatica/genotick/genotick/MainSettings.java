@@ -2,6 +2,7 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.ui.UserOutput;
 
 import java.lang.reflect.Field;
 
@@ -40,7 +41,7 @@ public class MainSettings {
         return new MainSettings();
     }
 
-    public String getString() {
+    public String getString(UserOutput output) {
         StringBuilder sb = new StringBuilder();
         Field [] fields = this.getClass().getDeclaredFields();
         for(Field field: fields) {
@@ -48,7 +49,7 @@ public class MainSettings {
             try {
                 sb.append(field.getName()).append(" ").append(field.get(this)).append("\n");
             } catch (IllegalAccessException e) {
-                Debug.d("Unable to print field",field.getName());
+                output.errorMessage("Unable to print field " + field.getName());
             }
         }
         return sb.toString();

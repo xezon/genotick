@@ -1,6 +1,6 @@
 package com.alphatica.genotick.data;
 
-import com.alphatica.genotick.genotick.Debug;
+import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -15,19 +15,19 @@ public class YahooFixer {
         this.path = yahooValue;
     }
 
-    public void fixFiles() {
+    public void fixFiles(UserOutput output) {
         String extension = ".csv";
         List<String> names = DataUtils.listFiles(extension,path);
         if(names == null) {
             throw new DataException("Unable to list files in " + path);
         }
         for(String name: names) {
-            fixFile(name);
+            fixFile(name,output);
         }
     }
 
-    private void fixFile(String name) {
-        Debug.d("Fixing file", name);
+    private void fixFile(String name, UserOutput output) {
+        output.infoMessage("Fixing file: " + name);
         List<Number[]> originalList = buildOriginalList(name);
         Collections.reverse(originalList);
         List<List<Number>> newList = fixList(originalList);

@@ -14,4 +14,6 @@ public interface UserOutput {
     void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction);
 
     Thread.UncaughtExceptionHandler createExceptionHandler();
+
+    void infoMessage(String s);
 }

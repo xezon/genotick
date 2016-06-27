@@ -1,6 +1,7 @@
 package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.genotick.RandomGenerator;
+import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public class InstructionList implements Serializable {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 267402795981161615L;
 
-    private static final Random random = RandomGenerator.assignRandom();
+    private final Random random;
     private final List<Instruction> list;
     private final int variablesCount = 256;
     private final double[] variables;
@@ -23,6 +24,7 @@ public class InstructionList implements Serializable {
     private InstructionList() {
         list = new ArrayList<>();
         variables = new double[variablesCount];
+        random = RandomGenerator.assignRandom();
     }
 
     public static InstructionList createInstructionList() {

@@ -3,6 +3,7 @@ package com.alphatica.genotick.timepoint;
 import com.alphatica.genotick.genotick.*;
 import com.alphatica.genotick.population.*;
 import com.alphatica.genotick.processor.RobotExecutorFactory;
+import com.alphatica.genotick.ui.UserOutput;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,14 +14,16 @@ class SimpleTimePointExecutor implements TimePointExecutor {
 
     private final ExecutorService executorService;
     private final List<RobotInfo> robotInfos;
+    private final UserOutput output;
     private DataSetExecutor dataSetExecutor;
     private RobotExecutorFactory robotExecutorFactory;
 
 
-    public SimpleTimePointExecutor() {
+    public SimpleTimePointExecutor(UserOutput output) {
         int cores = Runtime.getRuntime().availableProcessors();
         executorService = Executors.newFixedThreadPool(cores * 2, new DaemonThreadFactory());
         robotInfos = Collections.synchronizedList(new ArrayList<RobotInfo>());
+        this.output = output;
     }
 
     public List<RobotInfo> getRobotInfos() {
@@ -52,7 +55,7 @@ class SimpleTimePointExecutor implements TimePointExecutor {
             } catch (InterruptedException ignore) {
                 /* Do nothing, try again */
             } catch (ExecutionException e) {
-                Debug.d(e);
+                output.errorMessage(e.getMessage());
                 System.exit(1);
             }
         }

@@ -60,15 +60,10 @@ public class DataSetResult {
 
     Prediction getCumulativePrediction(double threshold) {
         double direction = weightUp - weightDown;
-        Debug.d("Before threshold: Up:",weightUp,countUp,"Down:",weightDown,countDown,"Out:",weightOut,countOut,
-                "Direction:",direction);
         double directionAfterThreshold = applyThreshold(direction,threshold);
         if(direction * directionAfterThreshold < 0) {
-            Debug.d("Not enough to pass threshold (",threshold,"): Up:",weightUp,"Down:",weightDown);
             return Prediction.OUT;
         }
-        Debug.d("After threshold: Up:",weightUp,countUp,"Down:",weightDown,countDown,"Out:",weightOut,countOut,
-                "Direction",directionAfterThreshold);
         return Prediction.getPrediction(directionAfterThreshold);
     }
 

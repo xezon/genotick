@@ -23,8 +23,7 @@ public class Main {
     private static UserInput input;
     private static UserOutput output;
 
-    public static void main(String... args) {
-        setupDebug();
+    public static void main(String... args) throws IOException {
         Parameters parameters = new Parameters(args);
         checkVersionRequest(parameters);
         checkShowPopulation(parameters);
@@ -43,7 +42,7 @@ public class Main {
             try {
                 showRobot(value);
             } catch (IllegalAccessException e) {
-                Debug.d(e);
+                output.errorMessage(e.getMessage());
             }
             System.exit(0);
         }
@@ -66,7 +65,7 @@ public class Main {
             try {
                 showPopulation(value);
             } catch (IllegalAccessException e) {
-                Debug.d(e);
+                output.errorMessage(e.getMessage());
             }
             System.exit(0);
         }
@@ -147,17 +146,11 @@ public class Main {
             return;
         }
         YahooFixer yahooFixer = new YahooFixer(yahooValue);
-        yahooFixer.fixFiles();
+        yahooFixer.fixFiles(output);
         System.exit(0);
     }
 
-    private static void setupDebug() {
-        Debug.setShowTime(true);
-        String outFileName = "genotick_" + DataUtils.getDateTimeString() + ".txt";
-        Debug.toFile(outFileName);
-    }
-
-    private static void getUserIO(Parameters parameters) {
+    private static void getUserIO(Parameters parameters) throws IOException {
         input = UserInputOutputFactory.getUserInput(parameters);
         if(input == null) {
             exit(errorCodes.NO_INPUT);
@@ -185,8 +178,8 @@ public class Main {
         }
         Simulation simulation = new Simulation(output);
         input.setSimulation(simulation);
-        MainSettings settings = input.getSettings();
-        MainAppData data = input.getData(settings.dataSettings);
+        MainSettings settings = input.getSettings(output);
+        MainAppData data = input.getData(settings.dataSettings,output);
         settings.validateTimePoints(data);
         simulation.start(settings,data);
     }

@@ -73,7 +73,7 @@ public class Simulation {
         DataSetExecutor dataSetExecutor = new SimpleDataSetExecutor();
         RobotExecutorSettings robotExecutorSettings = new RobotExecutorSettings(settings);
         RobotExecutorFactory robotExecutorFactory = new RobotExecutorFactory(robotExecutorSettings);
-        return TimePointExecutorFactory.getDefaultExecutor(dataSetExecutor, robotExecutorFactory);
+        return TimePointExecutorFactory.getDefaultExecutor(dataSetExecutor, robotExecutorFactory,output);
     }
 
     private Population wirePopulation(MainSettings settings) {
@@ -104,7 +104,7 @@ public class Simulation {
         killerSettings.protectBestRobots = settings.protectBestRobots;
         killerSettings.killNonPredictingRobots = settings.killNonPredictingRobots;
         killerSettings.requireSymmetricalRobots = settings.requireSymmetricalRobots;
-        return RobotKillerFactory.getDefaultRobotKiller(killerSettings);
+        return RobotKillerFactory.getDefaultRobotKiller(killerSettings,output);
     }
 
     private Mutator getMutator(MainSettings settings) {
@@ -126,8 +126,8 @@ public class Simulation {
     }
 
     private void logSettings(MainSettings settings) {
-        String settingsString = settings.getString();
-        Debug.d(settingsString);
+        String settingsString = settings.getString(output);
+        output.infoMessage(settingsString);
     }
 
     private void showSummary(List<TimePointStats> list) {
@@ -139,7 +139,7 @@ public class Simulation {
             result *= percent / 100.0 + 1;
         }
         showStatsResults(statsResults);
-        Debug.d("Final result for genotic:", result);
+        output.infoMessage("Final result for genotic: " + result);
     }
 
     private void recordSetsProfit(TimePointStats stats, Map<DataSetName, Double> statsResults) {
@@ -159,7 +159,7 @@ public class Simulation {
 
     private void showStatsResults(Map<DataSetName, Double> statsResults) {
         for(Map.Entry<DataSetName,Double> entry: statsResults.entrySet()) {
-            Debug.d("Profit for",entry.getKey(),":",entry.getValue());
+            output.infoMessage("Profit for " + entry.getKey() + ": " + entry.getValue());
         }
     }
 }

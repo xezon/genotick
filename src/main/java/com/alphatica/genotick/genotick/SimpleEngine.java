@@ -48,29 +48,28 @@ public class SimpleEngine implements Engine {
                 result *= (stat.getPercentEarned() / 100 + 1);
                 profitRecorder.recordProfit(stat.getPercentEarned());
                 output.reportProfitForTimePoint(timePoint,(result - 1) * 100, stat.getPercentEarned());
-                Debug.d("Time:",timePoint,"Percent earned so far:",(result - 1) * 100);
             }
             timePoint = timePoint.next();
         }
         if(engineSettings.performTraining) {
-            savePopulation();
+            savePopulation(output);
         }
-        showSummary();
+        showSummary(output);
         return timePointStats;
     }
 
-    private void showSummary() {
-        Debug.d("Total: Profit:",profitRecorder.getProfit(),"Drawdown:",profitRecorder.getMaxDrawdown(),
-                "Profit / DD:",profitRecorder.getProfit() / profitRecorder.getMaxDrawdown());
-        Debug.d("Second Half: Profit:",profitRecorder.getProfitSecondHalf(),"Drawdown:",profitRecorder.getMaxDrawdownSecondHalf(),
-                "Profit / DD:",profitRecorder.getProfitSecondHalf() / profitRecorder.getMaxDrawdownSecondHalf());
+    private void showSummary(UserOutput output) {
+        output.infoMessage("Total: Profit: " + profitRecorder.getProfit() + " Drawdown: " + profitRecorder.getMaxDrawdown()
+                + " Profit / DD: " + profitRecorder.getProfit() / profitRecorder.getMaxDrawdown());
+        output.infoMessage("Second Half: Profit: " + profitRecorder.getProfitSecondHalf() + " Drawdown: " + profitRecorder.getMaxDrawdownSecondHalf()
+                + " Profit / DD: " + profitRecorder.getProfitSecondHalf() / profitRecorder.getMaxDrawdownSecondHalf());
     }
 
-    private void savePopulation() {
+    private void savePopulation(UserOutput output) {
         String dirName = getSavedPopulationDirName();
         File dirFile = new File(dirName);
         if(!dirFile.exists() && !dirFile.mkdirs()) {
-            Debug.d("Unable to create directory",dirName);
+            output.errorMessage("Unable to create directory " + dirName);
         } else {
             population.savePopulation(dirName);
         }
@@ -104,38 +103,33 @@ public class SimpleEngine implements Engine {
         List<RobotData> robotDataList = data.prepareRobotDataList(timePoint);
         if(robotDataList.isEmpty())
             return null;
-        Debug.d("Starting TimePoint:", timePoint);
         TimePointResult timePointResult = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
-            Debug.d(timePoint,"Prediction for:",dataSetResult.getName(),prediction);
             output.showPrediction(timePoint,dataSetResult.getName(),prediction);
             Double actualChange = data.getActualChange(dataSetResult.getName(),timePoint);
             if(!actualChange.isNaN()) {
-                Debug.d("Actual change:", actualChange);
-                printPercentEarned(dataSetResult.getName(), actualChange, prediction);
+                printPercentEarned(dataSetResult.getName(), actualChange, prediction,output);
                 timePointStats.update(dataSetResult.getName(), actualChange, prediction);
             }
         }
         if(engineSettings.performTraining) {
             updatePopulation();
         }
-        Debug.d("Finished TimePoint:",timePoint);
         return timePointStats;
     }
 
-    private void printPercentEarned(DataSetName name, Double actualChange, Prediction prediction) {
+    private void printPercentEarned(DataSetName name, Double actualChange, Prediction prediction, UserOutput output) {
         double percent;
         if(prediction == Prediction.OUT) {
-            Debug.d("No position");
             return;
         }
         if(prediction.isCorrect(actualChange))
             percent = Math.abs(actualChange);
         else
             percent = -Math.abs(actualChange);
-        Debug.d("Profit for",name,percent);
+        output.infoMessage("Profit for " + name + " " + percent);
     }
 
     private void updatePopulation() {

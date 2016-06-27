@@ -1,6 +1,5 @@
 package com.alphatica.genotick.breeder;
 
-import com.alphatica.genotick.genotick.Debug;
 import com.alphatica.genotick.instructions.Instruction;
 import com.alphatica.genotick.instructions.InstructionList;
 import com.alphatica.genotick.instructions.TerminateInstructionList;
@@ -23,15 +22,11 @@ public class SimpleBreeder implements RobotBreeder {
 
     @Override
     public void breedPopulation(Population population, List<RobotInfo> robotInfos) {
-        Debug.d("Breeding population");
-        Debug.d("Current population size", population.getSize());
         if(population.haveSpaceToBreed()) {
             addRequiredRandomRobots(population);
             breedPopulationFromParents(population, robotInfos);
             addOptionalRandomRobots(population);
         }
-        Debug.d("Breeder exiting");
-        Debug.d("Current population size", population.getSize());
     }
 
     private void addOptionalRandomRobots(Population population) {

@@ -26,12 +26,12 @@ class FileInput extends BasicUserInput {
         fileName = input.substring(pos+1);
     }
     @Override
-    public MainSettings getSettings() {
+    public MainSettings getSettings(UserOutput output) {
         Set<String> parsedKeys = new HashSet<>();
         try {
             Map<String,String> map = buildFileMap();
             MainSettings settings = MainSettings.getSettings();
-            MainAppData data = createData(map,parsedKeys);
+            MainAppData data = createData(map,parsedKeys,output);
             settings.startTimePoint = data.getFirstTimePoint();
             settings.endTimePoint = data.getLastTimePoint();
             settings.dataSettings = getDataDir(map,parsedKeys);
@@ -108,9 +108,9 @@ class FileInput extends BasicUserInput {
     }
 
 
-    private MainAppData createData(Map<String, String> map, Set<String> parsedKeys) {
+    private MainAppData createData(Map<String, String> map, Set<String> parsedKeys, UserOutput output) {
         String dataDir = getDataDir(map,parsedKeys);
-        return getData(dataDir);
+        return getData(dataDir,output);
     }
 
     private String getDataDir(Map<String, String> map, Set<String> parsedKeys) {

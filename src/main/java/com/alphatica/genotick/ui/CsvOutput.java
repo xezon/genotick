@@ -1,31 +1,23 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.DataSetName;
-import com.alphatica.genotick.genotick.Debug;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.timepoint.TimePoint;
 
+import java.io.*;
 import java.lang.management.ManagementFactory;
 
 public class CsvOutput implements UserOutput {
     private final ConsoleOutput console;
-    private final Debug.Instance profitWriter;
-    private final Debug.Instance predictionWriter;
+    private final SimpleTextWriter profitWriter;
+    private final SimpleTextWriter predictionWriter;
     private final String pidString;
 
-    public CsvOutput() {
+    public CsvOutput() throws IOException {
         console = new ConsoleOutput();
         pidString = getPidString();
-
-        /* Profit Writer */
-        profitWriter = Debug.getInstance();
-        profitWriter.setShowTime(false);
-        setProfitWriterFile();
-
-        /* Prediction Writer */
-        predictionWriter = Debug.getInstance();
-        predictionWriter.setShowTime(false);
-        setPredictionWriterFile();
+        profitWriter = new SimpleTextWriter("profit_" + pidString + ".csv");
+        predictionWriter = new SimpleTextWriter("predictions_" + pidString + ".csv");
     }
 
     @Override
@@ -41,13 +33,13 @@ public class CsvOutput implements UserOutput {
     @Override
     public void reportProfitForTimePoint(TimePoint timePoint, double cumulativeProfit, double timePointProfit) {
         String line = timePoint.toString() + "," + String.valueOf(cumulativeProfit) + "," + String.valueOf(timePointProfit);
-        profitWriter.d(line);
+        profitWriter.writeLine(line);
     }
 
     @Override
     public void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction) {
         String line = String.format("%s,%s,%s",timePoint.toString(),name.toString(),prediction.toString());
-        predictionWriter.d(line);
+        predictionWriter.writeLine(line);
     }
 
     @Override
@@ -55,17 +47,11 @@ public class CsvOutput implements UserOutput {
         return console.createExceptionHandler();
     }
 
-    private void setProfitWriterFile() {
-        String fileName = "profit_" + pidString + ".csv";
-        profitWriter.toFile(fileName);
-        profitWriter.d("<Time Point>,<Cumulative Profit>,<Time Point Profit>");
+    @Override
+    public void infoMessage(String s) {
+        console.infoMessage(s);
     }
 
-    private void setPredictionWriterFile() {
-        String fileName = "predictions_" + pidString + ".csv";
-        predictionWriter.toFile(fileName);
-        predictionWriter.d("<Time Point>,<Name>,<Prediction>");
-    }
     private String getPidString() {
         String pid = ManagementFactory.getRuntimeMXBean().getName();
         if (pid.contains("@")) {
@@ -74,5 +60,17 @@ public class CsvOutput implements UserOutput {
             return pid;
         }
     }
+}
 
+class SimpleTextWriter {
+    private final PrintWriter writer;
+    SimpleTextWriter(String fileName) throws IOException {
+        File file = new File(fileName);
+        writer = new PrintWriter(new FileOutputStream(file));
+    }
+
+    void writeLine(String line) {
+        writer.println(line);
+        writer.flush();
+    }
 }

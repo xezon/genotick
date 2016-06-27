@@ -11,6 +11,19 @@ import java.util.Random;
 class RandomParametersInput extends BasicUserInput {
 
 
+    @Override
+    public MainSettings getSettings(UserOutput output) {
+        MainSettings defaults = MainSettings.getSettings();
+        defaults.populationDAO = "";
+        defaults.requireSymmetricalRobots = true;
+        defaults.killNonPredictingRobots = true;
+        defaults.performTraining = true;
+        MainAppData data = getData(Main.DEFAULT_DATA_DIR,output);
+        defaults.startTimePoint = data.getFirstTimePoint();
+        defaults.endTimePoint = data.getLastTimePoint();
+        return assignRandom(defaults);
+    }
+
     private MainSettings assignRandom(MainSettings settings) {
         Random r = RandomGenerator.assignRandom();
         settings.populationDesiredSize = r.nextInt(5000);
@@ -31,19 +44,6 @@ class RandomParametersInput extends BasicUserInput {
         settings.randomRobotsAtEachUpdate = r.nextDouble();
         settings.resultThreshold = 1 + (r.nextDouble() * 9);
         return settings;
-    }
-
-    @Override
-    public MainSettings getSettings() {
-        MainSettings defaults = MainSettings.getSettings();
-        defaults.populationDAO = "";
-        defaults.requireSymmetricalRobots = true;
-        defaults.killNonPredictingRobots = true;
-        defaults.performTraining = true;
-        MainAppData data = getData(Main.DEFAULT_DATA_DIR);
-        defaults.startTimePoint = data.getFirstTimePoint();
-        defaults.endTimePoint = data.getLastTimePoint();
-        return assignRandom(defaults);
     }
 
 }

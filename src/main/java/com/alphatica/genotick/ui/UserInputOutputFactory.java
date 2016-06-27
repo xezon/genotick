@@ -1,6 +1,6 @@
 package com.alphatica.genotick.ui;
 
-import com.alphatica.genotick.genotick.Debug;
+import java.io.IOException;
 
 public class UserInputOutputFactory {
     private static final String INPUT_STRING = "input";
@@ -28,12 +28,12 @@ public class UserInputOutputFactory {
             input = new ConsoleInput();
             return input;
         } catch (RuntimeException ex) {
-            Debug.d("Unable to get Console Input. Resorting to Default Input");
+            System.err.println("Unable to get Console Input. Resorting to Default Input");
             return new DefaultInputs();
         }
     }
 
-    public static UserOutput getUserOutput(Parameters parameters) {
+    public static UserOutput getUserOutput(Parameters parameters) throws IOException {
         String output = parameters.getValue(OUTPUT_STRING);
         parameters.removeKey(OUTPUT_STRING);
         if (output != null && output.equals("csv"))

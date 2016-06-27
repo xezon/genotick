@@ -9,7 +9,6 @@ public class RandomGenerator {
         if( seedString != null) {
             long seed = Long.parseLong(seedString);
             random.setSeed(seed);
-            Debug.d("Assigning",seed,"to random seed. Testing only!");
         }
         return random;
     }

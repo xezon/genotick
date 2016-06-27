@@ -20,7 +20,7 @@ public class Reversal {
 
     public void reverse() {
         FileSystemDataLoader loader = new FileSystemDataLoader(reverseValue);
-        MainAppData data = loader.createRobotData();
+        MainAppData data = loader.createRobotData(output);
         reverseData(data);
     }
 

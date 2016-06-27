@@ -7,7 +7,7 @@ class DefaultInputs extends BasicUserInput {
 
 
     @Override
-    public MainSettings getSettings() {
+    public MainSettings getSettings(UserOutput output) {
         return MainSettings.getSettings();
     }
 }

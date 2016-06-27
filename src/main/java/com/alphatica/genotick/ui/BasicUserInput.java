@@ -18,9 +18,9 @@ abstract public class BasicUserInput implements UserInput {
     }
 
     @Override
-    public MainAppData getData(String settings) {
+    public MainAppData getData(String settings, UserOutput output) {
         DataLoader dl = DataFactory.getDefaultLoader(settings);
-        return dl.createRobotData();
+        return dl.createRobotData(output);
     }
 
 }

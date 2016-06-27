@@ -1,5 +1,6 @@
 package com.alphatica.genotick.population;
 
+
 import java.util.List;
 
 public interface Population {

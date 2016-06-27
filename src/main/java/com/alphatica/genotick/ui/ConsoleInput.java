@@ -19,9 +19,9 @@ class ConsoleInput extends BasicUserInput {
     }
 
     @Override
-    public MainSettings getSettings() {
+    public MainSettings getSettings(UserOutput output) {
         String dataDirectory = getString("Data directory", Main.DEFAULT_DATA_DIR);
-        MainAppData data = getData(dataDirectory);
+        MainAppData data = getData(dataDirectory,output);
         MainSettings settings = MainSettings.getSettings();
         settings.dataSettings = dataDirectory;
         settings.performTraining = getBoolean("Perform training", settings.performTraining);

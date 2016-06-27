@@ -1,6 +1,7 @@
 package com.alphatica.genotick.data;
 
-import com.alphatica.genotick.genotick.Debug;
+
+import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,11 +17,11 @@ public class FileSystemDataLoader implements DataLoader {
     }
 
     @Override
-    public MainAppData createRobotData() throws DataException {
-        return loadData();
+    public MainAppData createRobotData(UserOutput output) throws DataException {
+        return loadData(output);
     }
 
-    private MainAppData loadData() {
+    private MainAppData loadData(UserOutput output) {
         MainAppData data = new MainAppData();
         String extension = ".csv";
         List<String> names = DataUtils.listFiles(extension,paths);
@@ -28,8 +29,8 @@ public class FileSystemDataLoader implements DataLoader {
             throw new DataException("Unable to list files");
         }
         for (String name : names) {
-            Debug.d("Reading file", name);
-            data.addDataSet(createDataSet(name));
+            output.infoMessage("Reading file " + name);
+            data.addDataSet(createDataSet(name,output));
         }
         if(data.isEmpty()) {
             throw new DataException("No files to read!");
@@ -37,10 +38,10 @@ public class FileSystemDataLoader implements DataLoader {
         return data;
 
     }
-    private DataSet createDataSet(String name) {
+    private DataSet createDataSet(String name, UserOutput output) {
         try(BufferedReader br = new BufferedReader(new FileReader(new File(name)))) {
             List<Number []> lines = DataUtils.createLineList(br);
-            Debug.d("Got",lines.size(),"lines");
+            output.infoMessage("Got " + lines.size() + " lines");
             return new DataSet(lines,name);
         } catch (IOException  | DataException e) {
             DataException de = new DataException("Unable to process file: " + name);

@@ -1,19 +1,18 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.DataSetName;
-import com.alphatica.genotick.genotick.Debug;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.timepoint.TimePoint;
 
 class ConsoleOutput implements UserOutput {
     @Override
     public void errorMessage(String message) {
-        Debug.d("Error:",message);
+        System.out.println("Error: " + message);
     }
 
     @Override
     public void warningMessage(String message) {
-        Debug.d("Warning:", message);
+        System.out.println("Warning: " + message);
     }
 
     @Override
@@ -39,6 +38,11 @@ class ConsoleOutput implements UserOutput {
                 throwable.printStackTrace();
             }
         };
+    }
+
+    @Override
+    public void infoMessage(String s) {
+        System.out.println(s);
     }
 
 }
