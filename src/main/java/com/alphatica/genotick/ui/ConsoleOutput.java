@@ -29,4 +29,16 @@ class ConsoleOutput implements UserOutput {
                 name.toString(),timePoint.toString(),prediction.toString()));
     }
 
+    @Override
+    public Thread.UncaughtExceptionHandler createExceptionHandler() {
+        return new Thread.UncaughtExceptionHandler() {
+
+            @Override
+            public void uncaughtException(Thread thread, Throwable throwable) {
+                System.out.println("Exception in thread: " + thread.getName());
+                throwable.printStackTrace();
+            }
+        };
+    }
+
 }

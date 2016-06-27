@@ -50,6 +50,11 @@ public class CsvOutput implements UserOutput {
         predictionWriter.d(line);
     }
 
+    @Override
+    public Thread.UncaughtExceptionHandler createExceptionHandler() {
+        return console.createExceptionHandler();
+    }
+
     private void setProfitWriterFile() {
         String fileName = "profit_" + pidString + ".csv";
         profitWriter.toFile(fileName);

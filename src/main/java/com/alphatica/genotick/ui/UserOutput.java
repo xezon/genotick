@@ -12,4 +12,6 @@ public interface UserOutput {
     void reportProfitForTimePoint(TimePoint timePoint, double cumulativeProfit, double timePointProfit);
 
     void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction);
+
+    Thread.UncaughtExceptionHandler createExceptionHandler();
 }

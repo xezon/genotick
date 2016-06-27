@@ -25,12 +25,12 @@ public class Main {
 
     public static void main(String... args) {
         setupDebug();
-        setupExceptionHandler();
         Parameters parameters = new Parameters(args);
         checkVersionRequest(parameters);
         checkShowPopulation(parameters);
         checkShowRobot(parameters);
         getUserIO(parameters);
+        setupExceptionHandler();
         checkReverse(parameters);
         checkYahoo(parameters);
         checkSimulation(parameters);
@@ -131,7 +131,7 @@ public class Main {
     }
 
     private static void setupExceptionHandler() {
-        Thread.setDefaultUncaughtExceptionHandler(Debug.createExceptionHandler());
+        Thread.setDefaultUncaughtExceptionHandler(output.createExceptionHandler());
     }
 
     private static void checkVersionRequest(Parameters parameters) {
