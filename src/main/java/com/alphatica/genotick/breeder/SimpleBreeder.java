@@ -25,8 +25,8 @@ public class SimpleBreeder implements RobotBreeder {
     public void breedPopulation(Population population, List<RobotInfo> robotInfos) {
         Debug.d("Breeding population");
         Debug.d("Current population size", population.getSize());
-        addRequiredRandomRobots(population);
         if(population.haveSpaceToBreed()) {
+            addRequiredRandomRobots(population);
             breedPopulationFromParents(population, robotInfos);
             addOptionalRandomRobots(population);
         }
