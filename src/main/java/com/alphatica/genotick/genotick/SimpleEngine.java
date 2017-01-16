@@ -1,6 +1,5 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.data.NoDataForTimePointException;
 import com.alphatica.genotick.population.RobotInfo;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
@@ -31,6 +30,7 @@ public class SimpleEngine implements Engine {
     private SimpleEngine() {
         profitRecorder = new ProfitRecorder();
     }
+
     public static Engine getEngine() {
         return new SimpleEngine();
     }
@@ -42,17 +42,17 @@ public class SimpleEngine implements Engine {
         initPopulation();
         TimePoint timePoint = new TimePoint(engineSettings.startTimePoint);
         List<TimePointStats> timePointStats = new ArrayList<>();
-        while(engineSettings.endTimePoint.compareTo(timePoint) >= 0) {
+        while (engineSettings.endTimePoint.compareTo(timePoint) >= 0) {
             TimePointStats stat = executeTimePoint(timePoint, output);
-            if(stat != null) {
+            if (stat != null) {
                 timePointStats.add(stat);
                 result *= (stat.getPercentEarned() / 100 + 1);
                 profitRecorder.recordProfit(stat.getPercentEarned());
-                output.reportProfitForTimePoint(timePoint,(result - 1) * 100, stat.getPercentEarned());
+                output.reportProfitForTimePoint(timePoint, (result - 1) * 100, stat.getPercentEarned());
             }
             timePoint = timePoint.next();
         }
-        if(engineSettings.performTraining) {
+        if (engineSettings.performTraining) {
             savePopulation(output);
         }
         showSummary(output);
@@ -69,7 +69,7 @@ public class SimpleEngine implements Engine {
     private void savePopulation(UserOutput output) {
         String dirName = getSavedPopulationDirName();
         File dirFile = new File(dirName);
-        if(!dirFile.exists() && !dirFile.mkdirs()) {
+        if (!dirFile.exists() && !dirFile.mkdirs()) {
             output.errorMessage("Unable to create directory " + dirName);
         } else {
             population.savePopulation(dirName);
@@ -96,47 +96,43 @@ public class SimpleEngine implements Engine {
     }
 
     private void initPopulation() {
-        if(population.getSize() == 0 && engineSettings.performTraining)
+        if (population.getSize() == 0 && engineSettings.performTraining)
             breeder.breedPopulation(population, timePointExecutor.getRobotInfos());
     }
 
     private TimePointStats executeTimePoint(TimePoint timePoint, UserOutput output) {
         List<RobotData> robotDataList = data.prepareRobotDataList(timePoint);
-        if(robotDataList.isEmpty())
+        if (robotDataList.isEmpty())
             return null;
         TimePointResult timePointResult = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
-        for(DataSetResult dataSetResult: timePointResult.listDataSetResults()) {
+        for (DataSetResult dataSetResult : timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
-            output.showPrediction(timePoint,dataSetResult.getName(),prediction);
-            tryUpdate(dataSetResult,timePoint,prediction,output,timePointStats);
+            output.showPrediction(timePoint, dataSetResult.getName(), prediction);
+            tryUpdate(dataSetResult, timePoint, prediction, output, timePointStats);
         }
-        if(engineSettings.performTraining) {
+        if (engineSettings.performTraining) {
             updatePopulation();
         }
         return timePointStats;
     }
 
     private void tryUpdate(DataSetResult dataSetResult, TimePoint timePoint, Prediction prediction, UserOutput output, TimePointStats timePointStats) {
-        try {
-            Double actualChange = data.getActualChange(dataSetResult.getName(),timePoint);
-            if(!actualChange.isNaN()) {
-                printPercentEarned(dataSetResult.getName(), actualChange, prediction,output);
-                if(!actualChange.isInfinite() && !actualChange.isNaN() && prediction != null) {
-                    timePointStats.update(dataSetResult.getName(), actualChange, prediction);
-                }
+        Double actualChange = data.getActualChange(dataSetResult.getName(), timePoint);
+        if (!actualChange.isNaN()) {
+            printPercentEarned(dataSetResult.getName(), actualChange, prediction, output);
+            if (!actualChange.isInfinite() && !actualChange.isNaN() && prediction != null) {
+                timePointStats.update(dataSetResult.getName(), actualChange, prediction);
             }
-        } catch (NoDataForTimePointException ex) {
-            /* Empty */
         }
     }
 
     private void printPercentEarned(DataSetName name, double actualChange, Prediction prediction, UserOutput output) {
         double percent;
-        if(prediction == Prediction.OUT) {
+        if (prediction == Prediction.OUT) {
             return;
         }
-        if(prediction.isCorrect(actualChange))
+        if (prediction.isCorrect(actualChange))
             percent = Math.abs(actualChange);
         else
             percent = -Math.abs(actualChange);
@@ -145,7 +141,7 @@ public class SimpleEngine implements Engine {
 
     private void updatePopulation() {
         List<RobotInfo> list = timePointExecutor.getRobotInfos();
-        killer.killRobots(population,list);
-        breeder.breedPopulation(population,list);
+        killer.killRobots(population, list);
+        breeder.breedPopulation(population, list);
     }
 }

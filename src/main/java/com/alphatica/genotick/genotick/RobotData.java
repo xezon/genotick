@@ -15,10 +15,6 @@ public class RobotData {
         return new RobotData(newData,name,actualChange);
     }
 
-    public static RobotData createData(List<double[]> newData, DataSetName name) {
-        return createData(newData, name, Double.NaN);
-    }
-
     public static RobotData createEmptyData(DataSetName name) {
         List<double []> list = new ArrayList<>();
         list.add(new double[0]);
