@@ -43,15 +43,15 @@ public class DataSet {
     }
 
 
-    public double calculateFutureChange(TimePoint timePoint) {
+    public Double calculateFutureChange(TimePoint timePoint) {
         int i = Arrays.binarySearch(timePoints,timePoint);
         if(i < 0)
-           throw NoDataForTimePointException.instance;
+           return Double.NaN;
         int startIndex = i + 1;
         int endIndex = startIndex + 1;
         double [] array = values.get(0);
         if(endIndex >= array.length)
-            throw NoDataForTimePointException.instance;
+            return Double.NaN;
         double startValue = array[startIndex];
         double endValue = array[endIndex];
         return 100.0 *(endValue - startValue) / startValue;
@@ -89,12 +89,8 @@ public class DataSet {
             double [] copy = copyReverseArray(original, i);
             list.add(copy);
         }
-        try {
-            Double futureChange = calculateFutureChange(timePoints[i]);
-            return RobotData.createData(list,name,futureChange);
-        } catch (NoDataForTimePointException ex) {
-            return RobotData.createEmptyData(name);
-        }
+        Double futureChange = calculateFutureChange(timePoints[i]);
+        return RobotData.createData(list, name, futureChange);
     }
 
     private double[] copyReverseArray(double[] original, int i) {
