@@ -1,7 +1,7 @@
 package com.alphatica.genotick.data;
 
-
-import com.alphatica.genotick.ui.*;
+import com.alphatica.genotick.ui.UserInputOutputFactory;
+import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,7 +39,9 @@ public class FileSystemDataLoader implements DataLoader {
 
     }
     private DataSet createDataSet(String name) {
-        try(BufferedReader br = new BufferedReader(new FileReader(new File(name)))) {
+        File file = new File(name);
+        dataFileSanityCheck(file);
+        try(BufferedReader br = new BufferedReader(new FileReader(file))) {
             List<Number []> lines = DataUtils.createLineList(br);
             output.infoMessage("Got " + lines.size() + " lines");
             return new DataSet(lines,name);
@@ -49,6 +51,12 @@ public class FileSystemDataLoader implements DataLoader {
             throw de;
         }
     }
+
+    private void dataFileSanityCheck(File file) {
+        if(!file.isFile()) {
+            String message = String.format("Unable to process file '%s' - not a file.", file.getName());
+            output.errorMessage(message);
+            throw new DataException(message);
+        }
+    }
 }
-
-
