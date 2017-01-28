@@ -44,7 +44,7 @@ public class SimpleEngine implements Engine {
         TimePoint timePoint = new TimePoint(engineSettings.startTimePoint);
         List<TimePointStats> timePointStats = new ArrayList<>();
         while (engineSettings.endTimePoint.compareTo(timePoint) >= 0) {
-            TimePointStats stat = executeTimePoint(timePoint, output);
+            TimePointStats stat = executeTimePoint(timePoint);
             if (stat != null) {
                 timePointStats.add(stat);
                 result *= (stat.getPercentEarned() / 100 + 1);
@@ -101,7 +101,7 @@ public class SimpleEngine implements Engine {
             breeder.breedPopulation(population, timePointExecutor.getRobotInfos());
     }
 
-    private TimePointStats executeTimePoint(TimePoint timePoint, UserOutput output) {
+    private TimePointStats executeTimePoint(TimePoint timePoint) {
         List<RobotData> robotDataList = data.prepareRobotDataList(timePoint);
         if (robotDataList.isEmpty())
             return null;
@@ -110,7 +110,7 @@ public class SimpleEngine implements Engine {
         for (DataSetResult dataSetResult : timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
             output.showPrediction(timePoint, dataSetResult.getName(), prediction);
-            tryUpdate(dataSetResult, timePoint, prediction, output, timePointStats);
+            tryUpdate(dataSetResult, timePoint, prediction, timePointStats);
         }
         if (engineSettings.performTraining) {
             updatePopulation();
@@ -118,17 +118,17 @@ public class SimpleEngine implements Engine {
         return timePointStats;
     }
 
-    private void tryUpdate(DataSetResult dataSetResult, TimePoint timePoint, Prediction prediction, UserOutput output, TimePointStats timePointStats) {
+    private void tryUpdate(DataSetResult dataSetResult, TimePoint timePoint, Prediction prediction, TimePointStats timePointStats) {
         Double actualChange = data.getActualChange(dataSetResult.getName(), timePoint);
         if (!actualChange.isNaN()) {
-            printPercentEarned(dataSetResult.getName(), actualChange, prediction, output);
+            printPercentEarned(dataSetResult.getName(), actualChange, prediction);
             if (!actualChange.isInfinite() && !actualChange.isNaN() && prediction != null) {
                 timePointStats.update(dataSetResult.getName(), actualChange, prediction);
             }
         }
     }
 
-    private void printPercentEarned(DataSetName name, double actualChange, Prediction prediction, UserOutput output) {
+    private void printPercentEarned(DataSetName name, double actualChange, Prediction prediction) {
         double percent;
         if (prediction == Prediction.OUT) {
             return;
