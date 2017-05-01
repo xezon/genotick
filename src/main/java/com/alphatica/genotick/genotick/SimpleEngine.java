@@ -48,7 +48,7 @@ public class SimpleEngine implements Engine {
             if (stat != null) {
                 timePointStats.add(stat);
                 result *= (stat.getPercentEarned() / 100 + 1);
-                profitRecorder.recordProfit(stat.getPercentEarned());
+                profitRecorder.recordProfit(stat);
                 output.reportProfitForTimePoint(timePoint, (result - 1) * 100, stat.getPercentEarned());
             }
             timePoint = timePoint.next();
@@ -61,6 +61,7 @@ public class SimpleEngine implements Engine {
     }
 
     private void showSummary(UserOutput output) {
+        profitRecorder.showPercentCorrectPredictions(data.listSets());
         output.infoMessage("Total: Profit: " + profitRecorder.getProfit() + " Drawdown: " + profitRecorder.getMaxDrawdown()
                 + " Profit / DD: " + profitRecorder.getProfit() / profitRecorder.getMaxDrawdown());
         output.infoMessage("Second Half: Profit: " + profitRecorder.getProfitSecondHalf() + " Drawdown: " + profitRecorder.getMaxDrawdownSecondHalf()

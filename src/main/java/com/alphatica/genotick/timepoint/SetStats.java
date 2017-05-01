@@ -9,8 +9,10 @@ public class SetStats implements Serializable{
     private static final long serialVersionUID = 4443286273783452188L;
     private double totalPercentPredicted;
     private double totalPercentMispredicted;
+    private Outcome outcome = Outcome.OUT;
 
-    public SetStats() {
+    public Outcome getOutcome() {
+        return outcome;
     }
 
     /**
@@ -19,14 +21,15 @@ public class SetStats implements Serializable{
      * @param actualFutureChange actual change of data in the future
      * @param prediction         predicted direction (up for positive values, down for negative)
      */
-    public void update(Double actualFutureChange, Prediction prediction) {
-        Outcome outcome = Outcome.getOutcome(prediction, actualFutureChange);
-        switch (outcome) {
+    void update(Double actualFutureChange, Prediction prediction) {
+        switch (Outcome.getOutcome(prediction, actualFutureChange)) {
             case CORRECT:
                 totalPercentPredicted += Math.abs(actualFutureChange);
+                outcome = Outcome.CORRECT;
                 break;
             case INCORRECT:
                 totalPercentMispredicted += Math.abs(actualFutureChange);
+                outcome = Outcome.INCORRECT;
                 break;
         }
     }
@@ -39,4 +42,5 @@ public class SetStats implements Serializable{
     public double getTotalPercent() {
         return totalPercentPredicted - totalPercentMispredicted;
     }
+
 }

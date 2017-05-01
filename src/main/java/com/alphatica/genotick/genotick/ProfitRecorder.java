@@ -1,16 +1,30 @@
 package com.alphatica.genotick.genotick;
 
+import com.alphatica.genotick.data.DataSet;
+import com.alphatica.genotick.data.DataSetName;
+import com.alphatica.genotick.timepoint.SetStats;
+import com.alphatica.genotick.timepoint.TimePointStats;
+import com.alphatica.genotick.ui.UserInputOutputFactory;
+
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 
 class ProfitRecorder {
     private final List<Double> profits = new ArrayList<>();
+    private final Map<DataSetName, Integer> correctPredictions = new HashMap<>();
+    private final Map<DataSetName, Integer> inCorrectPredictions = new HashMap<>();
 
-    public double getProfit() {
+    double getProfit() {
         return calculateProfit(profits);
     }
 
-    public double getProfitSecondHalf() {
+    double getProfitSecondHalf() {
         return calculateProfit(getSecondHalf(profits));
     }
 
@@ -19,11 +33,11 @@ class ProfitRecorder {
         return profits.subList(halfIndex,profits.size());
     }
 
-    public double getMaxDrawdown() {
+    double getMaxDrawdown() {
         return calculateMaxDrawdown(profits);
     }
 
-    public double getMaxDrawdownSecondHalf() {
+    double getMaxDrawdownSecondHalf() {
         return calculateMaxDrawdown(getSecondHalf(profits));
     }
 
@@ -56,8 +70,37 @@ class ProfitRecorder {
         return maxDrawdown;
     }
 
-    public void recordProfit(double percentEarned) {
-        profits.add(percentEarned);
+    void recordProfit(TimePointStats stats) {
+        profits.add(stats.getPercentEarned());
+        stats.listSets().forEach(this::recordProfitForDataSet);
+    }
 
+    private void recordProfitForDataSet(Map.Entry<DataSetName, SetStats> entry) {
+        if(entry.getValue().getOutcome() == Outcome.CORRECT) {
+            Integer count = correctPredictions.computeIfAbsent(entry.getKey(), z -> 0);
+            count++;
+            correctPredictions.put(entry.getKey(), count);
+        }
+        if(entry.getValue().getOutcome() == Outcome.INCORRECT) {
+            Integer count = inCorrectPredictions.computeIfAbsent(entry.getKey(), z -> 0);
+            count++;
+            inCorrectPredictions.put(entry.getKey(), count);
+        }
+    }
+
+    void showPercentCorrectPredictions(Collection<DataSet> dataSets) {
+        dataSets.forEach(this::showPercentCorrectPredictions);
+    }
+
+    private void showPercentCorrectPredictions(DataSet dataSet) {
+        int correct = ofNullable(correctPredictions.get(dataSet.getName())).orElse(0);
+        int incorrect = ofNullable(inCorrectPredictions.get(dataSet.getName())).orElse(0);
+        if(correct + incorrect > 0) {
+            double percentCorrect = (double) correct / (correct + incorrect);
+            UserInputOutputFactory.getUserOutput()
+                    .infoMessage(format("Percent correct for %s: %f %%", dataSet.getName().getName(), percentCorrect));
+        } else {
+            System.out.println("Zero for " + dataSet.getName().getName());
+        }
     }
 }
