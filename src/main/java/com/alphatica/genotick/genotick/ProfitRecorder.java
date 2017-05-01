@@ -2,7 +2,7 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
-import com.alphatica.genotick.timepoint.SetStats;
+import com.alphatica.genotick.timepoint.SetResult;
 import com.alphatica.genotick.timepoint.TimePointStats;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 
@@ -75,7 +75,7 @@ class ProfitRecorder {
         stats.listSets().forEach(this::recordProfitForDataSet);
     }
 
-    private void recordProfitForDataSet(Map.Entry<DataSetName, SetStats> entry) {
+    private void recordProfitForDataSet(Map.Entry<DataSetName, SetResult> entry) {
         if(entry.getValue().getOutcome() == Outcome.CORRECT) {
             Integer count = correctPredictions.computeIfAbsent(entry.getKey(), z -> 0);
             count++;
@@ -99,8 +99,6 @@ class ProfitRecorder {
             double percentCorrect = (double) correct / (correct + incorrect);
             UserInputOutputFactory.getUserOutput()
                     .infoMessage(format("Percent correct for %s: %f %%", dataSet.getName().getName(), percentCorrect));
-        } else {
-            System.out.println("Zero for " + dataSet.getName().getName());
         }
     }
 }

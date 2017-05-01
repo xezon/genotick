@@ -11,15 +11,15 @@ import java.util.Set;
 public class TimePointStats implements Serializable {
 
     private static final long serialVersionUID = -5355094455686373969L;
-    private final HashMap<DataSetName, SetStats> stats;
+    private final HashMap<DataSetName, SetResult> stats;
     private final TimePoint timePoint;
 
     public double getPercentEarned() {
         if(stats.isEmpty())
             return 0;
         double percent = 0;
-        for(SetStats setStats: stats.values()) {
-            percent += setStats.getTotalPercent();
+        for(SetResult setResult : stats.values()) {
+            percent += setResult.getProfit();
         }
         return percent / stats.size();
     }
@@ -39,17 +39,17 @@ public class TimePointStats implements Serializable {
     }
 
     public void update(DataSetName setName, double actualFutureChange, Prediction prediction) {
-        SetStats stats = getSetStats(setName);
+        SetResult stats = getSetStats(setName);
         stats.update(actualFutureChange,prediction);
     }
 
-    public Set<Map.Entry<DataSetName, SetStats>> listSets() {
+    public Set<Map.Entry<DataSetName, SetResult>> listSets() {
         return stats.entrySet();
     }
-    private SetStats getSetStats(DataSetName setName) {
-        SetStats stat = stats.get(setName);
+    private SetResult getSetStats(DataSetName setName) {
+        SetResult stat = stats.get(setName);
         if(stat == null) {
-            stat = new SetStats();
+            stat = new SetResult();
             stats.put(setName,stat);
         }
         return stat;
@@ -60,12 +60,12 @@ public class TimePointStats implements Serializable {
         sb.append("Stats for time point: ");
         sb.append(timePoint.toString());
         sb.append(System.lineSeparator());
-        for(Map.Entry<DataSetName,SetStats> entry: stats.entrySet()) {
+        for(Map.Entry<DataSetName,SetResult> entry: stats.entrySet()) {
             appendStats(sb,entry);
         }
         double percentPredicted = 0;
-        for(Map.Entry<DataSetName, SetStats> entry: stats.entrySet()) {
-            percentPredicted += entry.getValue().getTotalPercent();
+        for(Map.Entry<DataSetName, SetResult> entry: stats.entrySet()) {
+            percentPredicted += entry.getValue().getProfit();
         }
         sb.append("Total percent predicted: ");
         sb.append(percentPredicted);
@@ -73,7 +73,7 @@ public class TimePointStats implements Serializable {
         return sb.toString();
     }
 
-    private void appendStats(StringBuilder sb, Map.Entry<DataSetName, SetStats> entry) {
+    private void appendStats(StringBuilder sb, Map.Entry<DataSetName, SetResult> entry) {
         sb.append("Data set: ");
         sb.append(entry.getKey().toString());
         sb.append(" ");

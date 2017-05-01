@@ -1,7 +1,7 @@
 package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.data.DataSetName;
-import com.alphatica.genotick.timepoint.SetStats;
+import com.alphatica.genotick.timepoint.SetResult;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointExecutorFactory;
 import com.alphatica.genotick.timepoint.TimePointStats;
@@ -144,17 +144,17 @@ public class Simulation {
     }
 
     private void recordSetsProfit(TimePointStats stats, Map<DataSetName, Double> statsResults) {
-        for(Map.Entry<DataSetName,SetStats> entry: stats.listSets()) {
+        for(Map.Entry<DataSetName,SetResult> entry: stats.listSets()) {
             recordProfit(entry.getKey(),entry.getValue(),statsResults);
         }
     }
 
-    private void recordProfit(DataSetName name, SetStats setStats, Map<DataSetName, Double> statsResults) {
+    private void recordProfit(DataSetName name, SetResult setResult, Map<DataSetName, Double> statsResults) {
         Double soFar = statsResults.get(name);
         if(soFar == null) {
             soFar = 0.0;
         }
-        soFar += setStats.getTotalPercent();
+        soFar += setResult.getProfit();
         statsResults.put(name,soFar);
     }
 
