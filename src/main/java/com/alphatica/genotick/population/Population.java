@@ -29,4 +29,5 @@ public interface Population {
 
     RobotName[] listRobotsNames();
 
+    double getAverageWeight();
 }

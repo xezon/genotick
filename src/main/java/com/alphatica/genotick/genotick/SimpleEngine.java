@@ -115,21 +115,26 @@ public class SimpleEngine implements Engine {
         }
         if (engineSettings.performTraining) {
             updatePopulation();
+            showAverageRobotWeight();
         }
         return timePointStats;
+    }
+
+    private void showAverageRobotWeight() {
+        output.infoMessage("Average weight: " + String.valueOf(population.getAverageWeight()));
     }
 
     private void tryUpdate(DataSetResult dataSetResult, TimePoint timePoint, Prediction prediction, TimePointStats timePointStats) {
         Double actualChange = data.getActualChange(dataSetResult.getName(), timePoint);
         if (!actualChange.isNaN()) {
-            printPercentEarned(dataSetResult.getName(), actualChange, prediction);
+            printPercentEarned(timePoint, dataSetResult.getName(), actualChange, prediction);
             if (!actualChange.isInfinite() && !actualChange.isNaN() && prediction != null) {
                 timePointStats.update(dataSetResult.getName(), actualChange, prediction);
             }
         }
     }
 
-    private void printPercentEarned(DataSetName name, double actualChange, Prediction prediction) {
+    private void printPercentEarned(TimePoint timepoint, DataSetName name, double actualChange, Prediction prediction) {
         double percent;
         if (prediction == Prediction.OUT) {
             return;
@@ -138,7 +143,7 @@ public class SimpleEngine implements Engine {
             percent = Math.abs(actualChange);
         else
             percent = -Math.abs(actualChange);
-        output.infoMessage("Profit for " + name + " " + percent);
+        output.infoMessage(timepoint.getValue() + " Profit for " + name + " " + percent);
     }
 
     private void updatePopulation() {
