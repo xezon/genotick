@@ -57,12 +57,12 @@ public class CsvOutput implements UserOutput {
     }
 
 	@Override
-	public void setDebug(Boolean debug) {
-		this.debug = debug;		
+	public void setDebugEnabled(Boolean debugEnabled) {
+		this.debug = debugEnabled;
 	}
 
 	@Override
-	public Boolean getDebug() {		
+	public Boolean getDebugEnabled() {
 		return this.debug;
 	}
 

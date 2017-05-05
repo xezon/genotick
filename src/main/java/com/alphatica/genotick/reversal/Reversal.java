@@ -12,6 +12,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static java.lang.String.format;
+
 public class Reversal {
     private final String reverseValue;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
@@ -129,6 +131,7 @@ public class Reversal {
                 bw.write(row + "\n");
             }
         } catch (IOException e) {
+            UserInputOutputFactory.getUserOutput().errorMessage(format("Exception while reversing file: %s", e.getMessage()));
             e.printStackTrace();
         }
     }

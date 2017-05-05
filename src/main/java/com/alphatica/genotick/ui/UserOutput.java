@@ -6,9 +6,9 @@ import com.alphatica.genotick.timepoint.TimePoint;
 
 public interface UserOutput {
 	
-	void setDebug(Boolean debug);
+	void setDebugEnabled(Boolean debugEnabled);
 	
-	Boolean getDebug();	
+	Boolean getDebugEnabled();
 	
     void errorMessage(String message);
 
