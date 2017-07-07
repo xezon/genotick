@@ -28,7 +28,6 @@ public class YahooFixer {
     private void fixFile(String name) {
         output.infoMessage("Fixing file: " + name);
         List<Number[]> originalList = buildOriginalList(name);
-        Collections.reverse(originalList);
         List<List<Number>> newList = fixList(originalList);
         saveListToFile(newList,name);
     }
