@@ -123,6 +123,7 @@ public class Simulation {
         engineSettings.endTimePoint = settings.endTimePoint;
         engineSettings.performTraining = settings.performTraining;
         engineSettings.resultThreshold = settings.resultThreshold;
+        engineSettings.requireSymmetrical = settings.requireSymmetricalRobots;
         return engineSettings;
     }
 

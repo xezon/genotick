@@ -47,11 +47,6 @@ public class CsvOutput implements UserOutput {
     }
 
     @Override
-    public Thread.UncaughtExceptionHandler createExceptionHandler() {
-        return console.createExceptionHandler();
-    }
-
-    @Override
     public void infoMessage(String s) {
         console.infoMessage(s);
     }

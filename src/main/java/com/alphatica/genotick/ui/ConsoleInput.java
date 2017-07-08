@@ -30,6 +30,7 @@ class ConsoleInput extends BasicUserInput {
         settings.populationDAO = getString("Population storage", settings.populationDAO);
         settings.processorInstructionLimit = getInteger("Processor instruction limit", settings.processorInstructionLimit);
         settings.resultThreshold = getDouble("Result threshold",settings.resultThreshold);
+        settings.requireSymmetricalRobots = getBoolean("Require symmetrical robots", settings.requireSymmetricalRobots);
         if (settings.performTraining) {
             settings.dataMaximumOffset = getInteger("Data maximum offset", settings.dataMaximumOffset);
             settings.populationDesiredSize = getInteger("Population desired size", settings.populationDesiredSize);
@@ -49,7 +50,6 @@ class ConsoleInput extends BasicUserInput {
             settings.killNonPredictingRobots = getBoolean("Kill non-predicting robots", settings.killNonPredictingRobots);
             settings.randomRobotsAtEachUpdate = getDouble("Random robots at each update", settings.randomRobotsAtEachUpdate);
             settings.protectBestRobots = getDouble("Protect best robots", settings.protectBestRobots);
-            settings.requireSymmetricalRobots = getBoolean("Require symmetrical robots", settings.requireSymmetricalRobots);
             settings.ignoreColumns = getInteger("Ignore columns for training",settings.ignoreColumns);
         }
         return settings;

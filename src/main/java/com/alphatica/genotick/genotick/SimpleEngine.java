@@ -106,7 +106,7 @@ public class SimpleEngine implements Engine {
         List<RobotData> robotDataList = data.prepareRobotDataList(timePoint);
         if (robotDataList.isEmpty())
             return null;
-        TimePointResult timePointResult = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining);
+        TimePointResult timePointResult = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining, engineSettings.requireSymmetrical);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for (DataSetResult dataSetResult : timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);

@@ -44,17 +44,6 @@ class ConsoleOutput implements UserOutput {
     }
 
     @Override
-    public Thread.UncaughtExceptionHandler createExceptionHandler() {
-        return (thread, throwable) -> {
-            log("Exception in thread: " + thread.getName());
-            for(StackTraceElement element: throwable.getStackTrace()) {
-                log(element.toString());
-            }
-            throw new ExecutionException("Exiting due to exception", throwable);
-        };
-    }
-
-    @Override
     public void infoMessage(String s) {
         log(s);
     }

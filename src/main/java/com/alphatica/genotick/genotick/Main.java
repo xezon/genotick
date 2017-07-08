@@ -30,7 +30,6 @@ public class Main {
         checkShowPopulation(parameters);
         checkShowRobot(parameters);
         getUserIO(parameters);
-        setupExceptionHandler();
         checkReverse(parameters);
         checkYahoo(parameters);
         checkSimulation(parameters);
@@ -132,10 +131,6 @@ public class Main {
         return sb.toString();
     }
 
-    private static void setupExceptionHandler() {
-        Thread.setDefaultUncaughtExceptionHandler(output.createExceptionHandler());
-    }
-
     private static void checkVersionRequest(Parameters parameters) {
         if(parameters.getValue("showVersion") != null) {
             System.out.println(Main.VERSION);
@@ -148,19 +143,19 @@ public class Main {
         		|| parameters.getValue("--help") != null
         		|| parameters.getValue("-h") != null) {
         	System.out.print("Displaying version: ");
-        	System.out.println("	java -jar Genotick-version.jar showVersion");
+        	System.out.println("	java -jar genotick.jar showVersion");
         	System.out.print("Reversing data: ");
-        	System.out.println("	java -jar Genotick-version.jar reverse=mydata");
+        	System.out.println("	java -jar genotick.jar reverse=mydata");
         	System.out.print("Inputs from a file: ");
-        	System.out.println("	java -jar Genotick-version.jar input=file:path\\to\\file");
+        	System.out.println("	java -jar genotick.jar input=file:path\\to\\file");
         	System.out.print("Output to a file: ");
-        	System.out.println("	java -jar Genotick-version.jar output=csv");
+        	System.out.println("	java -jar genotick.jar output=csv");
         	System.out.print("Output to a file: ");
-        	System.out.println("	java -jar Genotick-version.jar output=csv");
+        	System.out.println("	java -jar genotick.jar output=csv");
         	System.out.print("show population: ");
-        	System.out.println("	java -jar Genotick.jar showPopulation=directory_with_population");
+        	System.out.println("	java -jar genotick.jar showPopulation=directory_with_population");
         	System.out.print("show robot info: ");
-        	System.out.println("	java -jar Genotick.jar showRobot=directory_with_population\\system name.prg");
+        	System.out.println("	java -jar genotick.jar showRobot=directory_with_population\\system name.prg");
         	System.out.println("contact: 		lukasz.wojtow@gmail.com");
         	System.out.println("more info: 		genotick.com");       	
 
