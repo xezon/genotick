@@ -51,7 +51,10 @@ public class SimpleEngine implements Engine {
                 profitRecorder.recordProfit(stat);
                 output.reportProfitForTimePoint(timePoint, (result - 1) * 100, stat.getPercentEarned());
             }
-            timePoint = timePoint.next();
+            timePoint = data.getNextTimePint(timePoint);
+            if(timePoint == null) {
+                break;
+            }
         }
         if (engineSettings.performTraining) {
             savePopulation(output);

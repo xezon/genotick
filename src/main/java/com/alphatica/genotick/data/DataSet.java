@@ -136,4 +136,8 @@ public class DataSet {
     public int hashCode() {
         return name.hashCode();
     }
+
+    List<TimePoint> getTimePoints() {
+        return Arrays.asList(timePoints);
+    }
 }
