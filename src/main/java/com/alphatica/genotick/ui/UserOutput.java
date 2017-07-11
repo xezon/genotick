@@ -20,5 +20,7 @@ public interface UserOutput {
 
     void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction);
 
+    void showCumulativeProfit(TimePoint timePoint, DataSetName name, double profit);
+
     void infoMessage(String s);
 }

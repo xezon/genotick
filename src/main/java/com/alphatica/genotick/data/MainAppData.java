@@ -10,16 +10,26 @@ import static java.util.Collections.binarySearch;
 
 public class MainAppData {
     private final Map<DataSetName, DataSet> sets;
+    private final Map<DataSetName, Double> profits;
 
     private final List<TimePoint> timePoints;
 
     public MainAppData() {
         sets = new HashMap<>();
         timePoints = new ArrayList<>();
+        profits = new HashMap<>();
+    }
+
+    public double recordProfit(DataSetName setName, double profit) {
+        double totalProfit = profits.get(setName);
+        totalProfit *= (profit / 100.0) + 1;
+        profits.put(setName, totalProfit);
+        return totalProfit;
     }
 
     public void addDataSet(DataSet set) {
         sets.put(set.getName(), set);
+        profits.put(set.getName(), 1.0);
         updateTimePoints(set.getTimePoints());
     }
 

@@ -28,9 +28,9 @@ public class FileSystemDataLoader implements DataLoader {
         if(names == null) {
             throw new DataException("Unable to list files");
         }
-        for (String name : names) {
-            output.infoMessage("Reading file " + name);
-            data.addDataSet(createDataSet(name));
+        for (String fileName : names) {
+            output.infoMessage("Reading file " + fileName);
+            data.addDataSet(createDataSet(fileName));
         }
         if(data.isEmpty()) {
             throw new DataException("No files to read!");
@@ -38,15 +38,15 @@ public class FileSystemDataLoader implements DataLoader {
         return data;
 
     }
-    private DataSet createDataSet(String name) {
-        File file = new File(name);
+    private DataSet createDataSet(String fileName) {
+        File file = new File(fileName);
         dataFileSanityCheck(file);
         try(BufferedReader br = new BufferedReader(new FileReader(file))) {
             List<Number []> lines = DataUtils.createLineList(br);
             output.infoMessage("Got " + lines.size() + " lines");
-            return new DataSet(lines,name);
+            return new DataSet(lines, fileName);
         } catch (IOException  | DataException e) {
-            DataException de = new DataException("Unable to process file: " + name);
+            DataException de = new DataException("Unable to process file: " + fileName);
             de.initCause(e);
             throw de;
         }

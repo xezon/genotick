@@ -130,8 +130,10 @@ public class SimpleEngine implements Engine {
     private void tryUpdate(DataSetResult dataSetResult, TimePoint timePoint, Prediction prediction, TimePointStats timePointStats) {
         Double actualChange = data.getActualChange(dataSetResult.getName(), timePoint);
         if (!actualChange.isNaN()) {
+            double totalProfit = data.recordProfit(dataSetResult.getName(), prediction.toProfit(actualChange));
+            output.showCumulativeProfit(timePoint, dataSetResult.getName(), totalProfit);
             printPercentEarned(timePoint, dataSetResult.getName(), actualChange, prediction);
-            if (!actualChange.isInfinite() && !actualChange.isNaN() && prediction != null) {
+            if (!actualChange.isInfinite() && !actualChange.isNaN()) {
                 timePointStats.update(dataSetResult.getName(), actualChange, prediction);
             }
         }

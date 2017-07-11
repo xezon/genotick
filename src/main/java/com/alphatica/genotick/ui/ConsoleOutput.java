@@ -10,8 +10,6 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static java.lang.String.format;
 
@@ -41,6 +39,11 @@ class ConsoleOutput implements UserOutput {
     public void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction) {
         log(format("%s prediction on %s for the next trade: %s",
                 name.toString(),timePoint.toString(),prediction.toString()));
+    }
+
+    @Override
+    public void showCumulativeProfit(TimePoint timePoint, DataSetName name, double profit) {
+        log(format("Cumulative profit for %s: %d", name.getName(), profit));
     }
 
     @Override
