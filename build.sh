@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 set -e
 
-rm -Rf genotick-log-*.txt
-rm -Rf savedPopulation_*
-rm -Rf dist
-mkdir dist
+rm -Rf genotick
+mkdir genotick
 mvn clean package
 export JAR=`ls target/genotick-*-jar-with-dependencies.jar`
-cp ${JAR} dist/genotick.jar
-java -jar ${JAR} input=default
-cp -a data dist
-cp LICENSE.txt dist
-cp genotick-log-*.txt dist/genotick.log
-cp -a savedPopulation_* dist/savedPopulation
+cp ${JAR} genotick/genotick.jar
+cp -a data genotick
+cp LICENSE.txt genotick
+cp genotick-log-*.txt genotick/genotick.log
+cp exampleConfigFile.txt genotick/
+cp -a savedPopulation_* genotick/savedPopulation
+zip -r genotick.zip genotick
