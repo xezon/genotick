@@ -117,14 +117,6 @@ public class DataSet {
         return line;
     }
 
-    public TimePoint getFirstTimePoint() {
-        return timePoints[0];
-    }
-
-    public TimePoint getLastTimePoint() {
-        return timePoints[timePoints.length -1];
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -57,7 +57,7 @@ public class Reversal {
     }
 
     private static String getReverseFileName(DataSetName name) {
-        Path full = Paths.get(name.getName());
+        Path full = Paths.get(name.getPath());
         Path parent = full.getParent();
         String newName = "reverse_" + full.getFileName().toString();
         return Paths.get(parent.toString(), newName).toString();
