@@ -28,7 +28,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         RobotName[] names = new RobotName[files.length];
         for(int i = 0; i < files.length; i++) {
             String longString = files[i].substring(0,files[i].indexOf('.'));
-            names[i] = new RobotName(Long.valueOf(longString));
+            names[i] = new RobotName(Long.parseLong(longString));
         }
         return names;
     }
@@ -43,7 +43,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     public Iterable<Robot> getRobotList() {
         return new Iterable<Robot>() {
             class ListAvailableRobots implements Iterator<Robot> {
-                final private List<RobotName> names;
+                private final List<RobotName> names;
                 int index = 0;
                 ListAvailableRobots() {
                     names = getAllRobotsNames();
