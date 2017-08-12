@@ -11,4 +11,5 @@ cp LICENSE.txt genotick
 cp genotick-log-*.txt genotick/genotick.log
 cp exampleConfigFile.txt genotick/
 cp -a savedPopulation_* genotick/savedPopulation
+rm -Rf genotick.zip
 zip -r genotick.zip genotick
