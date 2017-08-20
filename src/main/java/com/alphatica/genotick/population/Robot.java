@@ -57,22 +57,13 @@ public class Robot implements Serializable {
     }
 
     public void recordPrediction(Prediction prediction) {
-        if(prediction == Prediction.DOWN)
-            bias--;
-        else if(prediction == Prediction.UP)
-            bias++;
+        bias += prediction.getValue();
     }
 
     public void recordOutcomes(List<Outcome> outcomes) {
-        for(Outcome outcome: outcomes) {
-            totalOutcomes++;
-            if(outcome == Outcome.OUT) {
-                continue;
-            }
-            totalPredictions++;
-            if(outcome == Outcome.CORRECT)
-                correctPredictions++;
-        }
+        totalOutcomes += outcomes.size();
+        totalPredictions += outcomes.parallelStream().filter(o -> o != Outcome.OUT).count();
+        correctPredictions += outcomes.parallelStream().filter(o -> o == Outcome.CORRECT).count();
     }
 
     public InstructionList getMainFunction() {

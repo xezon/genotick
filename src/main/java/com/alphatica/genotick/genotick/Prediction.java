@@ -4,9 +4,9 @@ public enum Prediction {
     UP(1),
     DOWN(-1),
     OUT(0);
-    private final double value;
+    private final int value;
 
-    Prediction(double value) {
+    Prediction(int value) {
         this.value = value;
     }
     public static Prediction getPrediction(double change) {
@@ -15,6 +15,10 @@ public enum Prediction {
         if(change < 0)
             return Prediction.DOWN;
         return Prediction.OUT;
+    }
+
+    public int getValue() {
+        return value;
     }
 
     public double toProfit(double actualChange) {
