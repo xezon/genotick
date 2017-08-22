@@ -68,12 +68,16 @@ public class DataSet {
 
     private void fillFirstNumberAsTimePoint(int lineNumber, Number [] line) {
         TimePoint timePoint = new TimePoint(line[0].longValue());
+        validateTimePoint(lineNumber, timePoint);
+        timePoints[lineNumber - 1] = timePoint;
+    }
+
+    private void validateTimePoint(int lineNumber, TimePoint timePoint) {
         // Arrays start indexing from 0, but humans count text lines starting from 1.
         // New timePoint will be assigned to index = lineNumber -1, so
         // we have to check what happened two lines ago!
         if(lineNumber >= 2 &&  timePoint.compareTo(timePoints[lineNumber - 2]) <= 0)
             throw new DataException("Time (first number) is equal or less than previous. Line: " + lineNumber);
-        timePoints[lineNumber - 1] = timePoint;
     }
 
     private void checkNumberOfFieldsInLine(int lineNumber, Number [] line, int firstLineCount) {

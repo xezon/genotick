@@ -21,6 +21,10 @@ public class RobotData {
         return createData(list,name,Double.NaN);
     }
 
+    public double getTodaysOpen() {
+        return data.get(0)[0];
+    }
+
     private RobotData(List<double[]> newData, DataSetName name, double actualChange) {
         data = newData;
         this.name = name;

@@ -1,6 +1,8 @@
 package com.alphatica.genotick.genotick;
 
+import com.alphatica.genotick.account.Account;
 import com.alphatica.genotick.breeder.RobotBreeder;
+import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.killer.RobotKiller;
@@ -14,8 +16,12 @@ import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class SimpleEngine implements Engine {
@@ -27,6 +33,7 @@ public class SimpleEngine implements Engine {
     private MainAppData data;
     private final ProfitRecorder profitRecorder;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
+    private final Account account = new Account();
 
     private SimpleEngine() {
         profitRecorder = new ProfitRecorder();
@@ -59,6 +66,8 @@ public class SimpleEngine implements Engine {
         if (engineSettings.performTraining) {
             savePopulation(output);
         }
+        BigDecimal accountValue = account.closeAccount();
+        System.out.println("Account value: " + accountValue.toPlainString());
         showSummary(output);
         return timePointStats;
     }
@@ -109,10 +118,13 @@ public class SimpleEngine implements Engine {
         List<RobotData> robotDataList = data.prepareRobotDataList(timePoint);
         if (robotDataList.isEmpty())
             return null;
+        account.closeTrades(toPricesMap(robotDataList));
+        account.openTrades(toPricesMap(robotDataList));
         TimePointResult timePointResult = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining, engineSettings.requireSymmetrical);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for (DataSetResult dataSetResult : timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
+            account.addPendingOrder(dataSetResult.getName(), prediction);
             output.showPrediction(timePoint, dataSetResult.getName(), prediction);
             tryUpdate(dataSetResult, timePoint, prediction, timePointStats);
         }
@@ -121,6 +133,10 @@ public class SimpleEngine implements Engine {
             showAverageRobotWeight();
         }
         return timePointStats;
+    }
+
+    private Map<DataSetName, Double> toPricesMap(List<RobotData> robotDataList) {
+        return robotDataList.stream().collect(Collectors.toMap(RobotData::getName, RobotData::getTodaysOpen));
     }
 
     private void showAverageRobotWeight() {
