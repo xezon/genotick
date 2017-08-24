@@ -30,6 +30,22 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.2.2</version>
+                <configuration>
+                    <targetClasses>
+                        <param>com.alphatica.genotick.account.Account</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>com.alphatica.genotick.account.AccountTest</param>
+                    </targetTests>
+                    <mutators>
+                        <mutator>ALL</mutator>
+                    </mutators>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>
