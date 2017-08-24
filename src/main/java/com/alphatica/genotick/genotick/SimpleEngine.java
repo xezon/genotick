@@ -6,6 +6,7 @@ import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.killer.RobotKiller;
 import com.alphatica.genotick.population.Population;
+import com.alphatica.genotick.population.Robot;
 import com.alphatica.genotick.population.RobotInfo;
 import com.alphatica.genotick.population.RobotName;
 import com.alphatica.genotick.timepoint.TimePoint;
@@ -18,6 +19,7 @@ import com.alphatica.genotick.ui.UserOutput;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -109,17 +111,19 @@ public class SimpleEngine implements Engine {
     }
 
     private void initPopulation() {
-        if (population.getSize() == 0 && engineSettings.performTraining)
+        if (population.getSize() == 0 && engineSettings.performTraining) {
             breeder.breedPopulation(population, timePointExecutor.getRobotInfos());
+        }
     }
 
     private TimePointStats executeTimePoint(TimePoint timePoint) {
         List<RobotData> robotDataList = data.prepareRobotDataList(timePoint);
         if (robotDataList.isEmpty())
             return null;
-        account.closeTrades(toPricesMap(robotDataList));
-        account.openTrades(toPricesMap(robotDataList));
+        updateAccount(robotDataList);
+        recordMarketChangesInRobots(robotDataList);
         Map<RobotName, List<RobotResult>> map = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining, engineSettings.requireSymmetrical);
+        recordRobotsPredictions(map);
         TimePointResult timePointResult = getTimePointResult(map);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for (DataSetResult dataSetResult : timePointResult.listDataSetResults()) {
@@ -128,11 +132,41 @@ public class SimpleEngine implements Engine {
             output.showPrediction(timePoint, dataSetResult.getName(), prediction);
             tryUpdate(dataSetResult, timePoint, prediction, timePointStats);
         }
+        checkTraining();
+        return timePointStats;
+    }
+
+    private void recordRobotsPredictions(Map<RobotName, List<RobotResult>> map) {
+        if(engineSettings.performTraining) {
+            map.keySet().forEach(name -> {
+                Robot robot = population.getRobot(name);
+                map.get(name).forEach(robot::recordPredictonNew);
+                population.saveRobot(robot);
+            });
+        }
+    }
+
+    private void checkTraining() {
         if (engineSettings.performTraining) {
             updatePopulation();
             showAverageRobotWeight();
         }
-        return timePointStats;
+    }
+
+    private void updateAccount(List<RobotData> robotDataList) {
+        Map<DataSetName, Double> map = robotDataList.stream().collect(Collectors.toMap(RobotData::getName, RobotData::getLastOpen));
+        account.closeTrades(map);
+        account.openTrades(map);
+    }
+
+    private void recordMarketChangesInRobots(List<RobotData> robotDataList) {
+        if(engineSettings.performTraining) {
+            Arrays.stream(population.listRobotsNames()).forEach(robotName -> {
+                Robot robot = population.getRobot(robotName);
+                robotDataList.forEach(robot::recordMarketChange);
+                population.saveRobot(robot);
+            });
+        }
     }
 
     private TimePointResult getTimePointResult(Map<RobotName, List<RobotResult>> map) {
@@ -141,16 +175,12 @@ public class SimpleEngine implements Engine {
         return timePointResult;
     }
 
-    private Map<DataSetName, Double> toPricesMap(List<RobotData> robotDataList) {
-        return robotDataList.stream().collect(Collectors.toMap(RobotData::getName, RobotData::getLastOpen));
-    }
-
     private void showAverageRobotWeight() {
         output.infoMessage("Average weight: " + String.valueOf(population.getAverageWeight()));
     }
 
     private void tryUpdate(DataSetResult dataSetResult, TimePoint timePoint, Prediction prediction, TimePointStats timePointStats) {
-        Double actualChange = data.getActualChange(dataSetResult.getName(), timePoint);
+        Double actualChange = data.getFutureChange(dataSetResult.getName(), timePoint);
         if (!actualChange.isNaN()) {
             double totalProfit = data.recordProfit(dataSetResult.getName(), prediction.toProfit(actualChange));
             output.showCumulativeProfit(timePoint, dataSetResult.getName(), totalProfit);

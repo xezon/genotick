@@ -52,7 +52,7 @@ public class MainAppData {
         return list;
     }
 
-    public double getActualChange(DataSetName name, TimePoint timePoint) {
+    public double getFutureChange(DataSetName name, TimePoint timePoint) {
         return sets.get(name).calculateFutureChange(timePoint);
     }
 

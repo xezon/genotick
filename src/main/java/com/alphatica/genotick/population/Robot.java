@@ -3,6 +3,8 @@ package com.alphatica.genotick.population;
 
 import com.alphatica.genotick.genotick.Outcome;
 import com.alphatica.genotick.genotick.Prediction;
+import com.alphatica.genotick.genotick.RobotData;
+import com.alphatica.genotick.genotick.RobotResult;
 import com.alphatica.genotick.genotick.WeightCalculator;
 import com.alphatica.genotick.instructions.Instruction;
 import com.alphatica.genotick.instructions.InstructionList;
@@ -153,5 +155,13 @@ public class Robot implements Serializable {
                         append(field.get(this).toString()).append("\n");
             }
         }
+    }
+
+    public void recordMarketChange(RobotData robotData) {
+        //TODO
+    }
+
+    public void recordPredictonNew(RobotResult result) {
+        // TODO
     }
 }
