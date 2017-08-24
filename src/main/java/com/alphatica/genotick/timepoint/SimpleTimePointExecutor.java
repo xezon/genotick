@@ -7,7 +7,9 @@ import com.alphatica.genotick.ui.UserOutput;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 class SimpleTimePointExecutor implements TimePointExecutor {
@@ -31,26 +33,22 @@ class SimpleTimePointExecutor implements TimePointExecutor {
     }
 
     @Override
-    public TimePointResult execute(List<RobotData> robotDataList,
-                                   Population population, boolean updateRobots, boolean requireSymmetrical) {
+    public Map<RobotName, List<RobotResult>> execute(List<RobotData> robotDataList,
+                                                     Population population, boolean updateRobots, boolean requireSymmetrical) {
         robotInfos.clear();
-        TimePointResult timePointResult = new TimePointResult();
         if(robotDataList.isEmpty())
-            return timePointResult;
+            return Collections.emptyMap();
         List<Future<List<RobotResult>>> tasks = submitTasks(robotDataList,population,updateRobots);
-        getResults(timePointResult,tasks, requireSymmetrical);
-        return timePointResult;
+        return getResults(tasks, requireSymmetrical);
     }
 
-    private void getResults(TimePointResult timePointResult, List<Future<List<RobotResult>>> tasks, boolean requireSymmetrical) {
+    private Map<RobotName, List<RobotResult>> getResults(List<Future<List<RobotResult>>> tasks, boolean requireSymmetrical) {
+        Map<RobotName, List<RobotResult>> resultMap = new HashMap<>();
         while(!tasks.isEmpty()) {
             try {
-                int lastIndex = tasks.size() - 1;
-                Future<List<RobotResult>> future = tasks.get(lastIndex);
-                List<RobotResult> results = future.get();
-                tasks.remove(lastIndex);
+                List<RobotResult> results = getRobotResults(tasks);
                 if(!requireSymmetrical || resultsSymmetrical(results)) {
-                    results.forEach(timePointResult::addRobotResult);
+                    updateMap(resultMap, results);
                 }
             } catch (InterruptedException ignore) {
                 /* Do nothing, try again */
@@ -60,6 +58,20 @@ class SimpleTimePointExecutor implements TimePointExecutor {
                 System.exit(1);
             }
         }
+        return resultMap;
+    }
+
+    private void updateMap(Map<RobotName, List<RobotResult>> map, List<RobotResult> results) {
+        List<RobotResult> robotResults = map.computeIfAbsent(results.get(0).getName(), n -> new ArrayList<>());
+        robotResults.addAll(results);
+    }
+
+    private List<RobotResult> getRobotResults(List<Future<List<RobotResult>>> tasks) throws InterruptedException, ExecutionException {
+        int lastIndex = tasks.size() - 1;
+        Future<List<RobotResult>> future = tasks.get(lastIndex);
+        List<RobotResult> results = future.get();
+        tasks.remove(lastIndex);
+        return results;
     }
 
     private boolean resultsSymmetrical(List<RobotResult> results) {

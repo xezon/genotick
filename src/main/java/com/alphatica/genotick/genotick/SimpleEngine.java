@@ -7,6 +7,7 @@ import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.killer.RobotKiller;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.RobotInfo;
+import com.alphatica.genotick.population.RobotName;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointResult;
@@ -118,7 +119,8 @@ public class SimpleEngine implements Engine {
             return null;
         account.closeTrades(toPricesMap(robotDataList));
         account.openTrades(toPricesMap(robotDataList));
-        TimePointResult timePointResult = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining, engineSettings.requireSymmetrical);
+        Map<RobotName, List<RobotResult>> map = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining, engineSettings.requireSymmetrical);
+        TimePointResult timePointResult = getTimePointResult(map);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         for (DataSetResult dataSetResult : timePointResult.listDataSetResults()) {
             Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
@@ -131,6 +133,12 @@ public class SimpleEngine implements Engine {
             showAverageRobotWeight();
         }
         return timePointStats;
+    }
+
+    private TimePointResult getTimePointResult(Map<RobotName, List<RobotResult>> map) {
+        TimePointResult timePointResult = new TimePointResult();
+        timePointResult.build(map);
+        return timePointResult;
     }
 
     private Map<DataSetName, Double> toPricesMap(List<RobotData> robotDataList) {

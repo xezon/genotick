@@ -23,6 +23,10 @@ public class RobotResult {
         return "Name: " + name.toString() + " Prediction: " + prediction.toString() + " Weight: " + String.valueOf(weight);
     }
 
+    public RobotName getName() {
+        return name;
+    }
+
     public Prediction getPrediction() {
         return prediction;
     }
