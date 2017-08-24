@@ -19,10 +19,6 @@ public class Account {
 
     private BigDecimal cash;
 
-    public Account() {
-        this(BigDecimal.valueOf(100_000));
-    }
-
     public Account(BigDecimal cash) {
         this.cash = cash;
     }
@@ -32,6 +28,10 @@ public class Account {
             BigDecimal cashPerTrade = cash.divide(BigDecimal.valueOf(pendingOrders.size()), MathContext.DECIMAL128);
             prices.forEach((name, price) -> openTrade(cashPerTrade, name, price));
         }
+    }
+
+    public BigDecimal getCash() {
+        return cash;
     }
 
     public void closeTrades(Map<DataSetName, Double> prices) {

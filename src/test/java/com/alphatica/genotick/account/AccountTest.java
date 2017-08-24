@@ -45,6 +45,37 @@ public class AccountTest {
     }
 
     @Test
+    public void closesTrades() {
+        account.addPendingOrder(name1, Prediction.DOWN);
+        account.openTrades(map1);
+        account.closeAccount();
+        assertEquals(initial, account.getCash());
+    }
+
+    @Test
+    public void returnsCash() {
+        assertEquals(initial, account.getCash());
+    }
+
+    @Test
+    public void ignoresOpenTradesIfNoPendingOrders() {
+        BigDecimal cashStart = account.getCash();
+        account.openTrades(map1);
+        BigDecimal cashEnd = account.getCash();
+        assertEquals(cashStart, cashEnd);
+    }
+
+    @Test
+    public void shouldIgnorePendingOrderIfOut() {
+        account.addPendingOrder(name1, Prediction.OUT);
+        account.addPendingOrder(name1, Prediction.DOWN);
+        account.openTrades(map1);
+        account.closeTrades(map1);
+        BigDecimal closed = account.closeAccount();
+        assertTrue(initial.equals(closed));
+    }
+
+    @Test
     public void sameValueIfPriceNotChanged() {
         account.addPendingOrder(name1, Prediction.DOWN);
         account.openTrades(map1);
@@ -77,6 +108,16 @@ public class AccountTest {
         compare(closed, initial.multiply(BigDecimal.valueOf(profit)));
     }
 
+    @Test
+    public void valueUpIfOneMarketDown() {
+        double change = 0.05;
+        double finalPrice = price1 * (1 - change);
+        BigDecimal finalAccount = initial.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(change)));
+        account.addPendingOrder(name1, Prediction.DOWN);
+        account.openTrades(map1);
+        account.closeTrades(Collections.singletonMap(name1, finalPrice));
+        compare(finalAccount, account.getCash());
+    }
     /*
     valueUpIfTwoMarketsDown
     valueUpIfOneMarketUpOneDown
