@@ -2,7 +2,6 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.account.Account;
 import com.alphatica.genotick.breeder.RobotBreeder;
-import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.killer.RobotKiller;
@@ -18,7 +17,6 @@ import com.alphatica.genotick.ui.UserOutput;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -136,7 +134,7 @@ public class SimpleEngine implements Engine {
     }
 
     private Map<DataSetName, Double> toPricesMap(List<RobotData> robotDataList) {
-        return robotDataList.stream().collect(Collectors.toMap(RobotData::getName, RobotData::getTodaysOpen));
+        return robotDataList.stream().collect(Collectors.toMap(RobotData::getName, RobotData::getLastOpen));
     }
 
     private void showAverageRobotWeight() {
