@@ -8,11 +8,11 @@ import java.util.List;
 
 public class RobotData {
     private final List<double[]> data;
-    private final double actualChange;
+    private final double futureChange;
     private final DataSetName name;
 
-    public static RobotData createData(List<double[]> newData, DataSetName name, double actualChange) {
-        return new RobotData(newData,name,actualChange);
+    public static RobotData createData(List<double[]> newData, DataSetName name, double futureChange) {
+        return new RobotData(newData, name, futureChange);
     }
 
     public static RobotData createEmptyData(DataSetName name) {
@@ -21,14 +21,14 @@ public class RobotData {
         return createData(list,name,Double.NaN);
     }
 
-    public double getTodaysOpen() {
+    double getTodaysOpen() {
         return data.get(0)[0];
     }
 
-    private RobotData(List<double[]> newData, DataSetName name, double actualChange) {
+    private RobotData(List<double[]> newData, DataSetName name, double futureChange) {
         data = newData;
         this.name = name;
-        this.actualChange = actualChange;
+        this.futureChange = futureChange;
     }
 
     public double getData(int dataColumn, int dataOffset) {
@@ -46,8 +46,8 @@ public class RobotData {
         return data.get(0).length == 0;
     }
 
-    public Double getActualChange() {
-        return actualChange;
+    public Double getFutureChange() {
+        return futureChange;
     }
 
     public int getColumns() {
