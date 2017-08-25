@@ -1,5 +1,7 @@
 package com.alphatica.genotick.population;
 
+import java.util.Set;
+
 public interface PopulationDAO {
 
     Iterable<Robot> getRobotList();
@@ -12,5 +14,5 @@ public interface PopulationDAO {
 
     void removeRobot(RobotName robotName);
 
-    RobotName[] listRobotNames();
+    Set<RobotName> listRobotNames();
 }

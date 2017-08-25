@@ -3,6 +3,7 @@ package com.alphatica.genotick.population;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class SimplePopulation implements Population {
     private int desiredSize = 1024;
@@ -67,7 +68,7 @@ public class SimplePopulation implements Population {
     }
 
     @Override
-    public RobotName[] listRobotsNames() {
+    public Set<RobotName> listRobotsNames() {
         return dao.listRobotNames();
     }
 

@@ -9,7 +9,7 @@ import java.util.List;
 public class RobotData {
     private final List<double[]> data;
     private final double futureChange;
-    private final double actualChange;
+    private final double lastChange;
     private final DataSetName name;
 
     public static RobotData createData(List<double[]> newData, DataSetName name, double futureChange) {
@@ -26,11 +26,11 @@ public class RobotData {
         data = newData;
         this.name = name;
         this.futureChange = futureChange;
-        this.actualChange = calculateActualChange(newData);
+        this.lastChange = calculateActualChange(newData);
     }
 
-    public double getActualChange() {
-        return actualChange;
+    public double getLastChange() {
+        return lastChange;
     }
 
     public double getData(int dataColumn, int dataOffset) {

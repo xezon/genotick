@@ -94,11 +94,11 @@ class SimpleTimePointExecutor implements TimePointExecutor {
                                                         Population population,
                                                         boolean updateRobots) {
         List<Future<List<RobotResult>>> tasks = new ArrayList<>();
-        for(RobotName robotName : population.listRobotsNames()) {
+        population.listRobotsNames().forEach(robotName -> {
             Task task = new Task(robotName, robotDataList, population, updateRobots);
             Future<List<RobotResult>> future = executorService.submit(task);
             tasks.add(future);
-        }
+        });
         return tasks;
     }
 

@@ -2,6 +2,7 @@ package com.alphatica.genotick.population;
 
 
 import java.util.List;
+import java.util.Set;
 
 public interface Population {
 
@@ -27,7 +28,7 @@ public interface Population {
 
     void savePopulation(String path);
 
-    RobotName[] listRobotsNames();
+    Set<RobotName> listRobotsNames();
 
     double getAverageWeight();
 }

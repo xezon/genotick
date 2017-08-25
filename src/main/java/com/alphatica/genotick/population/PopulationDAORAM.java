@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 public class PopulationDAORAM implements PopulationDAO {
     private final Map<RobotName,Robot> map = new HashMap<>();
@@ -17,12 +18,7 @@ public class PopulationDAORAM implements PopulationDAO {
     }
     @Override
     public Iterable<Robot> getRobotList() {
-        return new Iterable<Robot> () {
-            @Override
-            public Iterator<Robot> iterator() {
-                return map.values().iterator();
-            }
-        };
+        return () -> map.values().iterator();
     }
 
     @Override
@@ -64,7 +60,7 @@ public class PopulationDAORAM implements PopulationDAO {
     }
 
     @Override
-    public RobotName[] listRobotNames() {
-        return map.keySet().toArray(new RobotName[map.size()]);
+    public Set<RobotName> listRobotNames() {
+        return map.keySet();
     }
 }

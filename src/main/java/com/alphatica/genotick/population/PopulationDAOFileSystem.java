@@ -4,10 +4,13 @@ import com.alphatica.genotick.genotick.RandomGenerator;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -16,21 +19,19 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     private final String robotsPath;
     private final Random random;
 
-    public PopulationDAOFileSystem(String dao) {
-        checkPath(dao);
-        robotsPath = dao;
+    public PopulationDAOFileSystem(String path) {
+        checkPath(path);
+        robotsPath = path;
         random = RandomGenerator.assignRandom();
     }
 
     @Override
-    public RobotName[] listRobotNames() {
+    public Set<RobotName> listRobotNames() {
         String [] files = listFiles(robotsPath);
-        RobotName[] names = new RobotName[files.length];
-        for(int i = 0; i < files.length; i++) {
-            String longString = files[i].substring(0,files[i].indexOf('.'));
-            names[i] = new RobotName(Long.parseLong(longString));
-        }
-        return names;
+        return Arrays.stream(files).map(file -> {
+            String longString = file.substring(0,file.indexOf('.'));
+            return new RobotName(Long.parseLong(longString));
+        }).collect(Collectors.toSet());
     }
 
     @Override

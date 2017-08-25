@@ -124,14 +124,14 @@ public class SimpleEngine implements Engine {
         recordMarketChangesInRobots(robotDataList);
         Map<RobotName, List<RobotResult>> map = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining, engineSettings.requireSymmetrical);
         recordRobotsPredictions(map);
-        TimePointResult timePointResult = getTimePointResult(map);
+        TimePointResult timePointResult = new TimePointResult(map);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
-        for (DataSetResult dataSetResult : timePointResult.listDataSetResults()) {
+        timePointResult.listDataSetResults().forEach(dataSetResult -> {
             Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
             account.addPendingOrder(dataSetResult.getName(), prediction);
             output.showPrediction(timePoint, dataSetResult.getName(), prediction);
             tryUpdate(dataSetResult, timePoint, prediction, timePointStats);
-        }
+        });
         checkTraining();
         return timePointStats;
     }
@@ -161,18 +161,12 @@ public class SimpleEngine implements Engine {
 
     private void recordMarketChangesInRobots(List<RobotData> robotDataList) {
         if(engineSettings.performTraining) {
-            Arrays.stream(population.listRobotsNames()).forEach(robotName -> {
+            population.listRobotsNames().forEach(robotName -> {
                 Robot robot = population.getRobot(robotName);
                 robotDataList.forEach(robot::recordMarketChange);
                 population.saveRobot(robot);
             });
         }
-    }
-
-    private TimePointResult getTimePointResult(Map<RobotName, List<RobotResult>> map) {
-        TimePointResult timePointResult = new TimePointResult();
-        timePointResult.build(map);
-        return timePointResult;
     }
 
     private void showAverageRobotWeight() {

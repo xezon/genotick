@@ -13,21 +13,13 @@ import java.util.Map;
 public class TimePointResult {
     private final Map<DataSetName, DataSetResult> dataSetResultMap;
 
-    public TimePointResult() {
+    public TimePointResult(Map<RobotName, List<RobotResult>> map) {
         dataSetResultMap = new HashMap<>();
-    }
-
-    public DataSetResult[] listDataSetResults() {
-        DataSetResult [] array = new DataSetResult[dataSetResultMap.size()];
-        int i = 0;
-        for(Map.Entry<DataSetName,DataSetResult> entry: dataSetResultMap.entrySet()) {
-            array[i++] = entry.getValue();
-        }
-        return array;
-    }
-
-    public void build(Map<RobotName, List<RobotResult>> map) {
         map.values().stream().flatMap(Collection::stream).forEach(this::addRobotResult);
+    }
+
+    public Collection<DataSetResult> listDataSetResults() {
+        return dataSetResultMap.values();
     }
 
     private void addRobotResult(RobotResult robotResult) {
