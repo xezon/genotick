@@ -1,6 +1,7 @@
 package com.alphatica.genotick.population;
 
 
+import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Outcome;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.genotick.RobotData;
@@ -13,7 +14,9 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Robot implements Serializable {
     @SuppressWarnings("unused")
@@ -31,6 +34,9 @@ public class Robot implements Serializable {
     private int totalOutcomes;
     private long outcomesAtLastChild;
     private int bias;
+
+    private final Map<DataSetName, Prediction> current = new HashMap<>();
+    private final Map<DataSetName, Prediction> pending = new HashMap<>();
 
     public static Robot createEmptyRobot(int maximumDataOffset, int ignoreColumns) {
         return new Robot(maximumDataOffset, ignoreColumns);
@@ -162,6 +168,9 @@ public class Robot implements Serializable {
     }
 
     public void recordPredictonNew(RobotResult result) {
-        // TODO
+        DataSetName name = result.getData().getName();
+        Prediction lastPrediction = pending.get(name);
+        current.put(name, lastPrediction);
+        pending.put(name, result.getPrediction());
     }
 }
