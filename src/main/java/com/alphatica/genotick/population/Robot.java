@@ -34,6 +34,7 @@ public class Robot implements Serializable {
     private int totalOutcomes;
     private long outcomesAtLastChild;
     private int bias;
+    private boolean isPredicting = false;
 
     private final Map<DataSetName, Prediction> current = new HashMap<>();
     private final Map<DataSetName, Prediction> pending = new HashMap<>();
@@ -64,8 +65,15 @@ public class Robot implements Serializable {
         this.ignoreColumns = ignoreColumns;
     }
 
+    public boolean isPredicting() {
+        return isPredicting;
+    }
+
     public void recordPrediction(Prediction prediction) {
         bias += prediction.getValue();
+        if(prediction != Prediction.OUT) {
+            isPredicting = true;
+        }
     }
 
     public void recordOutcomes(List<Outcome> outcomes) {

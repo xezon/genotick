@@ -26,7 +26,7 @@ public class RobotData {
         data = newData;
         this.name = name;
         this.futureChange = futureChange;
-        this.lastChange = calculateActualChange(newData);
+        this.lastChange = calculateLastChange(newData);
     }
 
     public double getLastChange() {
@@ -60,11 +60,12 @@ public class RobotData {
         return data.get(0)[0];
     }
 
-    private double calculateActualChange(List<double[]> newData) {
-        if(data.get(0).length > 1) {
-            return newData.get(0)[0] / newData.get(0)[1];
-        } else {
+    private double calculateLastChange(List<double[]> newData) {
+        if(data.get(0).length < 2) {
             return 0;
         }
+        double last = newData.get(0)[0];
+        double previous = newData.get(0)[1];
+        return 100 * (last - previous) / previous;
     }
 }

@@ -15,7 +15,6 @@ import java.util.concurrent.*;
 class SimpleTimePointExecutor implements TimePointExecutor {
 
     private final ExecutorService executorService;
-    private final List<RobotInfo> robotInfos;
     private final UserOutput output;
     private DataSetExecutor dataSetExecutor;
     private RobotExecutorFactory robotExecutorFactory;
@@ -23,19 +22,13 @@ class SimpleTimePointExecutor implements TimePointExecutor {
 
     public SimpleTimePointExecutor(UserOutput output) {
         int cores = Runtime.getRuntime().availableProcessors();
-        executorService = Executors.newFixedThreadPool(cores * 2, new DaemonThreadFactory());
-        robotInfos = Collections.synchronizedList(new ArrayList<RobotInfo>());
         this.output = output;
-    }
-
-    public List<RobotInfo> getRobotInfos() {
-        return robotInfos;
+        executorService = Executors.newFixedThreadPool(cores * 2, new DaemonThreadFactory());
     }
 
     @Override
     public Map<RobotName, List<RobotResult>> execute(List<RobotData> robotDataList,
                                                      Population population, boolean updateRobots, boolean requireSymmetrical) {
-        robotInfos.clear();
         if(robotDataList.isEmpty())
             return Collections.emptyMap();
         List<Future<List<RobotResult>>> tasks = submitTasks(robotDataList,population,updateRobots);
@@ -54,8 +47,7 @@ class SimpleTimePointExecutor implements TimePointExecutor {
                 /* Do nothing, try again */
             } catch (ExecutionException e) {
                 output.errorMessage(e.getMessage());
-                e.printStackTrace();
-                System.exit(1);
+                throw new RuntimeException(e);
             }
         }
         return resultMap;
@@ -79,7 +71,6 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         long votesDown = results.stream().filter(result -> result.getPrediction() == Prediction.DOWN).count();
         return votesUp == votesDown;
     }
-
 
     @Override
     public void setSettings(DataSetExecutor dataSetExecutor, RobotExecutorFactory robotExecutorFactory) {
@@ -124,8 +115,6 @@ class SimpleTimePointExecutor implements TimePointExecutor {
             if(updateRobots) {
                 updateRobots(robot,list);
             }
-            RobotInfo robotInfo = new RobotInfo(robot);
-            robotInfos.add(robotInfo);
             return list;
         }
 
@@ -133,7 +122,7 @@ class SimpleTimePointExecutor implements TimePointExecutor {
             List<Outcome> outcomes = new ArrayList<>();
             for(RobotResult result: list) {
                 robot.recordPrediction(result.getPrediction());
-                Outcome outcome = Outcome.getOutcome(result.getPrediction(),result.getData().getFutureChange());
+                Outcome outcome = Outcome.getOutcome(result.getPrediction(), result.getData().getFutureChange());
                 outcomes.add(outcome);
             }
             robot.recordOutcomes(outcomes);

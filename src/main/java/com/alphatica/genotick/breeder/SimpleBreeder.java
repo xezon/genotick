@@ -11,6 +11,7 @@ import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,8 +25,9 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     @Override
-    public void breedPopulation(Population population, List<RobotInfo> robotInfos) {
+    public void breedPopulation(Population population) {
         if (population.haveSpaceToBreed()) {
+            List<RobotInfo> robotInfos = population.getRobotInfoList();
             int before = population.getSize(), after;
             addRequiredRandomRobots(population);
             after = population.getSize();
@@ -185,6 +187,12 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private Robot getPossibleParent(Population population, List<RobotInfo> list) {
+        if(!list.isEmpty()) {
+            Collections.shuffle(list);
+            RobotInfo info = list.remove(0);
+            return population.getRobot(info.getName());
+        }
+
         double totalWeight = sumTotalWeight(list);
         double target = Math.abs(totalWeight * mutator.getNextDouble());
         double weightSoFar = 0;

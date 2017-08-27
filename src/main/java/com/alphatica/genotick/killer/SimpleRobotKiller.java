@@ -61,7 +61,7 @@ class SimpleRobotKiller implements RobotKiller {
             return;
         for(int i = list.size() - 1; i >= 0; i--) {
             RobotInfo info = list.get(i);
-            if(info.getTotalPredictions() == 0) {
+            if(!info.isPredicting()) {
                 list.remove(i);
                 population.removeRobot(info.getName());
             }
@@ -107,6 +107,7 @@ class SimpleRobotKiller implements RobotKiller {
     private void killRobotsByWeight(Population population, List<RobotInfo> listCopy, List<RobotInfo> originalList) {
         Collections.sort(listCopy, RobotInfo.comparatorByAbsoluteWeight);
         Collections.reverse(listCopy);
+
         int numberToKill = (int) Math.round(settings.maximumDeathByWeight * originalList.size());
         killRobots(listCopy,originalList,numberToKill,population,settings.probabilityOfDeathByWeight);
     }

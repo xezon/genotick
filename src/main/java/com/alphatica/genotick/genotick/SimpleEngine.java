@@ -20,6 +20,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public class SimpleEngine implements Engine {
     private MainAppData data;
     private final ProfitRecorder profitRecorder;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
-    private final Account account = new Account(BigDecimal.valueOf(1_000_000L));
+    private final Account account = new Account(BigDecimal.valueOf(100_000L));
 
     private SimpleEngine() {
         profitRecorder = new ProfitRecorder();
@@ -112,7 +113,7 @@ public class SimpleEngine implements Engine {
 
     private void initPopulation() {
         if (population.getSize() == 0 && engineSettings.performTraining) {
-            breeder.breedPopulation(population, timePointExecutor.getRobotInfos());
+            breeder.breedPopulation(population);
         }
     }
 
@@ -121,8 +122,10 @@ public class SimpleEngine implements Engine {
         if (robotDataList.isEmpty())
             return null;
         updateAccount(robotDataList);
+        List<RobotInfo> list = population.getRobotInfoList();
         recordMarketChangesInRobots(robotDataList);
         Map<RobotName, List<RobotResult>> map = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining, engineSettings.requireSymmetrical);
+        updatePredictions(list);
         recordRobotsPredictions(map);
         TimePointResult timePointResult = new TimePointResult(map);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
@@ -132,8 +135,15 @@ public class SimpleEngine implements Engine {
             output.showPrediction(timePoint, dataSetResult.getName(), prediction);
             tryUpdate(dataSetResult, timePoint, prediction, timePointStats);
         });
-        checkTraining();
+        checkTraining(list);
         return timePointStats;
+    }
+
+    private void updatePredictions(List<RobotInfo> list) {
+        list.parallelStream().forEach(info -> {
+            RobotInfo i = new RobotInfo(population.getRobot(info.getName()));
+            info.setPredicting(i.isPredicting());
+        });
     }
 
     private void recordRobotsPredictions(Map<RobotName, List<RobotResult>> map) {
@@ -146,9 +156,9 @@ public class SimpleEngine implements Engine {
         }
     }
 
-    private void checkTraining() {
+    private void checkTraining(List<RobotInfo> list) {
         if (engineSettings.performTraining) {
-            updatePopulation();
+            updatePopulation(list);
             showAverageRobotWeight();
         }
     }
@@ -197,10 +207,11 @@ public class SimpleEngine implements Engine {
         output.infoMessage(timepoint.getValue() + " Profit for " + name + " " + percent);
     }
 
-    private void updatePopulation() {
-        List<RobotInfo> list = timePointExecutor.getRobotInfos();
+    private void updatePopulation(List<RobotInfo> list) {
+//        List<RobotInfo> list = timePointExecutor.getRobotInfos();
+//        List<RobotInfo> list = population.getRobotInfoList();
         killer.killRobots(population,list);
-        breeder.breedPopulation(population,list);
+        breeder.breedPopulation(population);
         output.debugMessage("averageAge=" + population.getAverageAge());
     }
 }

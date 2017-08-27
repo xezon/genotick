@@ -15,8 +15,10 @@ public class RobotInfo {
     private final long length;
     private final int totalPredictions;
     private final int totalOutcomes;
-    private final int bias;
 
+    private boolean isPredicting;
+
+    private final int bias;
     @Override
     public String toString() {
         return name.toString() + ": Outcomes: " + String.valueOf(totalPredictions) + " weight: " + format.format(weight) +
@@ -32,6 +34,10 @@ public class RobotInfo {
         return weight;
     }
 
+    public void setPredicting(boolean predicting) {
+        isPredicting = predicting;
+    }
+
     public int getTotalPredictions() {
         return totalPredictions;
     }
@@ -45,6 +51,7 @@ public class RobotInfo {
         totalPredictions = robot.getTotalPredictions();
         totalOutcomes = robot.getTotalOutcomes();
         bias = robot.getBias();
+        isPredicting = robot.isPredicting();
     }
 
 
@@ -64,30 +71,7 @@ public class RobotInfo {
         return bias;
     }
 
-    private static double getTotalWeight(List<RobotInfo> list) {
-        double weight = 0;
-        for(RobotInfo robotInfo: list) {
-            weight += Math.abs(robotInfo.getWeight());
-        }
-        return weight;
-    }
-
-    public static double getAverageWeight(List<RobotInfo> list) {
-        if(list.isEmpty()) {
-            return 0;
-        } else {
-            return getTotalWeight(list) / list.size();
-        }
-    }
-
-    public static double getAverageLength(List<RobotInfo> robotsInfos) {
-        if(robotsInfos.isEmpty()) {
-            return 0;
-        }
-        double sum = 0;
-        for(RobotInfo robotInfo: robotsInfos) {
-            sum += robotInfo.length;
-        }
-        return sum / robotsInfos.size();
+    public boolean isPredicting() {
+        return isPredicting;
     }
 }

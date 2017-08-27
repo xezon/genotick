@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface RobotBreeder {
 
-    void breedPopulation(Population population, List<RobotInfo> robotInfos);
+    void breedPopulation(Population population);
 
     void setSettings(BreederSettings breederSettings, Mutator mutator);
 
