@@ -180,5 +180,8 @@ public class Robot implements Serializable {
         Prediction lastPrediction = pending.get(name);
         current.put(name, lastPrediction);
         pending.put(name, result.getPrediction());
+        if(result.getPrediction() != Prediction.OUT) {
+            isPredicting = true;
+        }
     }
 }

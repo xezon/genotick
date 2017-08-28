@@ -125,7 +125,7 @@ public class SimpleEngine implements Engine {
         List<RobotInfo> list = population.getRobotInfoList();
         recordMarketChangesInRobots(robotDataList);
         Map<RobotName, List<RobotResult>> map = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining, engineSettings.requireSymmetrical);
-        updatePredictions(list);
+//        updatePredictions(list);
         recordRobotsPredictions(map);
         TimePointResult timePointResult = new TimePointResult(map);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
@@ -208,9 +208,7 @@ public class SimpleEngine implements Engine {
     }
 
     private void updatePopulation(List<RobotInfo> list) {
-//        List<RobotInfo> list = timePointExecutor.getRobotInfos();
-//        List<RobotInfo> list = population.getRobotInfoList();
-        killer.killRobots(population,list);
+        killer.killRobots(population, population.getRobotInfoList());
         breeder.breedPopulation(population);
         output.debugMessage("averageAge=" + population.getAverageAge());
     }
