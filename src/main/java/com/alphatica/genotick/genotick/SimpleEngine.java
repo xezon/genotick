@@ -182,30 +182,6 @@ public class SimpleEngine implements Engine {
         output.infoMessage("Average weight: " + String.valueOf(population.getAverageWeight()));
     }
 
-    private void tryUpdate(DataSetResult dataSetResult, TimePoint timePoint, Prediction prediction, TimePointStats timePointStats) {
-        Double actualChange = data.getFutureChange(dataSetResult.getName(), timePoint);
-        if (!actualChange.isNaN()) {
-            double totalProfit = data.recordProfit(dataSetResult.getName(), prediction.toProfit(actualChange));
-            output.showCumulativeProfit(timePoint, dataSetResult.getName(), totalProfit);
-            printPercentEarned(timePoint, dataSetResult.getName(), actualChange, prediction);
-            if (!actualChange.isInfinite() && !actualChange.isNaN()) {
-                timePointStats.update(dataSetResult.getName(), actualChange, prediction);
-            }
-        }
-    }
-
-    private void printPercentEarned(TimePoint timepoint, DataSetName name, double actualChange, Prediction prediction) {
-        double percent;
-        if (prediction == Prediction.OUT) {
-            return;
-        }
-        if (prediction.isCorrect(actualChange))
-            percent = Math.abs(actualChange);
-        else
-            percent = -Math.abs(actualChange);
-        output.infoMessage(timepoint.getValue() + " Profit for " + name + " " + percent);
-    }
-
     private void updatePopulation(List<RobotInfo> list) {
         killer.killRobots(population, list);
         breeder.breedPopulation(population, list);

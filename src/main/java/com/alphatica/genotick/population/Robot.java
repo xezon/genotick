@@ -78,12 +78,6 @@ public class Robot implements Serializable {
         }
     }
 
-    public void recordOutcomes(List<Outcome> outcomes) {
-        totalOutcomes += outcomes.size();
-        totalPredictions += outcomes.parallelStream().filter(o -> o != Outcome.OUT).count();
-        correctPredictions += outcomes.parallelStream().filter(o -> o == Outcome.CORRECT).count();
-    }
-
     public InstructionList getMainFunction() {
         return mainFunction;
     }
@@ -189,11 +183,12 @@ public class Robot implements Serializable {
 
     public void recordPredictonNew(RobotResult result) {
         DataSetName name = result.getData().getName();
-        Prediction lastPrediction = pending.get(name);
-        current.put(name, lastPrediction);
+        Prediction pendingPrediction = pending.get(name);
+        current.put(name, pendingPrediction);
         pending.put(name, result.getPrediction());
         if(result.getPrediction() != Prediction.OUT) {
             isPredicting = true;
         }
+        bias += result.getPrediction().getValue();
     }
 }

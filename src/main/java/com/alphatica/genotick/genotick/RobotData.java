@@ -8,24 +8,22 @@ import java.util.List;
 
 public class RobotData {
     private final List<double[]> data;
-    private final double futureChange;
     private final double lastChange;
     private final DataSetName name;
 
-    public static RobotData createData(List<double[]> newData, DataSetName name, double futureChange) {
-        return new RobotData(newData, name, futureChange);
+    public static RobotData createData(List<double[]> newData, DataSetName name) {
+        return new RobotData(newData, name);
     }
 
     public static RobotData createEmptyData(DataSetName name) {
         List<double []> list = new ArrayList<>();
         list.add(new double[0]);
-        return createData(list, name, Double.NaN);
+        return createData(list, name);
     }
 
-    private RobotData(List<double[]> newData, DataSetName name, double futureChange) {
+    private RobotData(List<double[]> newData, DataSetName name) {
         data = newData;
         this.name = name;
-        this.futureChange = futureChange;
         this.lastChange = calculateLastChange(newData);
     }
 
@@ -46,10 +44,6 @@ public class RobotData {
 
     public boolean isEmpty() {
         return data.get(0).length == 0;
-    }
-
-    public Double getFutureChange() {
-        return futureChange;
     }
 
     public int getColumns() {

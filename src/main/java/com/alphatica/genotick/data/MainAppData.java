@@ -52,10 +52,6 @@ public class MainAppData {
         return list;
     }
 
-    public double getFutureChange(DataSetName name, TimePoint timePoint) {
-        return sets.get(name).calculateFutureChange(timePoint);
-    }
-
     public TimePoint getFirstTimePoint() {
         if (sets.isEmpty())
             return null;

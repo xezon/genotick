@@ -3,11 +3,7 @@ package com.alphatica.genotick.data;
 
 import com.alphatica.genotick.genotick.RobotData;
 import com.alphatica.genotick.timepoint.TimePoint;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,28 +33,13 @@ public class DataSet {
         return name;
     }
 
-    public RobotData getRobotData(TimePoint timePoint) {
+    RobotData getRobotData(TimePoint timePoint) {
         int i = Arrays.binarySearch(timePoints,timePoint);
         if(i < 0) {
             return RobotData.createEmptyData(name);
         } else {
             return createDataUpToTimePoint(i);
         }
-    }
-
-
-    public Double calculateFutureChange(TimePoint timePoint) {
-        int i = Arrays.binarySearch(timePoints,timePoint);
-        if(i < 0)
-           return Double.NaN;
-        int startIndex = i + 1;
-        int endIndex = startIndex + 1;
-        double [] array = values.get(0);
-        if(endIndex >= array.length)
-            return Double.NaN;
-        double startValue = array[startIndex];
-        double endValue = array[endIndex];
-        return 100.0 *(endValue - startValue) / startValue;
     }
 
     private void fillValuesArrays(int lineNumber, Number[] line, int firstLineCount) {
@@ -97,8 +78,7 @@ public class DataSet {
             double [] copy = copyReverseArray(original, i);
             list.add(copy);
         }
-        Double futureChange = calculateFutureChange(timePoints[i]);
-        return RobotData.createData(list, name, futureChange);
+        return RobotData.createData(list, name);
     }
 
     private double[] copyReverseArray(double[] original, int i) {
