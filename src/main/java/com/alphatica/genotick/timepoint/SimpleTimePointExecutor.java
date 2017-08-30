@@ -109,9 +109,8 @@ class SimpleTimePointExecutor implements TimePointExecutor {
 
         @Override
         public List<RobotResult> call() throws Exception {
-            RobotExecutor robotExecutor = robotExecutorFactory.getDefaultRobotExecutor();
             Robot robot = population.getRobot(robotName);
-            List<RobotResult> list = dataSetExecutor.execute(robotDataList, robot, robotExecutor);
+            List<RobotResult> list = dataSetExecutor.execute(robotDataList, robot, robotExecutorFactory);
             if(updateRobots) {
                 updateRobots(robot,list);
             }
@@ -119,13 +118,9 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         }
 
         private void updateRobots(Robot robot, List<RobotResult> list) {
-            List<Outcome> outcomes = new ArrayList<>();
             for(RobotResult result: list) {
                 robot.recordPrediction(result.getPrediction());
-                Outcome outcome = Outcome.getOutcome(result.getPrediction(), result.getData().getFutureChange());
-                outcomes.add(outcome);
             }
-            robot.recordOutcomes(outcomes);
             population.saveRobot(robot);
         }
     }

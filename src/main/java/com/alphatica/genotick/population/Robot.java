@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Optional.ofNullable;
+
 public class Robot implements Serializable {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -32164662984L;
@@ -172,7 +174,17 @@ public class Robot implements Serializable {
     }
 
     public void recordMarketChange(RobotData robotData) {
-        //TODO
+        ofNullable(current.get(robotData.getName())).ifPresent(prediction -> {
+            current.remove(robotData.getName());
+            Outcome outcome = Outcome.getOutcome(prediction, robotData.getLastChange());
+            totalOutcomes++;
+            if(outcome != Outcome.OUT) {
+                totalPredictions++;
+            }
+            if(outcome == Outcome.CORRECT) {
+                correctPredictions++;
+            }
+        });
     }
 
     public void recordPredictonNew(RobotResult result) {

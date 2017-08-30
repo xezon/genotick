@@ -19,7 +19,6 @@ import com.alphatica.genotick.ui.UserOutput;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -113,7 +112,7 @@ public class SimpleEngine implements Engine {
 
     private void initPopulation() {
         if (population.getSize() == 0 && engineSettings.performTraining) {
-            breeder.breedPopulation(population);
+            breeder.breedPopulation(population, Collections.emptyList());
         }
     }
 
@@ -125,7 +124,7 @@ public class SimpleEngine implements Engine {
         List<RobotInfo> list = population.getRobotInfoList();
         recordMarketChangesInRobots(robotDataList);
         Map<RobotName, List<RobotResult>> map = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining, engineSettings.requireSymmetrical);
-//        updatePredictions(list);
+        updatePredictions(list);
         recordRobotsPredictions(map);
         TimePointResult timePointResult = new TimePointResult(map);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
@@ -133,7 +132,7 @@ public class SimpleEngine implements Engine {
             Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
             account.addPendingOrder(dataSetResult.getName(), prediction);
             output.showPrediction(timePoint, dataSetResult.getName(), prediction);
-            tryUpdate(dataSetResult, timePoint, prediction, timePointStats);
+//            tryUpdate(dataSetResult, timePoint, prediction, timePointStats);
         });
         checkTraining(list);
         return timePointStats;
@@ -208,8 +207,8 @@ public class SimpleEngine implements Engine {
     }
 
     private void updatePopulation(List<RobotInfo> list) {
-        killer.killRobots(population, population.getRobotInfoList());
-        breeder.breedPopulation(population);
+        killer.killRobots(population, list);
+        breeder.breedPopulation(population, list);
         output.debugMessage("averageAge=" + population.getAverageAge());
     }
 }
