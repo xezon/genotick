@@ -14,11 +14,16 @@ class SimpleRobotKiller implements RobotKiller {
     private final Random random;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
 
-    public static RobotKiller getInstance() {
+    static RobotKiller getInstance() {
         return new SimpleRobotKiller();
     }
     private SimpleRobotKiller() {
         random = RandomGenerator.assignRandom();
+    }
+
+    @Override
+    public void setSettings(RobotKillerSettings killerSettings) {
+        settings = killerSettings;
     }
 
     @Override
@@ -75,7 +80,7 @@ class SimpleRobotKiller implements RobotKiller {
 
     private void protectBest(Population population, List<RobotInfo> list) {
         if(settings.protectBestRobots > 0) {
-            Collections.sort(list, RobotInfo.comparatorByAbsoluteWeight);
+            list.sort(RobotInfo.comparatorByAbsoluteWeight);
             int i = (int)Math.round(settings.protectBestRobots * population.getDesiredSize());
             while(i-- > 0) {
                 RobotInfo robotInfo = getLastFromList(list);
@@ -93,19 +98,14 @@ class SimpleRobotKiller implements RobotKiller {
         }
     }
 
-    @Override
-    public void setSettings(RobotKillerSettings killerSettings) {
-        settings = killerSettings;
-    }
-
     private void killRobotsByAge(Population population, List<RobotInfo> listCopy, List<RobotInfo> originalList) {
-        Collections.sort(listCopy, RobotInfo.comparatorByAge);
+        listCopy.sort(RobotInfo.comparatorByAge);
         int numberToKill = (int)Math.round(settings.maximumDeathByAge * originalList.size());
         killRobots(listCopy,originalList,numberToKill,population,settings.probabilityOfDeathByAge);
     }
 
     private void killRobotsByWeight(Population population, List<RobotInfo> listCopy, List<RobotInfo> originalList) {
-        Collections.sort(listCopy, RobotInfo.comparatorByAbsoluteWeight);
+        listCopy.sort(RobotInfo.comparatorByAbsoluteWeight);
         Collections.reverse(listCopy);
 
         int numberToKill = (int) Math.round(settings.maximumDeathByWeight * originalList.size());

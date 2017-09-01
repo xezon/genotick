@@ -123,7 +123,7 @@ public class SimpleEngine implements Engine {
         updateAccount(robotDataList);
         List<RobotInfo> list = population.getRobotInfoList();
         recordMarketChangesInRobots(robotDataList);
-        Map<RobotName, List<RobotResult>> map = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining, engineSettings.requireSymmetrical);
+        Map<RobotName, List<RobotResult>> map = timePointExecutor.execute(robotDataList, population);
         updatePredictions(list, map);
         recordRobotsPredictions(map);
         TimePointResult timePointResult = new TimePointResult(map);
@@ -152,7 +152,7 @@ public class SimpleEngine implements Engine {
         if(engineSettings.performTraining) {
             map.keySet().forEach(name -> {
                 Robot robot = population.getRobot(name);
-                map.get(name).forEach(robot::recordPredictonNew);
+                map.get(name).forEach(robot::recordPrediction);
                 population.saveRobot(robot);
             });
         }

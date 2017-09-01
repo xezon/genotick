@@ -6,9 +6,8 @@ import com.alphatica.genotick.ui.UserOutput;
 
 public class TimePointExecutorFactory {
     public static TimePointExecutor getDefaultExecutor(DataSetExecutor dataSetExecutor,
-                                                       RobotExecutorFactory robotExecutorFactory,
-                                                       UserOutput output) {
-        TimePointExecutor executor = new SimpleTimePointExecutor(output);
+                                                       RobotExecutorFactory robotExecutorFactory) {
+        TimePointExecutor executor = new SimpleTimePointExecutor();
         executor.setSettings(dataSetExecutor, robotExecutorFactory);
         return executor;
     }

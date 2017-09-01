@@ -61,29 +61,8 @@ public class Robot implements Serializable {
         this.inheritedWeight = inheritedWeight;
     }
 
-    private Robot(int maximumDataOffset, int ignoreColumns) {
-        mainFunction = InstructionList.createInstructionList();
-        this.maximumDataOffset = maximumDataOffset;
-        this.ignoreColumns = ignoreColumns;
-    }
-
-    public boolean isPredicting() {
-        return isPredicting;
-    }
-
-    public void recordPrediction(Prediction prediction) {
-        bias += prediction.getValue();
-        if(prediction != Prediction.OUT) {
-            isPredicting = true;
-        }
-    }
-
     public InstructionList getMainFunction() {
         return mainFunction;
-    }
-
-    public int getTotalChildren() {
-        return totalChildren;
     }
 
     public double getWeight() {
@@ -91,23 +70,8 @@ public class Robot implements Serializable {
         return inheritedWeight + earnedWeight;
     }
 
-    public long getOutcomesAtLastChild() {
-        return outcomesAtLastChild;
-    }
-
     public void setMainInstructionList(InstructionList newMainFunction) {
         mainFunction = newMainFunction;
-    }
-
-
-    @Override
-    public String toString() {
-        int length = mainFunction.getSize();
-        return "Name: " + this.name.toString()
-                + " Outcomes: " + String.valueOf(totalOutcomes)
-                + " Weight: " + weightFormat.format(getWeight())
-                + " Length: " + String.valueOf(length)
-                + " Children: " + String.valueOf(totalChildren);
     }
 
     public void increaseChildren() {
@@ -119,19 +83,47 @@ public class Robot implements Serializable {
         return maximumDataOffset;
     }
 
+    public void recordMarketChange(RobotData robotData) {
+        ofNullable(current.get(robotData.getName())).ifPresent(prediction -> {
+            current.remove(robotData.getName());
+            Outcome outcome = Outcome.getOutcome(prediction, robotData.getLastChange());
+            totalOutcomes++;
+            if(outcome != Outcome.OUT) {
+                totalPredictions++;
+            }
+            if(outcome == Outcome.CORRECT) {
+                correctPredictions++;
+            }
+        });
+    }
+
+    public void recordPrediction(RobotResult result) {
+        DataSetName dataSetName = result.getData().getName();
+        Prediction pendingPrediction = pending.get(dataSetName);
+        current.put(dataSetName, pendingPrediction);
+        pending.put(dataSetName, result.getPrediction());
+        if(result.getPrediction() != Prediction.OUT) {
+            isPredicting = true;
+        }
+        bias += result.getPrediction().getValue();
+    }
+
     public int getTotalPredictions() {
         return totalPredictions;
     }
 
-    public int getTotalOutcomes() {
-        return totalOutcomes;
-    }
-    public int getCorrectPredictions() {
-        return correctPredictions;
+    @Override
+    public String toString() {
+        int length = mainFunction.getSize();
+        return "Name: " + this.name.toString()
+                + " Outcomes: " + String.valueOf(totalOutcomes)
+                + " Weight: " + weightFormat.format(getWeight())
+                + " Length: " + String.valueOf(length)
+                + " Children: " + String.valueOf(totalChildren);
     }
 
-    public int getBias() {
-        return bias;
+    public int getCorrectPredictions() {
+        return correctPredictions;
     }
 
     public void setName(RobotName name) {
@@ -143,6 +135,32 @@ public class Robot implements Serializable {
         addFields(sb);
         addMainFunction(sb);
         return sb.toString();
+    }
+
+    boolean isPredicting() {
+        return isPredicting;
+    }
+
+    int getTotalChildren() {
+        return totalChildren;
+    }
+
+    long getOutcomesAtLastChild() {
+        return outcomesAtLastChild;
+    }
+
+    int getTotalOutcomes() {
+        return totalOutcomes;
+    }
+
+    int getBias() {
+        return bias;
+    }
+
+    private Robot(int maximumDataOffset, int ignoreColumns) {
+        mainFunction = InstructionList.createInstructionList();
+        this.maximumDataOffset = maximumDataOffset;
+        this.ignoreColumns = ignoreColumns;
     }
 
     private void addMainFunction(StringBuilder sb) throws IllegalAccessException {
@@ -165,30 +183,5 @@ public class Robot implements Serializable {
                         append(field.get(this).toString()).append("\n");
             }
         }
-    }
-
-    public void recordMarketChange(RobotData robotData) {
-        ofNullable(current.get(robotData.getName())).ifPresent(prediction -> {
-            current.remove(robotData.getName());
-            Outcome outcome = Outcome.getOutcome(prediction, robotData.getLastChange());
-            totalOutcomes++;
-            if(outcome != Outcome.OUT) {
-                totalPredictions++;
-            }
-            if(outcome == Outcome.CORRECT) {
-                correctPredictions++;
-            }
-        });
-    }
-
-    public void recordPredictonNew(RobotResult result) {
-        DataSetName name = result.getData().getName();
-        Prediction pendingPrediction = pending.get(name);
-        current.put(name, pendingPrediction);
-        pending.put(name, result.getPrediction());
-        if(result.getPrediction() != Prediction.OUT) {
-            isPredicting = true;
-        }
-        bias += result.getPrediction().getValue();
     }
 }

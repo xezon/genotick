@@ -13,10 +13,7 @@ import java.util.Map;
 
 public interface TimePointExecutor {
 
-    Map<RobotName, List<RobotResult>> execute(List<RobotData> robotDataList,
-                                              Population population,
-                                              boolean updateRobots,
-                                              boolean requireSymmetrical);
+    Map<RobotName, List<RobotResult>> execute(List<RobotData> robotDataList, Population population);
 
     void setSettings(DataSetExecutor dataSetExecutor, RobotExecutorFactory robotExecutorFactory);
 }

@@ -74,7 +74,7 @@ public class Simulation {
         DataSetExecutor dataSetExecutor = new SimpleDataSetExecutor();
         RobotExecutorSettings robotExecutorSettings = new RobotExecutorSettings(settings);
         RobotExecutorFactory robotExecutorFactory = new RobotExecutorFactory(robotExecutorSettings);
-        return TimePointExecutorFactory.getDefaultExecutor(dataSetExecutor, robotExecutorFactory,output);
+        return TimePointExecutorFactory.getDefaultExecutor(dataSetExecutor, robotExecutorFactory);
     }
 
     private Population wirePopulation(MainSettings settings) {
