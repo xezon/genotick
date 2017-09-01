@@ -2,6 +2,7 @@ package com.alphatica.genotick.timepoint;
 
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.DataSetResult;
+import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.genotick.RobotResult;
 import com.alphatica.genotick.population.RobotName;
 
@@ -15,11 +16,17 @@ public class TimePointResult {
 
     public TimePointResult(Map<RobotName, List<RobotResult>> map) {
         dataSetResultMap = new HashMap<>();
-        map.values().stream().flatMap(Collection::stream).forEach(this::addRobotResult);
+        map.values().stream().filter(this::resultsSymmetrical).flatMap(Collection::stream).forEach(this::addRobotResult);
     }
 
     public Collection<DataSetResult> listDataSetResults() {
         return dataSetResultMap.values();
+    }
+
+    private boolean resultsSymmetrical(List<RobotResult> results) {
+        long votesUp = results.stream().filter(result -> result.getPrediction() == Prediction.UP).count();
+        long votesDown = results.stream().filter(result -> result.getPrediction() == Prediction.DOWN).count();
+        return votesUp == votesDown;
     }
 
     private void addRobotResult(RobotResult robotResult) {

@@ -40,9 +40,9 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         while(!tasks.isEmpty()) {
             try {
                 List<RobotResult> results = getRobotResults(tasks);
-                if(!requireSymmetrical || resultsSymmetrical(results)) {
+//                if(!requireSymmetrical || resultsSymmetrical(results)) {
                     updateMap(resultMap, results);
-                }
+//                }
             } catch (InterruptedException ignore) {
                 /* Do nothing, try again */
             } catch (ExecutionException e) {
@@ -112,7 +112,7 @@ class SimpleTimePointExecutor implements TimePointExecutor {
             Robot robot = population.getRobot(robotName);
             List<RobotResult> list = dataSetExecutor.execute(robotDataList, robot, robotExecutorFactory);
             if(updateRobots) {
-                updateRobots(robot,list);
+//                updateRobots(robot,list);
             }
             return list;
         }

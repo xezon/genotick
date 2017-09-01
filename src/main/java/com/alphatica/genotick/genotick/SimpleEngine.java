@@ -124,7 +124,7 @@ public class SimpleEngine implements Engine {
         List<RobotInfo> list = population.getRobotInfoList();
         recordMarketChangesInRobots(robotDataList);
         Map<RobotName, List<RobotResult>> map = timePointExecutor.execute(robotDataList, population, engineSettings.performTraining, engineSettings.requireSymmetrical);
-        updatePredictions(list);
+        updatePredictions(list, map);
         recordRobotsPredictions(map);
         TimePointResult timePointResult = new TimePointResult(map);
         TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
@@ -132,16 +132,19 @@ public class SimpleEngine implements Engine {
             Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
             account.addPendingOrder(dataSetResult.getName(), prediction);
             output.showPrediction(timePoint, dataSetResult.getName(), prediction);
-//            tryUpdate(dataSetResult, timePoint, prediction, timePointStats);
         });
         checkTraining(list);
         return timePointStats;
     }
 
-    private void updatePredictions(List<RobotInfo> list) {
+    private void updatePredictions(List<RobotInfo> list, Map<RobotName, List<RobotResult>> map) {
         list.parallelStream().forEach(info -> {
-            RobotInfo i = new RobotInfo(population.getRobot(info.getName()));
-            info.setPredicting(i.isPredicting());
+            List<RobotResult> results = map.get(info.getName());
+            if(results != null) {
+                results.stream()
+                        .filter(result -> result.getPrediction() != Prediction.OUT).findFirst()
+                        .ifPresent(result -> info.setPredicting(true));
+            }
         });
     }
 
