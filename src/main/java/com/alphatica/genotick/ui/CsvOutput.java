@@ -85,7 +85,7 @@ public class CsvOutput implements UserOutput {
     }
 
     @Override
-    public void reportFinishedTimePoint(TimePoint timePoint) {
+    public void reportFinishedTimePoint(TimePoint timePoint, BigDecimal accountValue) {
 
     }
 

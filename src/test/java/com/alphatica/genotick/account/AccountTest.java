@@ -289,7 +289,7 @@ public class AccountTest {
         }
 
         @Override
-        public void reportFinishedTimePoint(TimePoint timePoint) {
+        public void reportFinishedTimePoint(TimePoint timePoint,  BigDecimal value) {
 
         }
     }

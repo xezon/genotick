@@ -32,5 +32,5 @@ public interface UserOutput {
 
     void reportStartingTimePoint(TimePoint timePoint);
 
-    void reportFinishedTimePoint(TimePoint timePoint);
+    void reportFinishedTimePoint(TimePoint timePoint, BigDecimal accountValue);
 }

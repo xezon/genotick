@@ -79,8 +79,8 @@ class ConsoleOutput implements UserOutput {
     }
 
     @Override
-    public void reportFinishedTimePoint(TimePoint timePoint) {
-        log(format("Finished time point %s", timePoint));
+    public void reportFinishedTimePoint(TimePoint timePoint, BigDecimal value) {
+        log(format("Finished time point %s with acount value %s", timePoint, scale(value)));
     }
 
     private void log(String string) {

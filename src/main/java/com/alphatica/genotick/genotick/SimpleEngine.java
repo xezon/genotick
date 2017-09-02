@@ -67,7 +67,6 @@ public class SimpleEngine implements Engine {
         if (engineSettings.performTraining) {
             savePopulation(output);
         }
-        BigDecimal accountValue = account.closeAccount();
         showSummary(output);
         return timePointStats;
     }
@@ -134,7 +133,7 @@ public class SimpleEngine implements Engine {
             output.showPrediction(timePoint, dataSetResult.getName(), prediction);
         });
         checkTraining(list);
-        output.reportFinishedTimePoint(timePoint);
+        output.reportFinishedTimePoint(timePoint, account.getValue());
         return timePointStats;
     }
 
