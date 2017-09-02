@@ -1,5 +1,5 @@
 #!/bin/bash
 set -e
-mvn clean package
+mvn package
 mvn org.pitest:pitest-maven:mutationCoverage
 

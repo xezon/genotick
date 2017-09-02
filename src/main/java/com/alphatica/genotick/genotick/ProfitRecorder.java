@@ -15,6 +15,7 @@ import java.util.Map;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 
+//TODO move to Account. Engine should not be bothered with this
 class ProfitRecorder {
     private final List<Double> profits = new ArrayList<>();
     private final Map<DataSetName, Integer> correctPredictions = new HashMap<>();

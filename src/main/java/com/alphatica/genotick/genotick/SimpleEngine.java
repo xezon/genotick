@@ -40,7 +40,7 @@ public class SimpleEngine implements Engine {
         profitRecorder = new ProfitRecorder();
     }
 
-    public static Engine getEngine() {
+    static Engine getEngine() {
         return new SimpleEngine();
     }
 
@@ -68,7 +68,6 @@ public class SimpleEngine implements Engine {
             savePopulation(output);
         }
         BigDecimal accountValue = account.closeAccount();
-        System.out.println("Account value: " + accountValue.toPlainString());
         showSummary(output);
         return timePointStats;
     }
@@ -120,6 +119,7 @@ public class SimpleEngine implements Engine {
         List<RobotData> robotDataList = data.prepareRobotDataList(timePoint);
         if (robotDataList.isEmpty())
             return null;
+        output.reportStartingTimePoint(timePoint);
         updateAccount(robotDataList);
         List<RobotInfo> list = population.getRobotInfoList();
         recordMarketChangesInRobots(robotDataList);
@@ -134,6 +134,7 @@ public class SimpleEngine implements Engine {
             output.showPrediction(timePoint, dataSetResult.getName(), prediction);
         });
         checkTraining(list);
+        output.reportFinishedTimePoint(timePoint);
         return timePointStats;
     }
 
@@ -161,7 +162,6 @@ public class SimpleEngine implements Engine {
     private void checkTraining(List<RobotInfo> list) {
         if (engineSettings.performTraining) {
             updatePopulation(list);
-            showAverageRobotWeight();
         }
     }
 
@@ -179,10 +179,6 @@ public class SimpleEngine implements Engine {
                 population.saveRobot(robot);
             });
         }
-    }
-
-    private void showAverageRobotWeight() {
-        output.infoMessage("Average weight: " + String.valueOf(population.getAverageWeight()));
     }
 
     private void updatePopulation(List<RobotInfo> list) {

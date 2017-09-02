@@ -17,7 +17,7 @@ import static java.lang.String.format;
 class ConsoleOutput implements UserOutput {
 
     private File logFile = new File(format("genotick-log-%s.txt", Tools.getPidString()));
-    private Boolean debugEnabled = true;
+    private Boolean debugEnabled = false;
 
     @Override
     public void errorMessage(String message) {
@@ -44,27 +44,28 @@ class ConsoleOutput implements UserOutput {
 
     @Override
     public void reportAccountOpening(BigDecimal cash) {
-
+        log(format("Openning account with %s cash", cash.toPlainString()));
     }
 
     @Override
     public void reportPendingTrade(DataSetName name, Prediction prediction) {
-
+        log(format("Adding pending trade %s for market %s", prediction, name));
     }
 
     @Override
-    public void reportOpeningTrade(BigDecimal cashPerTrade, DataSetName name, Prediction prediction, Double price) {
-
+    public void reportOpeningTrade(DataSetName name, BigDecimal quantity, Double price) {
+        log(format("Opening %s trade. Quantity: %s, price: %.4f", name, scale(quantity), price));
     }
 
     @Override
     public void reportClosingTrade(DataSetName name, BigDecimal quantity, BigDecimal price, BigDecimal profit, BigDecimal cash) {
-
+        log(format("Closing %s trade. Quantity %s, price: %s, profit: %s, current cash: %s",
+                name, scale(quantity), scale(price), scale(profit), scale(cash)));
     }
 
     @Override
     public void reportAccountClosing(BigDecimal cash) {
-
+        log(format("Account closing with final value %s", scale(cash)));
     }
 
     @Override
@@ -74,12 +75,12 @@ class ConsoleOutput implements UserOutput {
 
     @Override
     public void reportStartingTimePoint(TimePoint timePoint) {
-
+        log(format("Starting time point %s", timePoint));
     }
 
     @Override
     public void reportFinishedTimePoint(TimePoint timePoint) {
-
+        log(format("Finished time point %s", timePoint));
     }
 
     private void log(String string) {
@@ -92,6 +93,10 @@ class ConsoleOutput implements UserOutput {
 
             throw new ExecutionException(format("Unable to write to file %s", logFile.getAbsoluteFile()), e);
         }
+    }
+
+    private String scale(BigDecimal bigDecimal) {
+        return bigDecimal.setScale(4, BigDecimal.ROUND_HALF_DOWN).toPlainString();
     }
 
 	@Override

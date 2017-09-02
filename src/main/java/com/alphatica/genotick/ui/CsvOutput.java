@@ -60,7 +60,7 @@ public class CsvOutput implements UserOutput {
     }
 
     @Override
-    public void reportOpeningTrade(BigDecimal cashPerTrade,  DataSetName name, Prediction prediction, Double price) {
+    public void reportOpeningTrade(DataSetName name, BigDecimal quantity, Double price) {
 
     }
 

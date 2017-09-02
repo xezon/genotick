@@ -69,9 +69,9 @@ public class AccountTest {
         account.addPendingOrder(name1, prediction);
         output.clear();
         account.openTrades(map1);
-        compare(initial, output.cashPerTrade);
         assertEquals(name1, output.name);
-        assertEquals(prediction, output.prediction);
+        BigDecimal price = BigDecimal.valueOf(map1.get(name1));
+        assertEquals(initial.divide(price, MathContext.DECIMAL128), output.quantity);
         assertEquals(map1.get(name1), output.price);
     }
 
@@ -309,10 +309,9 @@ public class AccountTest {
         }
 
         @Override
-        public void reportOpeningTrade(BigDecimal cashPerTrade, DataSetName name, Prediction prediction, Double price) {
-            this.cashPerTrade = cashPerTrade;
+        public void reportOpeningTrade(DataSetName name, BigDecimal quantity, Double price) {
             this.name = name;
-            this.prediction = prediction;
+            this.quantity = quantity;
             this.price = price;
         }
 

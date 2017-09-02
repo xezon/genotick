@@ -22,7 +22,7 @@ public interface UserOutput {
 
     void reportPendingTrade(DataSetName name, Prediction prediction);
 
-    void reportOpeningTrade(BigDecimal cashPerTrade, DataSetName name, Prediction prediction, Double price);
+    void reportOpeningTrade(DataSetName name, BigDecimal quantity, Double price);
 
     void reportClosingTrade(DataSetName name, BigDecimal quantity, BigDecimal price, BigDecimal profit, BigDecimal cash);
 
