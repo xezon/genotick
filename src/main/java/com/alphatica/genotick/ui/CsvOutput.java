@@ -50,7 +50,7 @@ public class CsvOutput implements UserOutput {
         predictionWriter.writeLine(line);
     }
 
-    @Override
+//    @Override
     public void showCumulativeProfit(TimePoint timePoint, DataSetName name, double profit) {
         File file = new File(format("%s_%s_cumulative.csv", name.getName(),  pidString));
         try {
@@ -64,16 +64,6 @@ public class CsvOutput implements UserOutput {
     public void infoMessage(String s) {
         console.infoMessage(s);
     }
-
-	@Override
-	public void setDebugEnabled(Boolean debugEnabled) {
-		this.debug = debugEnabled;
-	}
-
-	@Override
-	public Boolean getDebugEnabled() {
-		return this.debug;
-	}
 
 	@Override
 	public void debugMessage(String message) {

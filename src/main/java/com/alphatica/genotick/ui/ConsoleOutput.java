@@ -42,11 +42,6 @@ class ConsoleOutput implements UserOutput {
     }
 
     @Override
-    public void showCumulativeProfit(TimePoint timePoint, DataSetName name, double profit) {
-        log(format("Cumulative profit for %s: %.2f", name.getPath(), profit));
-    }
-
-    @Override
     public void infoMessage(String s) {
         log(s);
     }
@@ -62,17 +57,6 @@ class ConsoleOutput implements UserOutput {
             throw new ExecutionException(format("Unable to write to file %s", logFile.getAbsoluteFile()), e);
         }
     }
-
-	@Override
-	public void setDebugEnabled(Boolean debugEnabled) {
-		this.debugEnabled = debugEnabled;
-		
-	}
-
-	@Override
-	public Boolean getDebugEnabled() {
-		return debugEnabled;
-	}
 
 	@Override
 	public void debugMessage(String message) {
