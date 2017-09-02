@@ -2,6 +2,7 @@ package com.alphatica.genotick.account;
 
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Prediction;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -36,6 +37,13 @@ public class AccountTest {
     public void init() {
         initial = BigDecimal.valueOf(1_000_000);
         account = new Account(initial);
+    }
+
+    @Test
+    public void returnsCorrectValuesWithTrades() {
+        account.addPendingOrder(name1, Prediction.UP);
+        account.openTrades(map1);
+        compare(account.getValue(), initial);
     }
 
     @Test

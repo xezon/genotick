@@ -11,4 +11,7 @@ class Trade {
 
     private BigDecimal price;
 
+    BigDecimal value() {
+        return quantity.abs().multiply(price);
+    }
 }

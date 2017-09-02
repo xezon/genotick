@@ -23,15 +23,15 @@ public class Account {
         this.cash = cash;
     }
 
+    public BigDecimal getValue() {
+        return cash.add(trades.values().stream().map(Trade::value).reduce(BigDecimal.ZERO, BigDecimal::add));
+    }
+
     public void openTrades(Map<DataSetName, Double> prices) {
         if(!pendingOrders.isEmpty()) {
             BigDecimal cashPerTrade = cash.divide(BigDecimal.valueOf(pendingOrders.size()), MathContext.DECIMAL128);
             prices.forEach((name, price) -> openTrade(cashPerTrade, name, price));
         }
-    }
-
-    public BigDecimal getCash() {
-        return cash;
     }
 
     public void closeTrades(Map<DataSetName, Double> prices) {
@@ -49,6 +49,10 @@ public class Account {
         if(prediction != Prediction.OUT) {
             pendingOrders.put(name, prediction);
         }
+    }
+
+    BigDecimal getCash() {
+        return cash;
     }
 
     private void openTrade(BigDecimal cashPerTrade, DataSetName name, Double price) {
