@@ -34,7 +34,7 @@ public class SimpleEngine implements Engine {
     private MainAppData data;
     private final ProfitRecorder profitRecorder;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
-    private final Account account = new Account(BigDecimal.valueOf(100_000L));
+    private final Account account = new Account(BigDecimal.valueOf(100_000L), output);
 
     private SimpleEngine() {
         profitRecorder = new ProfitRecorder();

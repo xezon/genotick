@@ -2,6 +2,7 @@ package com.alphatica.genotick.account;
 
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Prediction;
+import com.alphatica.genotick.ui.UserOutput;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -18,9 +19,12 @@ public class Account {
     private Map<DataSetName, Trade> trades = new HashMap<>();
 
     private BigDecimal cash;
+    private final UserOutput output;
 
-    public Account(BigDecimal cash) {
+    public Account(BigDecimal cash, UserOutput output) {
         this.cash = cash;
+        this.output = output;
+        output.reportAccountOpening(cash);
     }
 
     public BigDecimal getValue() {
@@ -41,12 +45,14 @@ public class Account {
     public BigDecimal closeAccount() {
         List<DataSetName> openedTradesNames = new ArrayList<>(trades.keySet());
         openedTradesNames.forEach(name -> closeTrade(name, trades.get(name).getPrice()));
+        output.reportAccountClosing(cash);
         return cash;
     }
 
     public void addPendingOrder(DataSetName name, Prediction prediction) {
         validateAddPending(name);
         if(prediction != Prediction.OUT) {
+            output.reportPendingTrade(name, prediction);
             pendingOrders.put(name, prediction);
         }
     }
@@ -58,6 +64,7 @@ public class Account {
     private void openTrade(BigDecimal cashPerTrade, DataSetName name, Double price) {
         validateOpenTrade(name);
         ofNullable(pendingOrders.get(name)).ifPresent(prediction -> {
+            output.reportOpeningTrade(cashPerTrade, name, prediction, price);
             BigDecimal quantity = cashPerTrade.divide(BigDecimal.valueOf(price), MathContext.DECIMAL128);
             if(prediction == Prediction.DOWN)
                 quantity = quantity.negate();
@@ -73,6 +80,7 @@ public class Account {
             BigDecimal profit = trade.getQuantity().multiply(price.subtract(trade.getPrice()));
             BigDecimal initial = trade.getQuantity().abs().multiply(trade.getPrice());
             cash = cash.add(profit).add(initial);
+            output.reportClosingTrade(name, trade.getQuantity(), price, profit, cash);
             trades.remove(name);
         });
     }

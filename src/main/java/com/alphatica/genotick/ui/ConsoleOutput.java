@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 
 import static java.lang.String.format;
@@ -39,6 +40,31 @@ class ConsoleOutput implements UserOutput {
     public void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction) {
         log(format("%s prediction on %s for the next trade: %s",
                 name.toString(),timePoint.toString(),prediction.toString()));
+    }
+
+    @Override
+    public void reportAccountOpening(BigDecimal cash) {
+
+    }
+
+    @Override
+    public void reportPendingTrade(DataSetName name, Prediction prediction) {
+
+    }
+
+    @Override
+    public void reportOpeningTrade(BigDecimal cashPerTrade, DataSetName name, Prediction prediction, Double price) {
+
+    }
+
+    @Override
+    public void reportClosingTrade(DataSetName name, BigDecimal quantity, BigDecimal price, BigDecimal profit, BigDecimal cash) {
+
+    }
+
+    @Override
+    public void reportAccountClosing(BigDecimal cash) {
+
     }
 
     @Override

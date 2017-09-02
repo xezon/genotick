@@ -2,11 +2,13 @@ package com.alphatica.genotick.account;
 
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Prediction;
-import jdk.nashorn.internal.ir.annotations.Ignore;
+import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.ui.UserOutput;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +27,7 @@ public class AccountTest {
     private final double price2 = 1000;
     private final Map<DataSetName, Double> map1 = Collections.singletonMap(name1, price1);
     private final Map<DataSetName, Double> map2 = buildMap2();
+    private MockUserOutput output;
 
     private Map<DataSetName,Double> buildMap2() {
         Map<DataSetName, Double> map = new HashMap<>();
@@ -36,13 +39,63 @@ public class AccountTest {
     @BeforeMethod
     public void init() {
         initial = BigDecimal.valueOf(1_000_000);
-        account = new Account(initial);
+        output = new MockUserOutput();
+        account = new Account(initial, output);
+    }
+
+    @Test
+    public void reportsAccountOpening() {
+        compare(initial, output.accountOpening);
+    }
+
+    @Test
+    public void reportsAccountClosing() {
+        Account acc = new Account(initial, output);
+        acc.closeAccount();
+        compare(initial, output.accountClosing);
+    }
+
+    @Test
+    public void reportsPendingTrade() {
+        Prediction prediction = Prediction.UP;
+        account.addPendingOrder(name1, prediction);
+        assertEquals(name1, output.name);
+        assertEquals(prediction, output.prediction);
+    }
+
+    @Test
+    public void reportsOpeningTrade() {
+        Prediction prediction = Prediction.UP;
+        account.addPendingOrder(name1, prediction);
+        output.clear();
+        account.openTrades(map1);
+        compare(initial, output.cashPerTrade);
+        assertEquals(name1, output.name);
+        assertEquals(prediction, output.prediction);
+        assertEquals(map1.get(name1), output.price);
+    }
+
+    @Test
+    public void reportsClosingTrade() {
+        Prediction prediction = Prediction.UP;
+        account.addPendingOrder(name1, prediction);
+        account.openTrades(map1);
+        output.clear();
+        account.closeTrades(map1);
+        BigDecimal closePrice = BigDecimal.valueOf(map1.get(name1));
+        assertEquals(name1, output.name);
+        compare(initial.divide(closePrice, MathContext.DECIMAL128), output.quantity);
+        compare(closePrice, output.closePrice);
+        compare(BigDecimal.ZERO, output.profit);
+        compare(initial, output.cash);
     }
 
     @Test
     public void returnsCorrectValuesWithTrades() {
         account.addPendingOrder(name1, Prediction.UP);
-        account.openTrades(map1);
+        account.addPendingOrder(name2, Prediction.DOWN);
+        account.addPendingOrder(new DataSetName("no_such_market"), Prediction.UP);
+        account.openTrades(map2);
         compare(account.getValue(), initial);
     }
 
@@ -193,4 +246,94 @@ public class AccountTest {
         );
     }
 
+    class MockUserOutput implements UserOutput {
+
+        BigDecimal accountOpening;
+        BigDecimal accountClosing;
+        BigDecimal cashPerTrade;
+        BigDecimal quantity;
+        BigDecimal profit;
+        BigDecimal closePrice;
+        BigDecimal cash;
+
+        Prediction prediction;
+        DataSetName name;
+        Double price;
+
+        void clear() {
+            accountOpening = null;
+            accountClosing = null;
+            cashPerTrade = null;
+            quantity = null;
+            profit = null;
+            cash = null;
+            prediction = null;
+            name = null;
+            price = Double.NaN;
+        }
+
+        @Override
+        public void errorMessage(String message) {
+
+        }
+
+        @Override
+        public void warningMessage(String message) {
+
+        }
+
+        @Override
+        public void debugMessage(String message) {
+
+        }
+
+        @Override
+        public void reportProfitForTimePoint(TimePoint timePoint, double cumulativeProfit, double timePointProfit) {
+
+        }
+
+        @Override
+        public void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction) {
+
+        }
+
+        @Override
+        public void reportAccountOpening(BigDecimal cash) {
+            accountOpening = cash;
+        }
+
+        @Override
+        public void reportPendingTrade(DataSetName name, Prediction prediction) {
+            this.name = name;
+            this.prediction = prediction;
+        }
+
+        @Override
+        public void reportOpeningTrade(BigDecimal cashPerTrade, DataSetName name, Prediction prediction, Double price) {
+            this.cashPerTrade = cashPerTrade;
+            this.name = name;
+            this.prediction = prediction;
+            this.price = price;
+        }
+
+        @Override
+        public void reportClosingTrade(DataSetName name, BigDecimal quantity, BigDecimal closePrice, BigDecimal profit, BigDecimal cash) {
+            this.name = name;
+            this.quantity = quantity;
+            this.closePrice = closePrice;
+            this.profit = profit;
+            this.cash = cash;
+        }
+
+
+        @Override
+        public void reportAccountClosing(BigDecimal cash) {
+            accountClosing = cash;
+        }
+
+        @Override
+        public void infoMessage(String s) {
+
+        }
+    }
 }

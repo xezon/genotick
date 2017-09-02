@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.Collections;
 
 import static java.lang.String.format;
@@ -50,7 +51,32 @@ public class CsvOutput implements UserOutput {
         predictionWriter.writeLine(line);
     }
 
-//    @Override
+    @Override
+    public void reportAccountOpening(BigDecimal cash) {
+
+    }
+
+    @Override
+    public void reportPendingTrade(DataSetName name, Prediction prediction) {
+
+    }
+
+    @Override
+    public void reportOpeningTrade(BigDecimal cashPerTrade,  DataSetName name, Prediction prediction, Double price) {
+
+    }
+
+    @Override
+    public void reportClosingTrade(DataSetName name, BigDecimal quantity, BigDecimal price, BigDecimal profit, BigDecimal cash) {
+
+    }
+
+    @Override
+    public void reportAccountClosing(BigDecimal cash) {
+
+    }
+
+    //    @Override
     public void showCumulativeProfit(TimePoint timePoint, DataSetName name, double profit) {
         File file = new File(format("%s_%s_cumulative.csv", name.getName(),  pidString));
         try {
