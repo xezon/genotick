@@ -100,21 +100,10 @@ public class AccountTest {
     }
 
     @Test
-    public void sameValueAfterClose() {
-        BigDecimal closed = account.closeAccount();
-        assertTrue(initial.equals(closed));
-    }
-
-    @Test
     public void closesTrades() {
         account.addPendingOrder(name1, Prediction.DOWN);
         account.openTrades(map1);
         account.closeAccount();
-        assertEquals(initial, account.getCash());
-    }
-
-    @Test
-    public void returnsCash() {
         assertEquals(initial, account.getCash());
     }
 
@@ -134,25 +123,6 @@ public class AccountTest {
         account.closeTrades(map1);
         BigDecimal closed = account.closeAccount();
         assertTrue(initial.equals(closed));
-    }
-
-    @Test
-    public void sameValueIfPriceNotChanged() {
-        account.addPendingOrder(name1, Prediction.DOWN);
-        account.openTrades(map1);
-        account.closeTrades(map1);
-        BigDecimal closed = account.closeAccount();
-        assertTrue(initial.equals(closed));
-    }
-
-    @Test
-    public void valueUpIfOneMarketUp() {
-        double profit = 1.05;
-        account.addPendingOrder(name1, Prediction.UP);
-        account.openTrades(map1);
-        account.closeTrades(Collections.singletonMap(name1, price1 * profit));
-        BigDecimal closed = account.closeAccount();
-        compare(closed, initial.multiply(BigDecimal.valueOf(profit)));
     }
 
     @Test
@@ -187,28 +157,6 @@ public class AccountTest {
     valueDownIfTwoMarketsDown
     valueDownIfOneMarketUpOneDown
      */
-
-    @Test
-    public void valueCorrectIfConsecutiveTrades() {
-        double profit = 1.05;
-        Map<DataSetName, Double> mapClose = Collections.singletonMap(name1, price1 * profit);
-
-        account.addPendingOrder(name1, Prediction.UP);
-        account.openTrades(map1);
-        account.closeTrades(mapClose);
-
-        account.addPendingOrder(name1, Prediction.UP);
-        account.openTrades(map1);
-        account.closeTrades(mapClose);
-
-        account.addPendingOrder(name1, Prediction.UP);
-        account.openTrades(map1);
-        account.closeTrades(mapClose);
-
-        BigDecimal closed = account.closeAccount();
-        BigDecimal profitBD = BigDecimal.valueOf(profit);
-        compare(closed, initial.multiply(profitBD).multiply(profitBD).multiply(profitBD));
-    }
 
     @Test
     public void canOpenConsecutiveTrades() {
