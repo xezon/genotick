@@ -79,7 +79,17 @@ public class CsvOutput implements UserOutput {
         console.infoMessage(s);
     }
 
-	@Override
+    @Override
+    public void reportStartingTimePoint(TimePoint timePoint) {
+
+    }
+
+    @Override
+    public void reportFinishedTimePoint(TimePoint timePoint) {
+
+    }
+
+    @Override
 	public void debugMessage(String message) {
 		if(this.debug)
 			console.infoMessage(message);		

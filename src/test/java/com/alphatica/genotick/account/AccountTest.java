@@ -335,5 +335,15 @@ public class AccountTest {
         public void infoMessage(String s) {
 
         }
+
+        @Override
+        public void reportStartingTimePoint(TimePoint timePoint) {
+
+        }
+
+        @Override
+        public void reportFinishedTimePoint(TimePoint timePoint) {
+
+        }
     }
 }

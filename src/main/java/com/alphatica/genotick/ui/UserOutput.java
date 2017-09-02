@@ -29,4 +29,8 @@ public interface UserOutput {
     void reportAccountClosing(BigDecimal cash);
 
     void infoMessage(String s);
+
+    void reportStartingTimePoint(TimePoint timePoint);
+
+    void reportFinishedTimePoint(TimePoint timePoint);
 }

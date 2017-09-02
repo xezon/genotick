@@ -72,6 +72,16 @@ class ConsoleOutput implements UserOutput {
         log(s);
     }
 
+    @Override
+    public void reportStartingTimePoint(TimePoint timePoint) {
+
+    }
+
+    @Override
+    public void reportFinishedTimePoint(TimePoint timePoint) {
+
+    }
+
     private void log(String string) {
         System.out.println(string);
         try {
