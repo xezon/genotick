@@ -7,17 +7,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.binarySearch;
 
+// TODO change nulls to optional
 public class MainAppData {
     private final Map<DataSetName, DataSet> sets;
 
-    private final List<TimePoint> timePoints;
+    private List<TimePoint> timePoints;
 
     public MainAppData() {
         sets = new HashMap<>();
@@ -30,10 +30,8 @@ public class MainAppData {
     }
 
     private void updateTimePoints(List<TimePoint> newTimePoints) {
-        Set<TimePoint> set = new HashSet<>(this.timePoints);
-        set.addAll(newTimePoints);
-        timePoints.clear();
-        timePoints.addAll(set);
+        timePoints.addAll(newTimePoints);
+        timePoints = timePoints.stream().distinct().collect(Collectors.toList());
         timePoints.sort(TimePoint::compareTo);
     }
 
