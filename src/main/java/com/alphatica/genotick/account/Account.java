@@ -65,9 +65,10 @@ public class Account {
         validateOpenTrade(name);
         ofNullable(pendingOrders.get(name)).ifPresent(prediction -> {
             BigDecimal quantity = cashPerTrade.divide(BigDecimal.valueOf(price), MathContext.DECIMAL128);
-            output.reportOpeningTrade(name, quantity, price);
-            if(prediction == Prediction.DOWN)
+            if(prediction == Prediction.DOWN) {
                 quantity = quantity.negate();
+            }
+            output.reportOpeningTrade(name, quantity, price);
             Trade trade = new Trade(quantity, BigDecimal.valueOf(price));
             trades.put(name, trade);
             pendingOrders.remove(name);

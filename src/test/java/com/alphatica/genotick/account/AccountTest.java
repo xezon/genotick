@@ -44,6 +44,14 @@ public class AccountTest {
     }
 
     @Test
+    public void reportsNegativeQuantityIfPredictionDown() {
+        account.addPendingOrder(name1, Prediction.DOWN);
+        output.clear();
+        account.openTrades(map1);
+        assertTrue(output.quantity.doubleValue() < 0);
+    }
+
+    @Test
     public void reportsAccountOpening() {
         compare(initial, output.accountOpening);
     }
