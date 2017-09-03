@@ -1,10 +1,5 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.data.DataSetName;
-import com.alphatica.genotick.timepoint.SetResult;
-import com.alphatica.genotick.timepoint.TimePointExecutor;
-import com.alphatica.genotick.timepoint.TimePointExecutorFactory;
-import com.alphatica.genotick.timepoint.TimePointStats;
 import com.alphatica.genotick.breeder.BreederSettings;
 import com.alphatica.genotick.breeder.RobotBreeder;
 import com.alphatica.genotick.breeder.RobotBreederFactory;
@@ -15,14 +10,15 @@ import com.alphatica.genotick.killer.RobotKillerSettings;
 import com.alphatica.genotick.mutator.Mutator;
 import com.alphatica.genotick.mutator.MutatorFactory;
 import com.alphatica.genotick.mutator.MutatorSettings;
-import com.alphatica.genotick.population.*;
+import com.alphatica.genotick.population.Population;
+import com.alphatica.genotick.population.PopulationDAO;
+import com.alphatica.genotick.population.PopulationDAOFactory;
+import com.alphatica.genotick.population.RobotExecutorSettings;
 import com.alphatica.genotick.processor.RobotExecutorFactory;
+import com.alphatica.genotick.timepoint.TimePointExecutor;
+import com.alphatica.genotick.timepoint.TimePointExecutorFactory;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Simulation {
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
@@ -33,19 +29,16 @@ public class Simulation {
     }
 
 
-    @SuppressWarnings("UnusedReturnValue")
-    public List<TimePointStats> start(MainSettings mainSettings, MainAppData data) throws IllegalAccessException {
-        if(!validateSettings(mainSettings))
-            return null;
-        logSettings(mainSettings);
-        RobotKiller killer = getRobotKiller(mainSettings);
-        Mutator mutator = getMutator(mainSettings);
-        RobotBreeder breeder = wireBreeder(mainSettings, mutator);
-        population = wirePopulation(mainSettings);
-        Engine engine = wireEngine(mainSettings, data, killer, breeder, population);
-        List<TimePointStats> results = engine.start();
-        showSummary(results);
-        return results;
+    public void start(MainSettings mainSettings, MainAppData data) throws IllegalAccessException {
+        if(validateSettings(mainSettings)) {
+            logSettings(mainSettings);
+            RobotKiller killer = getRobotKiller(mainSettings);
+            Mutator mutator = getMutator(mainSettings);
+            RobotBreeder breeder = wireBreeder(mainSettings, mutator);
+            population = wirePopulation(mainSettings);
+            Engine engine = wireEngine(mainSettings, data, killer, breeder, population);
+            engine.start();
+        }
     }
 
     public Population getPopulation() {
@@ -132,36 +125,4 @@ public class Simulation {
         output.infoMessage(settingsString);
     }
 
-    private void showSummary(List<TimePointStats> list) {
-        Map<DataSetName,Double> statsResults = new HashMap<>();
-        double result = 1;
-        for (TimePointStats stats : list) {
-            double percent = stats.getPercentEarned();
-            recordSetsProfit(stats,statsResults);
-            result *= percent / 100.0 + 1;
-        }
-        showStatsResults(statsResults);
-        output.infoMessage("Final result for genotick: " + result);
-    }
-
-    private void recordSetsProfit(TimePointStats stats, Map<DataSetName, Double> statsResults) {
-        for(Map.Entry<DataSetName,SetResult> entry: stats.listSets()) {
-            recordProfit(entry.getKey(),entry.getValue(),statsResults);
-        }
-    }
-
-    private void recordProfit(DataSetName name, SetResult setResult, Map<DataSetName, Double> statsResults) {
-        Double soFar = statsResults.get(name);
-        if(soFar == null) {
-            soFar = 0.0;
-        }
-        soFar += setResult.getProfit();
-        statsResults.put(name,soFar);
-    }
-
-    private void showStatsResults(Map<DataSetName, Double> statsResults) {
-        for(Map.Entry<DataSetName,Double> entry: statsResults.entrySet()) {
-            output.infoMessage("Profit for " + entry.getKey() + ": " + entry.getValue());
-        }
-    }
 }

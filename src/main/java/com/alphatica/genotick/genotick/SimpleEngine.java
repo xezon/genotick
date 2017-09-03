@@ -12,13 +12,11 @@ import com.alphatica.genotick.population.RobotName;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointResult;
-import com.alphatica.genotick.timepoint.TimePointStats;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,54 +30,32 @@ public class SimpleEngine implements Engine {
     private RobotBreeder breeder;
     private Population population;
     private MainAppData data;
-    private final ProfitRecorder profitRecorder;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
     private final Account account = new Account(BigDecimal.valueOf(100_000L), output);
-
-    private SimpleEngine() {
-        profitRecorder = new ProfitRecorder();
-    }
 
     static Engine getEngine() {
         return new SimpleEngine();
     }
 
     @Override
-    public List<TimePointStats> start() {
+    public void start() {
         Thread.currentThread().setName("Main engine execution thread");
-        double result = 1;
         initPopulation();
         TimePoint timePoint = new TimePoint(engineSettings.startTimePoint);
-        List<TimePointStats> timePointStats = new ArrayList<>();
         while (engineSettings.endTimePoint.compareTo(timePoint) >= 0) {
-            TimePointStats stat = executeTimePoint(timePoint);
-            if (stat != null) {
-                timePointStats.add(stat);
-                result *= (stat.getPercentEarned() / 100 + 1);
-                profitRecorder.recordProfit(stat);
-                output.reportProfitForTimePoint(timePoint, (result - 1) * 100, stat.getPercentEarned());
-            }
+            executeTimePoint(timePoint);
             timePoint = data.getNextTimePint(timePoint);
             if(timePoint == null) {
                 break;
             }
         }
         if (engineSettings.performTraining) {
-            savePopulation(output);
+            savePopulation();
         }
-        showSummary(output);
-        return timePointStats;
+        account.closeAccount();
     }
 
-    private void showSummary(UserOutput output) {
-        profitRecorder.showPercentCorrectPredictions(data.listSets());
-        output.infoMessage("Total: Profit: " + profitRecorder.getProfit() + " Drawdown: " + profitRecorder.getMaxDrawdown()
-                + " Profit / DD: " + profitRecorder.getProfit() / profitRecorder.getMaxDrawdown());
-        output.infoMessage("Second Half: Profit: " + profitRecorder.getProfitSecondHalf() + " Drawdown: " + profitRecorder.getMaxDrawdownSecondHalf()
-                + " Profit / DD: " + profitRecorder.getProfitSecondHalf() / profitRecorder.getMaxDrawdownSecondHalf());
-    }
-
-    private void savePopulation(UserOutput output) {
+    private void savePopulation() {
         String dirName = getSavedPopulationDirName();
         File dirFile = new File(dirName);
         if (!dirFile.exists() && !dirFile.mkdirs()) {
@@ -114,10 +90,10 @@ public class SimpleEngine implements Engine {
         }
     }
 
-    private TimePointStats executeTimePoint(TimePoint timePoint) {
+    private void executeTimePoint(TimePoint timePoint) {
         List<RobotData> robotDataList = data.prepareRobotDataList(timePoint);
         if (robotDataList.isEmpty())
-            return null;
+            return;
         output.reportStartingTimePoint(timePoint);
         updateAccount(robotDataList);
         List<RobotInfo> list = population.getRobotInfoList();
@@ -126,7 +102,6 @@ public class SimpleEngine implements Engine {
         updatePredictions(list, map);
         recordRobotsPredictions(map);
         TimePointResult timePointResult = new TimePointResult(map);
-        TimePointStats timePointStats = TimePointStats.getNewStats(timePoint);
         timePointResult.listDataSetResults().forEach(dataSetResult -> {
             Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
             account.addPendingOrder(dataSetResult.getName(), prediction);
@@ -134,7 +109,6 @@ public class SimpleEngine implements Engine {
         });
         checkTraining(list);
         output.reportFinishedTimePoint(timePoint, account.getValue());
-        return timePointStats;
     }
 
     private void updatePredictions(List<RobotInfo> list, Map<RobotName, List<RobotResult>> map) {

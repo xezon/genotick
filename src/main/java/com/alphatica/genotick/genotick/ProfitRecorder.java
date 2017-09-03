@@ -2,8 +2,6 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
-import com.alphatica.genotick.timepoint.SetResult;
-import com.alphatica.genotick.timepoint.TimePointStats;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 
 import java.util.ArrayList;
@@ -69,24 +67,6 @@ class ProfitRecorder {
             }
         }
         return maxDrawdown;
-    }
-
-    void recordProfit(TimePointStats stats) {
-        profits.add(stats.getPercentEarned());
-        stats.listSets().forEach(this::recordProfitForDataSet);
-    }
-
-    private void recordProfitForDataSet(Map.Entry<DataSetName, SetResult> entry) {
-        if(entry.getValue().getOutcome() == Outcome.CORRECT) {
-            Integer count = correctPredictions.computeIfAbsent(entry.getKey(), z -> 0);
-            count++;
-            correctPredictions.put(entry.getKey(), count);
-        }
-        if(entry.getValue().getOutcome() == Outcome.INCORRECT) {
-            Integer count = inCorrectPredictions.computeIfAbsent(entry.getKey(), z -> 0);
-            count++;
-            inCorrectPredictions.put(entry.getKey(), count);
-        }
     }
 
     void showPercentCorrectPredictions(Collection<DataSet> dataSets) {

@@ -30,5 +30,4 @@ public interface Population {
 
     Set<RobotName> listRobotsNames();
 
-    double getAverageWeight();
 }
