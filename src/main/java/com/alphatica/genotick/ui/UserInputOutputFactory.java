@@ -2,9 +2,15 @@ package com.alphatica.genotick.ui;
 
 import java.io.IOException;
 
+import com.alphatica.genotick.genotick.Main;
+
 public class UserInputOutputFactory {
     private static final String INPUT_STRING = "input";
     private static final String OUTPUT_STRING = "output";
+    private static final String OPTION_FILE = "file" + FileInput.delimiter;
+    private static final String OPTION_DEFAULT = "default";
+    private static final String OPTION_RANDOM = "random";
+    private static final String OPTION_CONSOLE = "console";
     private static UserOutput userOutput;
 
     public static UserInput getUserInput(Parameters parameters) {
@@ -12,14 +18,21 @@ public class UserInputOutputFactory {
         parameters.removeKey(INPUT_STRING);
         if(input == null)
             return tryConsoleInput();
-        if(input.startsWith("file" + FileInput.delimiter)) {
+        if(input.startsWith(OPTION_FILE)) {
             return new FileInput(input);
         }
         switch(input) {
-            case "default": return new DefaultInputs();
-            case "random": return new RandomParametersInput();
-            case "console": return tryConsoleInput();
+            case OPTION_DEFAULT: return new DefaultInputs();
+            case OPTION_RANDOM: return new RandomParametersInput();
+            case OPTION_CONSOLE: return tryConsoleInput();
         }
+        
+        System.out.println(String.format("'%s=%s' is no valid option.", INPUT_STRING, input));
+        System.out.println("Options are:");
+        System.out.println(String.format("%s=%spath\\to\\file", INPUT_STRING, OPTION_FILE));
+        System.out.println(String.format("%s=%s", INPUT_STRING, OPTION_DEFAULT));
+        System.out.println(String.format("%s=%s", INPUT_STRING, OPTION_RANDOM));
+        System.out.println(String.format("%s=%s", INPUT_STRING, OPTION_CONSOLE));
         return null;
     }
 

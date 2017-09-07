@@ -150,8 +150,6 @@ public class Main {
         	System.out.println("	java -jar genotick.jar input=file:path\\to\\file");
         	System.out.print("Output to a file: ");
         	System.out.println("	java -jar genotick.jar output=csv");
-        	System.out.print("Output to a file: ");
-        	System.out.println("	java -jar genotick.jar output=csv");
         	System.out.print("show population: ");
         	System.out.println("	java -jar genotick.jar showPopulation=directory_with_population");
         	System.out.print("show robot info: ");
