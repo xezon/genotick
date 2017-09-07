@@ -15,16 +15,16 @@ class Trade {
         return quantity.abs().multiply(price);
     }
     
-    public Trade(BigDecimal _quantity, BigDecimal _price) {
-    	quantity = _quantity;
-    	price = _price;
+    public Trade(BigDecimal quantity, BigDecimal price) {
+        this.quantity = quantity;
+        this.price = price;
     }
     
     public BigDecimal getPrice() {
-    	return price;
+        return price;
     }
     
     public BigDecimal getQuantity() {
-    	return quantity;
+        return quantity;
     }
 }
