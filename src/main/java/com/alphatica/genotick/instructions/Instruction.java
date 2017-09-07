@@ -31,9 +31,9 @@ public abstract class Instruction implements Serializable {
         return sb.toString();
     }
 
-    private List<InstructionField> getInheritedFields(Class aClass) throws IllegalAccessException {
+    private List<InstructionField> getInheritedFields(Class<?> aClass) throws IllegalAccessException {
         List<InstructionField> fields = new ArrayList<>();
-        Class check = aClass;
+        Class<?> check = aClass;
         while(check != Object.class) {
             Field [] declared = check.getDeclaredFields();
             for(Field field: declared) {

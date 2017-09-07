@@ -104,13 +104,13 @@ public class Main {
     }
 
     private static void showHeader() {
-        Class infoClass = RobotInfo.class;
+        Class<RobotInfo> infoClass = RobotInfo.class;
         List<Field> fields = buildFields(infoClass);
         String line = buildLine(fields);
         System.out.println(line);
     }
 
-    private static List<Field> buildFields(Class infoClass) {
+    private static List<Field> buildFields(Class<?> infoClass) {
         List<Field> fields = new ArrayList<>();
         for(Field field: infoClass.getDeclaredFields()) {
             if(!Modifier.isStatic(field.getModifiers())) {
