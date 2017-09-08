@@ -23,11 +23,11 @@ class SimpleMutator implements Mutator {
 
     @SuppressWarnings("unchecked")
     private void buildInstructionList(List<Class<? super Instruction>> instructionList) throws ClassNotFoundException {
-        Class processorClass = Processor.class;
+        Class<Processor> processorClass = Processor.class;
         Method[] methods = processorClass.getDeclaredMethods();
         for(Method m: methods) {
-            Class [] types = m.getParameterTypes();
-            for(Class t: types) {
+            Class<?> [] types = m.getParameterTypes();
+            for(Class<?> t: types) {
                 Class<Instruction> c = (Class<Instruction>)Class.forName(t.getName());
                 instructionList.add(c);
             }

@@ -27,12 +27,14 @@ public class DataSetResult {
             switch (robotResult.getPrediction()) {
                 case UP: recordUp(robotResult.getWeight()); break;
                 case DOWN: recordDown(robotResult.getWeight()); break;
+                case OUT: /*does nothing*/ break;
             }
         }
         if(robotResult.getWeight() < 0) {
             switch (robotResult.getPrediction()) {
                 case UP: recordDown(-robotResult.getWeight()); break;
                 case DOWN: recordUp(-robotResult.getWeight()); break;
+                case OUT: /*does nothing*/ break;
             }
         }
     }

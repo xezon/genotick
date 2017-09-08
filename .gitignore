@@ -3,3 +3,8 @@
 target/
 src/main/main.iml
 genotick-standalone.iml
+
+# Ignore all files and folders starting with dot,
+# Apart from this file
+.*
+!/.gitignore
