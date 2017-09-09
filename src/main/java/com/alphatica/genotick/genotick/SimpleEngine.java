@@ -32,7 +32,7 @@ public class SimpleEngine implements Engine {
     private Population population;
     private MainAppData data;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
-    private final ProfitRecorder profitRecorder = new ProfitRecorder();
+    private final ProfitRecorder profitRecorder = new ProfitRecorder(output);
     private final Account account = new Account(BigDecimal.valueOf(100_000L), output, profitRecorder);
 
     static Engine getEngine() {

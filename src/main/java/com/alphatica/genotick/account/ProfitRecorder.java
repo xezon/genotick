@@ -20,6 +20,11 @@ public class ProfitRecorder {
     private final Map<DataSetName, Integer> wins = new HashMap<>();
     private final Map<DataSetName, Integer> losses = new HashMap<>();
     private final Set<DataSetName> names = new HashSet<>();
+    private final UserOutput output;
+    
+    public ProfitRecorder(UserOutput output) {
+        this.output = output;
+    }
     
     void addTradeResult(DataSetName name, double profit) {
         names.add(name);
@@ -99,8 +104,7 @@ public class ProfitRecorder {
         int incorrect = ofNullable(losses.get(name)).orElse(0);
         if(correct + incorrect > 0) {
             double percentCorrect = (double) correct / (correct + incorrect) * 100;
-            UserOutput output = UserInputOutputFactory.getUserOutput();
-            output.infoMessage(format("Win rate for %s: %f %%", name.getPath(), percentCorrect));
+            output.infoMessage(format("Win rate for %s: %.2f %%", name.getPath(), percentCorrect));
         }
     }
 }
