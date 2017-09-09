@@ -18,12 +18,15 @@ import static org.testng.Assert.assertTrue;
 
 public class AccountTest {
 
+    private static final String NAME_ONE = "one";
+    private static final String NAME_TWO = "two";
+    
     private Account account;
     private BigDecimal initial;
 
-    private final DataSetName name1 = new DataSetName("one");
+    private final DataSetName name1 = new DataSetName(NAME_ONE);
     private final double price1 = 100;
-    private final DataSetName name2 = new DataSetName("two");
+    private final DataSetName name2 = new DataSetName(NAME_TWO);
     private final double price2 = 1000;
     private final Map<DataSetName, Double> map1 = Collections.singletonMap(name1, price1);
     private final Map<DataSetName, Double> map2 = buildMap2();
@@ -41,7 +44,7 @@ public class AccountTest {
     public void init() {
         initial = BigDecimal.valueOf(1_000_000);
         output = new MockUserOutput();
-        profitRecorder = new ProfitRecorder();
+        profitRecorder = new ProfitRecorder(output);
         account = new Account(initial, output, profitRecorder);
     }
 
@@ -63,6 +66,7 @@ public class AccountTest {
         Account acc = new Account(initial, output, profitRecorder);
         acc.closeAccount();
         compare(initial, output.accountClosing);
+        assertEquals(output.message, null);
     }
 
     @Test
@@ -115,6 +119,7 @@ public class AccountTest {
         account.openTrades(map1);
         account.closeAccount();
         assertEquals(initial, account.getCash());
+        assertEquals(output.message, String.format("Win rate for %s: 0,00 %%", NAME_ONE));
     }
 
     @Test
@@ -132,8 +137,8 @@ public class AccountTest {
         account.openTrades(map1);
         account.closeTrades(map1);
         account.closeAccount();
-        BigDecimal closed = account.getCash();
-        assertTrue(initial.equals(closed));
+        assertEquals(initial, account.getCash());
+        assertEquals(output.message, String.format("Win rate for %s: 0,00 %%", NAME_ONE));
     }
 
     @Test
@@ -149,6 +154,7 @@ public class AccountTest {
         account.closeAccount();
         BigDecimal closed = account.getCash();
         compare(closed, initial.multiply(BigDecimal.valueOf(profit)));
+        assertEquals(output.message, String.format("Win rate for %s: 100,00 %%", NAME_TWO));
     }
 
     @Test
@@ -219,6 +225,7 @@ public class AccountTest {
         Prediction prediction;
         DataSetName name;
         Double price;
+        String message;
 
         void clear() {
             accountOpening = null;
@@ -230,6 +237,7 @@ public class AccountTest {
             prediction = null;
             name = null;
             price = Double.NaN;
+            message = null;
         }
 
         @Override
@@ -287,7 +295,7 @@ public class AccountTest {
 
         @Override
         public void infoMessage(String s) {
-
+            message = s;
         }
 
         @Override
