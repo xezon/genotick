@@ -1,7 +1,10 @@
 package com.alphatica.genotick.account;
 
+import com.alphatica.genotick.account.ProfitRecorder;
 import com.alphatica.genotick.data.DataSetName;
+import com.alphatica.genotick.genotick.Outcome;
 import com.alphatica.genotick.genotick.Prediction;
+import com.alphatica.genotick.genotick.RobotData;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.math.BigDecimal;
@@ -14,7 +17,7 @@ import java.util.Map;
 import static java.util.Optional.ofNullable;
 
 public class Account {
-
+    private ProfitRecorder profitRecorder = new ProfitRecorder();
     private Map<DataSetName, Prediction> pendingOrders = new HashMap<>();
     private Map<DataSetName, Trade> trades = new HashMap<>();
 
@@ -34,7 +37,7 @@ public class Account {
     public void openTrades(Map<DataSetName, Double> prices) {
         if(!pendingOrders.isEmpty()) {
             BigDecimal cashPerTrade = cash.divide(BigDecimal.valueOf(pendingOrders.size()), MathContext.DECIMAL128);
-            prices.forEach((name, price) -> openTrade(cashPerTrade, name, price));
+            prices.forEach((name, price) -> openTrade(cashPerTrade, name, BigDecimal.valueOf(price)));
         }
     }
 
@@ -42,11 +45,13 @@ public class Account {
         prices.forEach((name, price) -> closeTrade(name, BigDecimal.valueOf(price)));
     }
 
-    public BigDecimal closeAccount() {
+    public void closeAccount() {
+        // Creating new list because a call to closeTrade() modifies the 'trades' collection
         List<DataSetName> openedTradesNames = new ArrayList<>(trades.keySet());
         openedTradesNames.forEach(name -> closeTrade(name, trades.get(name).getPrice()));
+        
         output.reportAccountClosing(cash);
-        return cash;
+        profitRecorder.outputWinRateForAllRecords();
     }
 
     public void addPendingOrder(DataSetName name, Prediction prediction) {
@@ -61,15 +66,15 @@ public class Account {
         return cash;
     }
 
-    private void openTrade(BigDecimal cashPerTrade, DataSetName name, Double price) {
+    private void openTrade(BigDecimal cashPerTrade, DataSetName name, BigDecimal price) {
         validateOpenTrade(name);
         ofNullable(pendingOrders.get(name)).ifPresent(prediction -> {
-            BigDecimal quantity = cashPerTrade.divide(BigDecimal.valueOf(price), MathContext.DECIMAL128);
+            BigDecimal quantity = cashPerTrade.divide(price, MathContext.DECIMAL128);
             if(prediction == Prediction.DOWN) {
                 quantity = quantity.negate();
             }
-            output.reportOpeningTrade(name, quantity, price);
-            Trade trade = new Trade(quantity, BigDecimal.valueOf(price));
+            output.reportOpeningTrade(name, quantity, price.doubleValue());
+            Trade trade = new Trade(quantity, price, prediction);
             trades.put(name, trade);
             pendingOrders.remove(name);
             cash = cash.subtract(cashPerTrade);
@@ -80,8 +85,17 @@ public class Account {
         ofNullable(trades.get(name)).ifPresent(trade -> {
             BigDecimal profit = trade.getQuantity().multiply(price.subtract(trade.getPrice()));
             BigDecimal initial = trade.getQuantity().abs().multiply(trade.getPrice());
+            Prediction prediction = trade.getPrediction();
+            BigDecimal previousPrice = trade.getPrice();
+            
+            double priceDbl = price.doubleValue();
+            double previousPriceDbl = previousPrice.doubleValue();
+            double priceDifference = RobotData.calculateLastChange(priceDbl, previousPriceDbl);
+            Outcome outcome = Outcome.getOutcome(prediction, priceDifference);
+            
             cash = cash.add(profit).add(initial);
             output.reportClosingTrade(name, trade.getQuantity(), price, profit, cash);
+            profitRecorder.addTradeResult(name, outcome, profit.doubleValue());
             trades.remove(name);
         });
     }

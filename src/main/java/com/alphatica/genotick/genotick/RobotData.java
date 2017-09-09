@@ -27,6 +27,7 @@ public class RobotData {
         this.lastChange = calculateLastChange(newData);
     }
 
+    // lastChange is the difference of the previous price to the current price
     public double getLastChange() {
         return lastChange;
     }
@@ -50,16 +51,20 @@ public class RobotData {
         return data.size();
     }
 
-    double getLastOpen() {
+    public double getLastOpen() {
         return data.get(0)[0];
     }
 
-    private double calculateLastChange(List<double[]> newData) {
-        if(data.get(0).length < 2) {
+    private static double calculateLastChange(List<double[]> newData) {
+        if(newData.get(0).length < 2) {
             return 0;
         }
         double last = newData.get(0)[0];
         double previous = newData.get(0)[1];
+        return calculateLastChange(last, previous);
+    }
+    
+    public static double calculateLastChange(double last, double previous) {
         return 100 * (last - previous) / previous;
     }
 }
