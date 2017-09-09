@@ -30,13 +30,6 @@ class ConsoleOutput implements UserOutput {
     }
 
     @Override
-    public void reportProfitForTimePoint(TimePoint timePoint, double cumulativeProfit, double timePointProfit) {
-        log("Profit for " + timePoint.toString() + ": "
-                + "Cumulative profit: " + cumulativeProfit + " "
-                + "TimePoint's profit: " + timePointProfit);
-    }
-
-    @Override
     public void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction) {
         log(format("%s prediction on %s for the next trade: %s",
                 name.toString(),timePoint.toString(),prediction.toString()));

@@ -38,12 +38,6 @@ public class CsvOutput implements UserOutput {
     }
 
     @Override
-    public void reportProfitForTimePoint(TimePoint timePoint, double cumulativeProfit, double timePointProfit) {
-        String line = timePoint.toString() + "," + String.valueOf(cumulativeProfit) + "," + String.valueOf(timePointProfit);
-        profitWriter.writeLine(line);
-    }
-
-    @Override
     public void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction) {
         String line = format("%s,%s,%s",timePoint.toString(),name.toString(),prediction.toString());
         predictionWriter.writeLine(line);
@@ -75,26 +69,27 @@ public class CsvOutput implements UserOutput {
     }
 
     @Override
-    public void infoMessage(String s) {
-        console.infoMessage(s);
-    }
-
-    @Override
     public void reportStartingTimePoint(TimePoint timePoint) {
 
     }
 
     @Override
     public void reportFinishedTimePoint(TimePoint timePoint, BigDecimal accountValue) {
-
+        String line = format("%s,%s", timePoint.toString(), accountValue.toPlainString());
+        profitWriter.writeLine(line);
     }
 
     @Override
 	public void debugMessage(String message) {
 		if(this.debug)
-			console.infoMessage(message);		
+			console.infoMessage(message);
 	}
 
+
+    @Override
+    public void infoMessage(String s) {
+        console.infoMessage(s);
+    }
 }
 
 class SimpleTextWriter {

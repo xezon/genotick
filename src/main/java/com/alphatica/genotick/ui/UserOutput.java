@@ -14,8 +14,6 @@ public interface UserOutput {
     
     void debugMessage(String message);
 
-    void reportProfitForTimePoint(TimePoint timePoint, double cumulativeProfit, double timePointProfit);
-
     void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction);
 
     void reportAccountOpening(BigDecimal cash);

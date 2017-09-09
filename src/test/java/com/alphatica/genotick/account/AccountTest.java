@@ -246,11 +246,6 @@ public class AccountTest {
         }
 
         @Override
-        public void reportProfitForTimePoint(TimePoint timePoint, double cumulativeProfit, double timePointProfit) {
-
-        }
-
-        @Override
         public void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction) {
 
         }
