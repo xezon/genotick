@@ -1,24 +1,44 @@
-package com.alphatica.genotick.genotick;
+package com.alphatica.genotick.account;
 
-import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
+import com.alphatica.genotick.ui.UserOutput;
+import com.alphatica.genotick.genotick.Outcome;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 
-//TODO move to Account. Engine should not be bothered with this
 class ProfitRecorder {
     private final List<Double> profits = new ArrayList<>();
-    private final Map<DataSetName, Integer> correctPredictions = new HashMap<>();
-    private final Map<DataSetName, Integer> inCorrectPredictions = new HashMap<>();
-
+    private final Map<DataSetName, Integer> wins = new HashMap<>();
+    private final Map<DataSetName, Integer> losses = new HashMap<>();
+    private final Set<DataSetName> names = new HashSet<>();
+    
+    public void addTradeResult(DataSetName name, Outcome outcome, double profit) {
+        names.add(name);
+        if (Outcome.OUT != outcome) {
+            if (Outcome.CORRECT == outcome) {
+                wins.merge(name, 1, Integer::sum);
+            }
+            else if (Outcome.INCORRECT == outcome) {
+                losses.merge(name, 1, Integer::sum);
+            }
+            profits.add(profit);
+        }
+    }
+    
+    Set<DataSetName> getRecordedDataSetNames() {
+        return names;
+    }
+    
     double getProfit() {
         return calculateProfit(profits);
     }
@@ -68,18 +88,22 @@ class ProfitRecorder {
         }
         return maxDrawdown;
     }
-
-    void showPercentCorrectPredictions(Collection<DataSet> dataSets) {
-        dataSets.forEach(this::showPercentCorrectPredictions);
+    
+    void outputWinRateForAllRecords() {
+        outputWinRate(this.names);
     }
 
-    private void showPercentCorrectPredictions(DataSet dataSet) {
-        int correct = ofNullable(correctPredictions.get(dataSet.getName())).orElse(0);
-        int incorrect = ofNullable(inCorrectPredictions.get(dataSet.getName())).orElse(0);
+    void outputWinRate(Collection<DataSetName> names) {
+        names.forEach(this::outputWinRate);
+    }
+
+    private void outputWinRate(DataSetName name) {
+        int correct = ofNullable(wins.get(name)).orElse(0);
+        int incorrect = ofNullable(losses.get(name)).orElse(0);
         if(correct + incorrect > 0) {
-            double percentCorrect = (double) correct / (correct + incorrect);
-            UserInputOutputFactory.getUserOutput()
-                    .infoMessage(format("Percent correct for %s: %f %%", dataSet.getName().getPath(), percentCorrect));
+            double percentCorrect = (double) correct / (correct + incorrect) * 100;
+            UserOutput output = UserInputOutputFactory.getUserOutput();
+            output.infoMessage(format("Win rate for %s: %f %%", name.getPath(), percentCorrect));
         }
     }
 }

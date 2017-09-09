@@ -37,7 +37,7 @@ class ConsoleOutput implements UserOutput {
 
     @Override
     public void reportAccountOpening(BigDecimal cash) {
-        log(format("Openning account with %s cash", cash.toPlainString()));
+        log(format("Opening account with %s cash", cash.toPlainString()));
     }
 
     @Override
@@ -58,7 +58,7 @@ class ConsoleOutput implements UserOutput {
 
     @Override
     public void reportAccountClosing(BigDecimal cash) {
-        log(format("Account closing with final value %s", scale(cash)));
+        log(format("Closing account with %s cash", scale(cash)));
     }
 
     @Override

@@ -129,7 +129,8 @@ public class AccountTest {
         account.addPendingOrder(name1, Prediction.DOWN);
         account.openTrades(map1);
         account.closeTrades(map1);
-        BigDecimal closed = account.closeAccount();
+        account.closeAccount();
+        BigDecimal closed = account.getCash();
         assertTrue(initial.equals(closed));
     }
 
@@ -143,7 +144,8 @@ public class AccountTest {
         map.put(name1, price1 * profit);
         map.put(name2, price2 * profit);
         account.closeTrades(map);
-        BigDecimal closed = account.closeAccount();
+        account.closeAccount();
+        BigDecimal closed = account.getCash();
         compare(closed, initial.multiply(BigDecimal.valueOf(profit)));
     }
 
