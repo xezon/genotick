@@ -31,7 +31,7 @@ public class RobotData {
         return lastPriceChange;
     }
 
-    public double getData(int dataColumn, int dataOffset) {
+    public double getPriceData(int dataColumn, int dataOffset) {
         if (dataOffset >= priceData.get(dataColumn).length)
             throw new NotEnoughDataException();
         else
@@ -50,7 +50,7 @@ public class RobotData {
         return priceData.size();
     }
 
-    public double getLastOpen() {
+    double getLastPriceOpen() {
         return priceData.get(0)[0];
     }
 
@@ -60,10 +60,6 @@ public class RobotData {
         }
         double last = priceData.get(0)[0];
         double previous = priceData.get(0)[1];
-        return calculateLastPriceChange(last, previous);
-    }
-    
-    public static double calculateLastPriceChange(double last, double previous) {
         return 100 * (last - previous) / previous;
     }
 }

@@ -141,7 +141,7 @@ public class SimpleEngine implements Engine {
     }
 
     private void updateAccount(List<RobotData> robotDataList) {
-        Map<DataSetName, Double> map = robotDataList.stream().collect(Collectors.toMap(RobotData::getName, RobotData::getLastOpen));
+        Map<DataSetName, Double> map = robotDataList.stream().collect(Collectors.toMap(RobotData::getName, RobotData::getLastPriceOpen));
         account.closeTrades(map);
         account.openTrades(map);
     }

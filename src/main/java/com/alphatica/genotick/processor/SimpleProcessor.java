@@ -334,7 +334,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int reg = ins.getRegister();
         int offset = fixOffset(ins.getDataOffsetIndex());
         int column = fixColumn(ins.getDataColumnIndex());
-        registers[reg] = data.getData(column, offset);
+        registers[reg] = data.getPriceData(column, offset);
     }
 
 
@@ -342,7 +342,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     public void execute(MoveDataToVariable ins) {
         int offset = fixOffset(ins.getDataOffsetIndex());
         int column = fixColumn(ins.getDataColumnIndex());
-        double value = data.getData(column, offset);
+        double value = data.getPriceData(column, offset);
         instructionList.setVariable(ins.getVariableArgument(),value);
     }
 
@@ -351,14 +351,14 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int reg = ins.getRegister();
         int varOffset = getRelativeOffset(ins);
         int column = fixColumn(ins.getDataColumnIndex());
-        registers[reg] = data.getData(column, varOffset);
+        registers[reg] = data.getPriceData(column, varOffset);
     }
 
     @Override
     public void execute(MoveRelativeDataToVariable ins) {
         int varOffset = getRelativeOffset(ins);
         int column = fixColumn(ins.getDataColumnIndex());
-        double value = data.getData(column, varOffset);
+        double value = data.getPriceData(column, varOffset);
         instructionList.setVariable(ins.getVariableArgument(), value);
     }
 
@@ -606,7 +606,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     public void execute(NaturalLogarithmOfData ins) {
         int column = fixColumn(ins.getDataColumnIndex());
         int offset = fixOffset(ins.getDataOffsetIndex());
-        double value = Math.log(data.getData(column,offset));
+        double value = Math.log(data.getPriceData(column,offset));
         registers[ins.getRegister()] = value;
     }
 
@@ -653,7 +653,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     private double getSum(int column, int length) {
         double sum = 0;
         for(int i = 0; i < length; i++) {
-            sum += data.getData(column,i);
+            sum += data.getPriceData(column,i);
         }
         return sum;
     }
@@ -773,9 +773,9 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     public void execute(HighestOfColumn ins) {
         int column = fixColumn(ins.getRegister1());
         int length = fixOffset(registers[ins.getRegister2()]);
-        double highest = data.getData(column,0);
+        double highest = data.getPriceData(column,0);
         for(int i = 1; i < length; i++) {
-            double check = data.getData(column,i);
+            double check = data.getPriceData(column,i);
             if(check > highest) {
                 highest = check;
             }
@@ -787,9 +787,9 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     public void execute(LowestOfColumn ins) {
         int column = fixColumn(ins.getRegister1());
         int length = fixOffset(registers[ins.getRegister2()]);
-        double lowest = data.getData(column,0);
+        double lowest = data.getPriceData(column,0);
         for(int i = 1; i < length; i++) {
-            double check = data.getData(column,i);
+            double check = data.getPriceData(column,i);
             if(check < lowest) {
                 lowest = check;
             }

@@ -16,6 +16,7 @@ import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 
 public class ProfitRecorder {
+
     private final List<Double> profits = new ArrayList<>();
     private final Map<DataSetName, Integer> wins = new HashMap<>();
     private final Map<DataSetName, Integer> losses = new HashMap<>();
@@ -32,7 +33,7 @@ public class ProfitRecorder {
         if (profit > 0) {
             wins.merge(name, 1, Integer::sum);
         }
-        else {
+        else if (profit < 0) {
             losses.merge(name, 1, Integer::sum);
         }
     }
@@ -104,7 +105,18 @@ public class ProfitRecorder {
         int incorrect = ofNullable(losses.get(name)).orElse(0);
         if(correct + incorrect > 0) {
             double percentCorrect = (double) correct / (correct + incorrect) * 100;
-            output.infoMessage(format("Win rate for %s: %.2f %%", name.getPath(), percentCorrect));
+            output.infoMessage(getWinRateFormat(name, percentCorrect));
         }
+        else {
+            output.infoMessage(getNoWinRateFormat(name));
+        }
+    }
+    
+    public static String getWinRateFormat(DataSetName name, double percentCorrect) {
+        return String.format("Win rate for %s: %.2f %%", name.getPath(), percentCorrect);
+    }
+    
+    public static String getNoWinRateFormat(DataSetName name) {
+        return String.format("No win rate for %s", name.getPath());
     }
 }

@@ -80,7 +80,8 @@ public class Account {
 
     private void closeTrade(DataSetName name, BigDecimal price) {
         ofNullable(trades.get(name)).ifPresent(trade -> {
-            BigDecimal profit = trade.getQuantity().multiply(price.subtract(trade.getPrice()));
+            BigDecimal priceDifference = price.subtract(trade.getPrice());
+            BigDecimal profit = trade.getQuantity().multiply(priceDifference);
             BigDecimal initial = trade.getQuantity().abs().multiply(trade.getPrice());
             cash = cash.add(profit).add(initial);
             output.reportClosingTrade(name, trade.getQuantity(), price, profit, cash);
