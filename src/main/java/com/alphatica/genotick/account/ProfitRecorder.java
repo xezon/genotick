@@ -3,7 +3,6 @@ package com.alphatica.genotick.account;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
-import com.alphatica.genotick.genotick.Outcome;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,22 +15,20 @@ import java.util.Set;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 
-class ProfitRecorder {
+public class ProfitRecorder {
     private final List<Double> profits = new ArrayList<>();
     private final Map<DataSetName, Integer> wins = new HashMap<>();
     private final Map<DataSetName, Integer> losses = new HashMap<>();
     private final Set<DataSetName> names = new HashSet<>();
     
-    public void addTradeResult(DataSetName name, Outcome outcome, double profit) {
+    void addTradeResult(DataSetName name, double profit) {
         names.add(name);
-        if (Outcome.OUT != outcome) {
-            if (Outcome.CORRECT == outcome) {
-                wins.merge(name, 1, Integer::sum);
-            }
-            else if (Outcome.INCORRECT == outcome) {
-                losses.merge(name, 1, Integer::sum);
-            }
-            profits.add(profit);
+        profits.add(profit);
+        if (profit > 0) {
+            wins.merge(name, 1, Integer::sum);
+        }
+        else {
+            losses.merge(name, 1, Integer::sum);
         }
     }
     
@@ -90,7 +87,7 @@ class ProfitRecorder {
     }
     
     void outputWinRateForAllRecords() {
-        outputWinRate(this.names);
+        outputWinRate(names);
     }
 
     void outputWinRate(Collection<DataSetName> names) {
