@@ -17,16 +17,13 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class AccountTest {
-
-    private static final String NAME_ONE = "one";
-    private static final String NAME_TWO = "two";
     
     private Account account;
     private BigDecimal initial;
 
-    private final DataSetName name1 = new DataSetName(NAME_ONE);
+    private final DataSetName name1 = new DataSetName("one");
     private final double price1 = 100;
-    private final DataSetName name2 = new DataSetName(NAME_TWO);
+    private final DataSetName name2 = new DataSetName("two");
     private final double price2 = 1000;
     private final Map<DataSetName, Double> map1 = Collections.singletonMap(name1, price1);
     private final Map<DataSetName, Double> map2 = buildMap2();
@@ -64,6 +61,7 @@ public class AccountTest {
     @Test
     public void reportsAccountClosing() {
         Account acc = new Account(initial, output, profitRecorder);
+        output.clear();
         acc.closeAccount();
         compare(initial, output.accountClosing);
         assertEquals(output.message, null);
@@ -117,9 +115,10 @@ public class AccountTest {
     public void closesTrades() {
         account.addPendingOrder(name1, Prediction.DOWN);
         account.openTrades(map1);
+        output.clear();
         account.closeAccount();
         assertEquals(initial, account.getCash());
-        assertEquals(output.message, String.format("Win rate for %s: 0,00 %%", NAME_ONE));
+        assertEquals(output.message, ProfitRecorder.getNoWinRateFormat(name1));
     }
 
     @Test
@@ -136,9 +135,10 @@ public class AccountTest {
         account.addPendingOrder(name1, Prediction.DOWN);
         account.openTrades(map1);
         account.closeTrades(map1);
+        output.clear();
         account.closeAccount();
         assertEquals(initial, account.getCash());
-        assertEquals(output.message, String.format("Win rate for %s: 0,00 %%", NAME_ONE));
+        assertEquals(output.message, ProfitRecorder.getNoWinRateFormat(name1));
     }
 
     @Test
@@ -151,10 +151,11 @@ public class AccountTest {
         map.put(name1, price1 * profit);
         map.put(name2, price2 * profit);
         account.closeTrades(map);
+        output.clear();
         account.closeAccount();
         BigDecimal closed = account.getCash();
         compare(closed, initial.multiply(BigDecimal.valueOf(profit)));
-        assertEquals(output.message, String.format("Win rate for %s: 100,00 %%", NAME_TWO));
+        assertEquals(output.message, ProfitRecorder.getWinRateFormat(name2, 100.0));
     }
 
     @Test
