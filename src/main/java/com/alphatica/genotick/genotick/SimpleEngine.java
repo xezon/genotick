@@ -1,6 +1,7 @@
 package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.account.Account;
+import com.alphatica.genotick.account.ProfitRecorder;
 import com.alphatica.genotick.breeder.RobotBreeder;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
@@ -31,7 +32,8 @@ public class SimpleEngine implements Engine {
     private Population population;
     private MainAppData data;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
-    private final Account account = new Account(BigDecimal.valueOf(100_000L), output);
+    private final ProfitRecorder profitRecorder = new ProfitRecorder();
+    private final Account account = new Account(BigDecimal.valueOf(100_000L), output, profitRecorder);
 
     static Engine getEngine() {
         return new SimpleEngine();

@@ -28,6 +28,7 @@ public class AccountTest {
     private final Map<DataSetName, Double> map1 = Collections.singletonMap(name1, price1);
     private final Map<DataSetName, Double> map2 = buildMap2();
     private MockUserOutput output;
+    private ProfitRecorder profitRecorder;
 
     private Map<DataSetName,Double> buildMap2() {
         Map<DataSetName, Double> map = new HashMap<>();
@@ -40,7 +41,8 @@ public class AccountTest {
     public void init() {
         initial = BigDecimal.valueOf(1_000_000);
         output = new MockUserOutput();
-        account = new Account(initial, output);
+        profitRecorder = new ProfitRecorder();
+        account = new Account(initial, output, profitRecorder);
     }
 
     @Test
@@ -58,7 +60,7 @@ public class AccountTest {
 
     @Test
     public void reportsAccountClosing() {
-        Account acc = new Account(initial, output);
+        Account acc = new Account(initial, output, profitRecorder);
         acc.closeAccount();
         compare(initial, output.accountClosing);
     }

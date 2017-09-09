@@ -27,7 +27,6 @@ public class RobotData {
         this.lastChange = calculateLastChange(newData);
     }
 
-    // lastChange is the difference of the previous price to the current price
     public double getLastChange() {
         return lastChange;
     }
