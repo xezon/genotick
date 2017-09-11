@@ -1,22 +1,23 @@
 package com.alphatica.genotick.population;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public class SimplePopulation implements Population {
-    private int desiredSize = 1024;
+    private PopulationSettings settings;
     private PopulationDAO dao;
 
     @Override
-    public void setDesiredSize(int size) {
-        desiredSize = size;
+    public void setSettings(PopulationSettings settings) {
+        this.settings = settings;
     }
 
     @Override
-    public int getDesiredSize() {
-        return desiredSize;
+    public PopulationSettings getSettings() {
+        return settings;
     }
 
     @Override
@@ -55,16 +56,41 @@ public class SimplePopulation implements Population {
     }
 
     @Override
-    public boolean haveSpaceToBreed() {
-        return getSize() < getDesiredSize();
+    public boolean hasSpaceToBreed() {
+        return getSize() < settings.desiredSize();
     }
 
     @Override
-    public void savePopulation(String path) {
-        PopulationDAO fs = new PopulationDAOFileSystem(path);
-        for(Robot robot : dao.getRobotList()) {
-            fs.saveRobot(robot);
+    public void loadFromDisk(String path) {
+        if (!(dao instanceof PopulationDAOFileSystem)) {
+            dao.removeAllRobots();
+            PopulationDAO fs = new PopulationDAOFileSystem(path);
+            int i = 0;
+            for(Robot robot : fs.getRobotList()) {
+                if(++i > settings.desiredSize())
+                    break;
+                dao.saveRobot(robot);
+            }
         }
+    }
+
+    @Override
+    public boolean saveToDisk(String path) {
+        boolean success = true;
+        if (!(dao instanceof PopulationDAOFileSystem)) {
+            File dirFile = new File(path);
+            if (!dirFile.exists() && !dirFile.mkdirs()) {
+                success = false;
+            }
+            else {
+                PopulationDAO fs = new PopulationDAOFileSystem(path);
+                fs.removeAllRobots();
+                for(Robot robot : dao.getRobotList()) {
+                    fs.saveRobot(robot);
+                }
+            }
+        }
+        return success;
     }
 
     @Override

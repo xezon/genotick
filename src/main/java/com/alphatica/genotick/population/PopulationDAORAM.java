@@ -1,7 +1,6 @@
 package com.alphatica.genotick.population;
 
 import com.alphatica.genotick.genotick.RandomGenerator;
-import com.alphatica.genotick.ui.UserOutput;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,6 +43,10 @@ public class PopulationDAORAM implements PopulationDAO {
         map.remove(robotName);
     }
 
+    @Override
+    public void removeAllRobots() {
+        map.clear();
+    }
 
     private RobotName getAvailableRobotName() {
         long l;

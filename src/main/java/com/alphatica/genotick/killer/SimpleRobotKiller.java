@@ -81,7 +81,7 @@ class SimpleRobotKiller implements RobotKiller {
     private void protectBest(Population population, List<RobotInfo> list) {
         if(settings.protectBestRobots > 0) {
             list.sort(RobotInfo.comparatorByAbsoluteWeight);
-            int i = (int)Math.round(settings.protectBestRobots * population.getDesiredSize());
+            int i = (int)Math.round(settings.protectBestRobots * population.getSettings().desiredSize());
             while(i-- > 0) {
                 RobotInfo robotInfo = getLastFromList(list);
                 if(robotInfo == null)

@@ -13,6 +13,7 @@ import com.alphatica.genotick.mutator.MutatorSettings;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.PopulationDAO;
 import com.alphatica.genotick.population.PopulationDAOFactory;
+import com.alphatica.genotick.population.PopulationSettings;
 import com.alphatica.genotick.population.RobotExecutorSettings;
 import com.alphatica.genotick.processor.RobotExecutorFactory;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
@@ -71,10 +72,10 @@ public class Simulation {
     }
 
     private Population wirePopulation(MainSettings settings) {
-        PopulationDAO dao = PopulationDAOFactory.getDefaultDAO(settings.populationDAO);
-        Population p = PopulationFactory.getDefaultPopulation(dao);
-        p.setDesiredSize(settings.populationDesiredSize);
-        return p;
+        PopulationSettings populationSettings = new PopulationSettings(settings.populationDAO, settings.populationDesiredSize);
+        PopulationDAO dao = PopulationDAOFactory.getDefaultDAO(populationSettings);
+        Population population = PopulationFactory.getDefaultPopulation(populationSettings, dao);
+        return population;
     }
 
     private RobotBreeder wireBreeder(MainSettings settings, Mutator mutator) {

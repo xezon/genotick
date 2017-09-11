@@ -95,9 +95,17 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         if(!result)
             throw new DAOException("Unable to remove file " + file.getAbsolutePath());
     }
+    
+    @Override
+    public void removeAllRobots() {
+        Set<RobotName> names = listRobotNames();
+        for (RobotName name : names) {
+            removeRobot(name);
+        }
+    }
 
     public static Robot getRobotFromFile(File file) {
-        try(ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream( new FileInputStream(file)))) {
+        try(ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
             return (Robot) ois.readObject();
         } catch (ClassNotFoundException | IOException e) {
             throw new DAOException(e);
@@ -148,7 +156,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
 
     private void saveRobotToFile(Robot robot, File file)  {
         deleteFileIfExists(file);
-        try(ObjectOutputStream ous = new ObjectOutputStream(new BufferedOutputStream( new FileOutputStream(file)))) {
+        try(ObjectOutputStream ous = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
             ous.writeObject(robot);
         } catch (IOException ex) {
             throw new DAOException(ex);

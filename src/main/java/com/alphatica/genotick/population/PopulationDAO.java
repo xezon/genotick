@@ -13,6 +13,8 @@ public interface PopulationDAO {
     void saveRobot(Robot robot);
 
     void removeRobot(RobotName robotName);
+    
+    void removeAllRobots();
 
     Set<RobotName> listRobotNames();
 }
