@@ -3,7 +3,7 @@
 ####################### Lines starting at # are ignored ################################
 ########################################################################################
 
-# This is a directory where data files are stored. It is relative to Genotick's root directory.
+# This is a directory where data files are stored. It is relative to the user's working directory.
 dataDirectory data
 
 # Time at which Genotick should start its simulation / training.
@@ -21,7 +21,7 @@ endTimePoint	20150101
 # allow for a much larger population.
 #populationDAO	/change/this/path
 
-# true or false. If true, Genotick will perform a full training.
+# If true, Genotick will perform a full training.
 # If false, then only a prediction is given. The population and robot weights are neither trained nor updated.
 performTraining true
 
@@ -52,7 +52,7 @@ probabilityOfDeathByWeight	0.5
 # This is done to protect new robots from getting removed when they had a few predictions only.
 inheritedChildWeight	0
 
-# Value on how far a robot can read data into the past. Set it to something reasonable, depending on your time frame.
+# Value of how far a robot can read data into the past. Set it to something reasonable, depending on your time frame.
 dataMaximumOffset	256
 
 # Value for how long a new robot is protected and cannot be removed.
