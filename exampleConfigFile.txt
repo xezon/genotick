@@ -1,109 +1,109 @@
-#######################################################################################
-########################	Example config file   ##################################
+########################################################################################
+########################	Example config file   ######################################
 ####################### Lines starting at # are ignored ################################
 ########################################################################################
 
-
-# This is a directory (relative to your current directory) where data files are stored.
+# This is a directory where data files are stored. It is relative to Genotick's root directory.
 dataDirectory data
 
-# Time at which Genotick should start its simulation / training
-# Leave commented out to enable start when data start
+# Time at which Genotick should start its simulation / training.
+# Leave commented out to start the simulation at the first available time point.
 startTimePoint	20000101
 
-# End time of simulation / training. Same as above - comment out to
-# end when data ends
+# Time at which the simulation / training ends.
+# Leave commented out to end the simulation at the last available time point.
 endTimePoint	20150101
 
-# This tells Genotick where robots' files should be. It must be a directory, must exist and 
-# has to be readable. If commented out then training will be done in RAM, so obviously 
+# Path to a directory of existing robot files. It must be a valid and readable directory.
+# If commented out, then training will be done in RAM - so obviously 
 # no prediction is possible in this mode (you need a population to make a prediction).  
-# Using path to a directory while training will make Genotick a lot slower but will 
-# allow for much larger population.  
+# Using a directory path while training will make Genotick a lot slower but will 
+# allow for a much larger population.
 #populationDAO	/change/this/path
 
-# false or true. If true Genotick will do full training. If false, only prediction is given - 
-# no training or updating population / robots' weights.
+# true or false. If true, Genotick will perform a full training.
+# If false, then only a prediction is given. The population and robot weights are neither trained nor updated.
 performTraining true
 
-# Desired size for the population. Should be in thousands at least to get satisfactory results. 
+# Desired size for the population. Should be at least in the thousands to get satisfactory results.
 # The more the merrier.
 populationDesiredSize	1000
 
-# This setting prevents robots to run forever. Given number is used to calculate 
+# This setting prevents robots to run forever. The given number is used to calculate the
 # maximum instructions that can be executed for a robot on each TimePoint for each data file.
-# Currently algorithm is simply: processorInstructionLimit * robotLength
+# The currently algorithm is simply: processorInstructionLimit * robotLength
 processorInstructionLimit	256
 
-# This setting is used to calculate how many robots is considered to be killed based on their age.
+# This setting is used to calculate how many robots are considered to be removed based on their age.
 maximumDeathByAge	0.01
 
-# This setting is used to calculate how many robots is considered to be killed based on their weight.
+# This setting is used to calculate how many robots are considered to be removed based on their weight.
 maximumDeathByWeight	0.01
 
-# Probability of killing robot because it's too old.
+# The probability of removing a robot because it is too old.
 probabilityOfDeathByAge	0.5
 
-# Probability of a robot getting killed because its weight is too close to 0.
-# Currently, killing by weight happens only if there is no more space to breed in population.
+# The probability of removing a robot because its weight is too close to 0.
+# Currently, removal by weight happens only if there is no more space to breed in the population.
 probabilityOfDeathByWeight	0.5
 
-# When a child is born is weight is zero because it has no predictions. 
-# This setting enables setting child's weight as percentage (in range 0.. 1) of its parents' average weight. 
-# This is done to protect young robots from getting killed when they had few predictions.
+# When a child robot is born its weight is zero because it has no predictions yet. 
+# This setting enables the child robot to inherit a percentage (in range 0..1) of its parents' average weight.
+# This is done to protect new robots from getting removed when they had a few predictions only.
 inheritedChildWeight	0
 
-# This is how far into the past a robot can read data. Set it to something reasonable, depending on your time frame.
+# Value on how far a robot can read data into the past. Set it to something reasonable, depending on your time frame.
 dataMaximumOffset	256
 
-# This is how long for a robot is protected (i.e. cannot be killed).
+# Value for how long a new robot is protected and cannot be removed.
+# This setting has no effect if it violates 'killNonPredictingRobots' and 'requireSymmetricalRobots'.
 # Number of outcomes increments by one for every data on every time point.
 protectRobotsUntilOutcomes	100
 
-# Probability of new instruction when making a child.
+# The probability of spawning new instructions when making a child.
 newInstructionProbability	0.01
 
-# Probability of mutating existing instruction when making a child.
+# The probability of mutating existing instructions when making a child.
 instructionMutationProbability	0.01
 
-# Probability of skipping an instruction when making a child. Better set it very close to newInstructionProbability, 
-# otherwise robots will either shrink (i.e. become useless) or grow uncontrollably (will execute forever).
+# The probability of skipping an instruction when making a child. Preferably set very close to newInstructionProbability, 
+# otherwise robots will either shrink and potentially become useless or grow uncontrollably and potentially execute for a long time.
 skipInstructionProbability	0.01
 
-# This settings is used to decide when a robot can have a child for the first time.
+# The number of outcomes required for a robot to breed its first child robot.
 minimumOutcomesToAllowBreeding	50
 
-# This setting is used to decide how soon a robot can have a child after previous child.
+# The number of outcomes required for a parent robot to breed another child.
 minimumOutcomesBetweenBreeding	50
 
-# If set to true robots that make no prediction will be removed immediately. Even if they protected by protectUntilOutcomes.
+# If true, then robots that make no prediction will be removed immediately,
+# regardless of the protection implied by 'protectUntilOutcomes'
 killNonPredictingRobots	true
 
-# Number of totally new and random robots to be added at each time point (as a fraction of PopulationDesiredSize). 
-# Even if population is full.
+# The number of totally new and random robots to be added at each time point (as a fraction of PopulationDesiredSize). 
+# Robots are added even if the population is full.
 randomRobotsAtEachUpdate	0.02
 
-# Elitism. Number of best robots to protect (as a fraction of PopulationDesiredSize). 
-# Even if they old and smell funny, as long as they useful.
+# The number of the best robots to protect (as a fraction of PopulationDesiredSize). 
 protectBestRobots	0.02
 
-# Should be used only if every data file has its reversed equivalent. 
-# If set to true and a number of UP and DOWN predictions is not the same – it gets removed immediately. 
-# Even if it's protected.
+# If true, robots are removed as soon as their predictions (UP, DOWN) on regular data sets
+# do not match reversed predictions on reversed data sets.
+# This setting should be used only if every data file has its reversed equivalent.
+# This setting ignores 'protectUntilOutcomes'.
 requireSymmetricalRobots	true
 
-# This prevents Genotick from trading if Long votes are too close to Short votes.
-# Majority weight is divided by this number and still has to be bigger than minority.
-# By default this is set to 1, so even small difference can tilt the scale.
-# For example setting this number to 2 means that majority weight has to be at least 2 times bigger
-# than minority. Numbers below 1 make no sense.
+# This prevents Genotick from trading if Long (UP) votes are too close to Short (DOWN) votes.
+# The majority weight is divided by this number and still has to be larger than the minority weight.
+# By default this is set to 1, so even small differences can tilt the direction.
+# For example setting this number to 2 means that the majority weight has to be at least 2 times larger
+# than the minority weight. Numbers below 1 make no sense.
 resultThreshold 1
 
-
-# This tells Genotick to ignore first N columns for learning. It still uses first column (second if
-# you count TimePoint column) for trading. 
+# This tells Genotick to ignore the first N columns for learning.
+# The 'open' column will be used for trading regardless. 
 # Example column count (date, open, high, low, close, volume):
 # 20160222, 100, 101, 99, 103, 42
 # 0         1    2    3   4    5
-# If 'ignoreColumns' is 3 then only 4th and 5th columns (close and volume) will be used for learning.
+# If 'ignoreColumns' is 3 then only the 4th and 5th columns (close and volume) will be used for learning.
 ignoreColumns 0
