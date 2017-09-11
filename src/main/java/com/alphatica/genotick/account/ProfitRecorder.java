@@ -1,7 +1,6 @@
 package com.alphatica.genotick.account;
 
 import com.alphatica.genotick.data.DataSetName;
-import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 
 public class ProfitRecorder {
