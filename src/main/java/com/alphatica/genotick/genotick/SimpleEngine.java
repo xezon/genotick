@@ -83,11 +83,11 @@ public class SimpleEngine implements Engine {
     }
 
     private void savePopulation() {
-        String userPath = population.getSettings().daoPath();
-        String generatedPath = getSavedPopulationDirName();
-        String path = userPath.isEmpty() ? generatedPath : userPath;
-        if (!population.saveToFolder(path)) {
-            output.errorMessage("Failed to save population in " + path);
+        if (!population.saveOnDisk()) {
+            String path = getSavedPopulationDirName();
+            if (!population.saveToFolder(path)) {
+                output.errorMessage("Failed to save population in " + path);
+            }
         }
     }
 

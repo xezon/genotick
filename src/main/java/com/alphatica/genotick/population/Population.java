@@ -8,7 +8,7 @@ public interface Population {
 
     void setSettings(PopulationSettings settings);
 
-    PopulationSettings getSettings();
+    int getDesiredSize();
 
     int getSize();
 
@@ -27,6 +27,8 @@ public interface Population {
     boolean hasSpaceToBreed();
 
     void loadFromFolder(String path);
+    
+    boolean saveOnDisk();
     
     boolean saveToFolder(String path);
 

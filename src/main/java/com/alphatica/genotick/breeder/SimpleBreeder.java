@@ -43,7 +43,7 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private void addOptionalRandomRobots(Population population) {
-        int count = population.getSettings().desiredSize() - population.getSize();
+        int count = population.getDesiredSize() - population.getSize();
         if (count > 0) {
             fillWithRobots(count, population);
         }
@@ -51,7 +51,7 @@ public class SimpleBreeder implements RobotBreeder {
 
     private void addRequiredRandomRobots(Population population) {
         if (settings.randomRobots > 0) {
-            int count = (int) Math.round(settings.randomRobots * population.getSettings().desiredSize());
+            int count = (int) Math.round(settings.randomRobots * population.getDesiredSize());
             fillWithRobots(count, population);
         }
     }

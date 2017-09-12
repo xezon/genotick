@@ -16,8 +16,8 @@ public class SimplePopulation implements Population {
     }
 
     @Override
-    public PopulationSettings getSettings() {
-        return settings;
+    public int getDesiredSize() {
+        return settings.desiredSize();
     }
 
     @Override
@@ -62,19 +62,31 @@ public class SimplePopulation implements Population {
 
     @Override
     public void loadFromFolder(String path) {
-        if (!(dao instanceof PopulationDAOFileSystem)) {
+        if (canSave()) {
             dao.removeAllRobots();
             PopulationDAO fs = new PopulationDAOFileSystem(path);
-            int maxSize = settings.desiredSize();
-            for(Robot robot : fs.getRobotList(0, maxSize)) {
+            int size = settings.desiredSize();
+            for(Robot robot : fs.getRobotList(0, size)) {
                 dao.saveRobot(robot);
             }
         }
     }
     
     @Override
+    public boolean saveOnDisk() {
+        if (canSave()) {
+            String path = settings.daoPath();
+            if (!path.isEmpty()) {
+                saveToExistingFolder(path);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @Override
     public boolean saveToFolder(String path) {
-        if (!(dao instanceof PopulationDAOFileSystem)) {
+        if (canSave()) {
             File dirFile = new File(path);
             if (!dirFile.exists() && !dirFile.mkdirs()) {
                 return false;
@@ -92,6 +104,10 @@ public class SimplePopulation implements Population {
         for(Robot robot : dao.getRobotList()) {
             fs.saveRobot(robot);
         }
+    }
+    
+    private boolean canSave() {
+        return !(dao instanceof PopulationDAOFileSystem);
     }
 
     @Override
