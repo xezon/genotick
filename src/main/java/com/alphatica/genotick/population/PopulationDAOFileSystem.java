@@ -99,9 +99,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     @Override
     public void removeAllRobots() {
         Set<RobotName> names = listRobotNames();
-        for (RobotName name : names) {
-            removeRobot(name);
-        }
+        names.forEach(name -> removeRobot(name));
     }
 
     public static Robot getRobotFromFile(File file) {

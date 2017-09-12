@@ -18,7 +18,7 @@ class PopulationFactory {
         population.setSettings(settings);
         population.setDao(dao);
         if(settings.daoOption() == PopulationDaoOption.EXPLICIT_RAM) {
-            population.loadFromDisk(settings.daoPath());
+            population.loadFromFolder(settings.daoPath());
         }
         return population;
     }

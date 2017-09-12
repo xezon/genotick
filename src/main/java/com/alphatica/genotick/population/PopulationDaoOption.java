@@ -3,8 +3,8 @@ package com.alphatica.genotick.population;
 public enum PopulationDaoOption {
     IMPLICIT(1<<0),
     EXPLICIT(1<<1),
-    RAM(1<<2),
-    DISK(1<<3),
+    RAM     (1<<2),
+    DISK    (1<<3),
     IMPLICIT_RAM (IMPLICIT.value() | RAM.value()),
     IMPLICIT_DISK(IMPLICIT.value() | DISK.value()),
     EXPLICIT_RAM (EXPLICIT.value() | RAM.value()),
@@ -25,13 +25,14 @@ public enum PopulationDaoOption {
     }
 
     private static String getIdentifier(PopulationDaoOption option) {        
-        String identifier;
         switch (option) {
-            case EXPLICIT_RAM: identifier = "ram:"; break;
-            case EXPLICIT_DISK: identifier = "disk:"; break;
-            default: identifier = ""; break;
+            case EXPLICIT_RAM:
+                return "ram:";
+            case EXPLICIT_DISK:
+                return "disk:";
+            default:
+                return "";
         }
-        return identifier;
     }
 
     private static boolean hasIdentifier(String daoSetting, PopulationDaoOption option) {
@@ -39,16 +40,14 @@ public enum PopulationDaoOption {
     }
 
     public static PopulationDaoOption getOption(String daoSetting) {
-        PopulationDaoOption option;
         if (daoSetting.isEmpty())
-            option = IMPLICIT_RAM;
+            return IMPLICIT_RAM;
         else if (hasIdentifier(daoSetting, EXPLICIT_RAM))
-            option = EXPLICIT_RAM;
+            return EXPLICIT_RAM;
         else if (hasIdentifier(daoSetting, EXPLICIT_DISK))
-            option = EXPLICIT_DISK;
+            return EXPLICIT_DISK;
         else
-            option = IMPLICIT_DISK;
-        return option;
+            return IMPLICIT_DISK;
     }
 
     public static String getPath(String daoSetting) {

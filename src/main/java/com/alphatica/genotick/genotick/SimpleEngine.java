@@ -72,7 +72,7 @@ public class SimpleEngine implements Engine {
         this.data = data;
     }
 
-    private String getSavedPopulationPath() {
+    private String getSavedPopulationDirName() {
         return "savedPopulation_" + Tools.getPidString();
     }
 
@@ -84,9 +84,9 @@ public class SimpleEngine implements Engine {
 
     private void savePopulation() {
         String userPath = population.getSettings().daoPath();
-        String generatedPath = getSavedPopulationPath();
+        String generatedPath = getSavedPopulationDirName();
         String path = userPath.isEmpty() ? generatedPath : userPath;
-        if (!population.saveToDisk(path)) {
+        if (!population.saveToFolder(path)) {
             output.errorMessage("Failed to save population in " + path);
         }
     }

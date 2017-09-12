@@ -61,36 +61,39 @@ public class SimplePopulation implements Population {
     }
 
     @Override
-    public void loadFromDisk(String path) {
+    public void loadFromFolder(String path) {
         if (!(dao instanceof PopulationDAOFileSystem)) {
             dao.removeAllRobots();
             PopulationDAO fs = new PopulationDAOFileSystem(path);
-            int i = 0;
+            int size = 0;
             for(Robot robot : fs.getRobotList()) {
-                if(++i > settings.desiredSize())
+                if(++size > settings.desiredSize())
                     break;
                 dao.saveRobot(robot);
             }
         }
     }
-
+    
     @Override
-    public boolean saveToDisk(String path) {
-        boolean success = true;
+    public boolean saveToFolder(String path) {
         if (!(dao instanceof PopulationDAOFileSystem)) {
             File dirFile = new File(path);
             if (!dirFile.exists() && !dirFile.mkdirs()) {
-                success = false;
+                return false;
             }
             else {
-                PopulationDAO fs = new PopulationDAOFileSystem(path);
-                fs.removeAllRobots();
-                for(Robot robot : dao.getRobotList()) {
-                    fs.saveRobot(robot);
-                }
+                saveToExistingFolder(path);
             }
         }
-        return success;
+        return true;
+    }
+    
+    private void saveToExistingFolder(String path) {
+        PopulationDAO fs = new PopulationDAOFileSystem(path);
+        fs.removeAllRobots();
+        for(Robot robot : dao.getRobotList()) {
+            fs.saveRobot(robot);
+        }
     }
 
     @Override

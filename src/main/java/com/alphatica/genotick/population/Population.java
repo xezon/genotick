@@ -26,9 +26,9 @@ public interface Population {
 
     boolean hasSpaceToBreed();
 
-    void loadFromDisk(String path);
+    void loadFromFolder(String path);
     
-    boolean saveToDisk(String path);
+    boolean saveToFolder(String path);
 
     Set<RobotName> listRobotsNames();
 
