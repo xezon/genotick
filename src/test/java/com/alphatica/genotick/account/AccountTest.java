@@ -2,11 +2,12 @@ package com.alphatica.genotick.account;
 
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Prediction;
-import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.ui.CsvOutput;
 import com.alphatica.genotick.ui.UserOutput;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Collections;
@@ -28,7 +29,7 @@ public class AccountTest {
     private final Map<DataSetName, Double> map1 = Collections.singletonMap(name1, price1);
     private final Map<DataSetName, Double> map2 = buildMap2();
     private MockUserOutput output;
-    private ProfitRecorder profitRecorder;
+    private MockProfitRecorder profitRecorder;
 
     private Map<DataSetName,Double> buildMap2() {
         Map<DataSetName, Double> map = new HashMap<>();
@@ -38,10 +39,10 @@ public class AccountTest {
     }
 
     @BeforeMethod
-    public void init() {
+    public void init() throws IOException {
         initial = BigDecimal.valueOf(1_000_000);
         output = new MockUserOutput();
-        profitRecorder = new ProfitRecorder(output);
+        profitRecorder = new MockProfitRecorder(output);
         account = new Account(initial, output, profitRecorder);
     }
 
@@ -117,8 +118,8 @@ public class AccountTest {
         account.openTrades(map1);
         output.clear();
         account.closeAccount();
+        assertEquals(profitRecorder.addTradeResultCount, map1.size());
         assertEquals(initial, account.getCash());
-        assertEquals(output.message, ProfitRecorder.getNoWinRateFormat(name1));
     }
 
     @Test
@@ -138,7 +139,6 @@ public class AccountTest {
         output.clear();
         account.closeAccount();
         assertEquals(initial, account.getCash());
-        assertEquals(output.message, ProfitRecorder.getNoWinRateFormat(name1));
     }
 
     @Test
@@ -155,7 +155,7 @@ public class AccountTest {
         account.closeAccount();
         BigDecimal closed = account.getCash();
         compare(closed, initial.multiply(BigDecimal.valueOf(profit)));
-        assertEquals(output.message, ProfitRecorder.getWinRateFormat(name2, 100.0));
+        assertTrue(profitRecorder.calledWinRate);
     }
 
     @Test
@@ -168,6 +168,17 @@ public class AccountTest {
         account.closeTrades(Collections.singletonMap(name1, finalPrice));
         compare(finalAccount, account.getCash());
     }
+
+    @Test
+    public void callsProfitRecordedWithRightValue() {
+        account.addPendingOrder(name1, Prediction.UP);
+        account.openTrades(map1);
+        double change = 0.05;
+        double finalPrice = price1 * (1 + change);
+        account.closeTrades(Collections.singletonMap(name1, finalPrice));
+        assertEquals(profitRecorder.profit, change * initial.doubleValue());
+    }
+
     /*
     valueUpIfTwoMarketsDown
     valueUpIfOneMarketUpOneDown
@@ -213,7 +224,29 @@ public class AccountTest {
         );
     }
 
-    class MockUserOutput implements UserOutput {
+    class MockProfitRecorder extends ProfitRecorder {
+
+        boolean calledWinRate = false;
+        int addTradeResultCount = 0;
+        double profit = 0.0;
+
+        MockProfitRecorder(UserOutput output) {
+            super(output);
+        }
+
+        @Override
+        void outputWinRateForAllRecords() {
+            calledWinRate = true;
+        }
+
+        @Override
+        void addTradeResult(DataSetName name, double profit) {
+            addTradeResultCount++;
+            this.profit += profit;
+        }
+    }
+
+    class MockUserOutput extends CsvOutput {
 
         BigDecimal accountOpening;
         BigDecimal accountClosing;
@@ -227,6 +260,9 @@ public class AccountTest {
         DataSetName name;
         Double price;
         String message;
+
+        MockUserOutput() throws IOException {
+        }
 
         void clear() {
             accountOpening = null;
@@ -242,29 +278,15 @@ public class AccountTest {
         }
 
         @Override
-        public void errorMessage(String message) {
-
-        }
-
-        @Override
-        public void warningMessage(String message) {
-
-        }
-
-        @Override
-        public void debugMessage(String message) {
-
-        }
-
-        @Override
-        public void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction) {
-
-        }
-
-        @Override
         public void reportAccountOpening(BigDecimal cash) {
             accountOpening = cash;
         }
+
+        @Override
+        public void reportAccountClosing(BigDecimal cash) {
+            accountClosing = cash;
+        }
+
 
         @Override
         public void reportPendingTrade(DataSetName name, Prediction prediction) {
@@ -288,25 +310,5 @@ public class AccountTest {
             this.cash = cash;
         }
 
-
-        @Override
-        public void reportAccountClosing(BigDecimal cash) {
-            accountClosing = cash;
-        }
-
-        @Override
-        public void infoMessage(String s) {
-            message = s;
-        }
-
-        @Override
-        public void reportStartingTimePoint(TimePoint timePoint) {
-
-        }
-
-        @Override
-        public void reportFinishedTimePoint(TimePoint timePoint,  BigDecimal value) {
-
-        }
     }
 }

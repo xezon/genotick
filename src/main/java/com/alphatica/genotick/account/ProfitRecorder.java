@@ -4,7 +4,6 @@ import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -91,10 +90,6 @@ public class ProfitRecorder {
     }
     
     void outputWinRateForAllRecords() {
-        outputWinRate(names);
-    }
-
-    void outputWinRate(Collection<DataSetName> names) {
         names.forEach(this::outputWinRate);
     }
 
@@ -103,18 +98,11 @@ public class ProfitRecorder {
         int incorrect = ofNullable(losses.get(name)).orElse(0);
         if(correct + incorrect > 0) {
             double percentCorrect = (double) correct / (correct + incorrect) * 100;
-            output.infoMessage(getWinRateFormat(name, percentCorrect));
+            output.infoMessage(format("Win rate for %s: %.2f %%", name.getPath(), percentCorrect));
         }
         else {
-            output.infoMessage(getNoWinRateFormat(name));
+            output.infoMessage(format("No win rate for %s", name.getPath()));
         }
     }
-    
-    public static String getWinRateFormat(DataSetName name, double percentCorrect) {
-        return String.format("Win rate for %s: %.2f %%", name.getPath(), percentCorrect);
-    }
-    
-    public static String getNoWinRateFormat(DataSetName name) {
-        return String.format("No win rate for %s", name.getPath());
-    }
+
 }
