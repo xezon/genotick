@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
-import static java.math.BigDecimal.valueOf;
 
 public class Account {
     private Map<DataSetName, Prediction> pendingOrders = new HashMap<>();
