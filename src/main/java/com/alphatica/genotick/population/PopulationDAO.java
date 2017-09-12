@@ -1,8 +1,11 @@
 package com.alphatica.genotick.population;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 public interface PopulationDAO {
+
+    Stream<Robot> getRobotsStream();
 
     Iterable<Robot> getRobotList();
     

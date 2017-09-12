@@ -4,19 +4,25 @@ import com.alphatica.genotick.genotick.RandomGenerator;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class PopulationDAORAM implements PopulationDAO {
+
     private final Map<RobotName,Robot> map = new HashMap<>();
     private final Random random;
 
     public PopulationDAORAM() {
         random = RandomGenerator.get();
     }
-    
+
+    @Override
+    public Stream<Robot> getRobotsStream() {
+        return map.values().stream();
+    }
+
     @Override
     public Iterable<Robot> getRobotList() {
         return () -> map.values().iterator();

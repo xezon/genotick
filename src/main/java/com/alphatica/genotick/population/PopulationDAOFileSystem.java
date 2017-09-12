@@ -11,6 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
@@ -18,11 +19,13 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     private static final String FILE_EXTENSION = ".prg";
     private final String robotsPath;
     private final Random random;
+    private final List<RobotName> names;
 
     public PopulationDAOFileSystem(String path) {
         checkPath(path);
         robotsPath = path;
         random = RandomGenerator.get();
+        names = loadRobotNames();
     }
 
     @Override
@@ -38,6 +41,11 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     public Robot getRobotByName(RobotName name) {
         File file = createFileForName(name);
         return getRobotFromFile(file);
+    }
+
+    @Override
+    public Stream<Robot> getRobotsStream() {
+        return names.stream().map(this::getRobotByName);
     }
 
     @Override
@@ -103,11 +111,11 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         if(!result)
             throw new DAOException("Unable to remove file " + file.getAbsolutePath());
     }
-    
+
     @Override
     public void removeAllRobots() {
         Set<RobotName> names = listRobotNames();
-        names.forEach(name -> removeRobot(name));
+        names.forEach(this::removeRobot);
     }
 
     public static Robot getRobotFromFile(File file) {
@@ -116,6 +124,14 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         } catch (ClassNotFoundException | IOException e) {
             throw new DAOException(e);
         }
+    }
+
+    private List<RobotName> loadRobotNames() {
+        String [] files = listFiles(robotsPath);
+        return Arrays.stream(files).map(file -> {
+            String longString = file.substring(0,file.indexOf('.'));
+            return new RobotName(Long.parseLong(longString));
+        }).collect(Collectors.toList());
     }
 
     private void checkPath(String dao) {
