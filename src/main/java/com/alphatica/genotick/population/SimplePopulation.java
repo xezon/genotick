@@ -65,10 +65,8 @@ public class SimplePopulation implements Population {
         if (!(dao instanceof PopulationDAOFileSystem)) {
             dao.removeAllRobots();
             PopulationDAO fs = new PopulationDAOFileSystem(path);
-            int size = 0;
-            for(Robot robot : fs.getRobotList()) {
-                if(++size > settings.desiredSize())
-                    break;
+            int maxSize = settings.desiredSize();
+            for(Robot robot : fs.getRobotList(0, maxSize)) {
                 dao.saveRobot(robot);
             }
         }

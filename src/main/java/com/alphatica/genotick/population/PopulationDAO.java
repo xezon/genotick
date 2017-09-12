@@ -5,6 +5,8 @@ import java.util.Set;
 public interface PopulationDAO {
 
     Iterable<Robot> getRobotList();
+    
+    Iterable<Robot> getRobotList(int fromIndex, int toIndex);
 
     int getAvailableRobotsCount();
 

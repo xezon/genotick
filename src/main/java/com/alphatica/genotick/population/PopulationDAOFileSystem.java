@@ -42,12 +42,20 @@ public class PopulationDAOFileSystem implements PopulationDAO {
 
     @Override
     public Iterable<Robot> getRobotList() {
+        return getRobotList(0, 0);
+    }
+
+    @Override
+    public Iterable<Robot> getRobotList(int fromIndex, int toIndex) {
         return new Iterable<Robot>() {
             class ListAvailableRobots implements Iterator<Robot> {
                 private final List<RobotName> names;
                 int index = 0;
-                ListAvailableRobots() {
-                    names = getAllRobotsNames();
+                ListAvailableRobots(int fromIndex, int toIndex) {
+                    List<RobotName> names = getAllRobotsNames();
+                    this.names = (fromIndex < toIndex && fromIndex >= 0 && toIndex < names.size())
+                            ? getAllRobotsNames().subList(fromIndex, toIndex)
+                            : getAllRobotsNames();
                 }
                 @Override
                 public boolean hasNext() {
@@ -69,7 +77,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
             }
             @Override
             public Iterator<Robot> iterator() {
-                return new ListAvailableRobots();
+                return new ListAvailableRobots(fromIndex, toIndex);
             }
         };
     }
@@ -168,6 +176,4 @@ public class PopulationDAOFileSystem implements PopulationDAO {
             throw new DAOException("Unable to delete file: " + file);
         }
     }
-
-
 }
