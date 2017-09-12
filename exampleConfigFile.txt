@@ -26,14 +26,14 @@ performTraining true
 # 2. [populationDAO ram:user/path/]  -> Existing robots are loaded and trained in RAM (faster).
 #                                         Upon simulation end, the new robot files are saved in the given folder.
 # 3. [populationDAO disk:user/path/] -> Existing robots are loaded and trained on the hard drive (slower).
-#    or [populationDAO user/path/         Added robots are immediately saved and removed robots are removed in the given folder.
+#    or [populationDAO user/path/]        Added robots are immediately saved and removed robots are removed in the given folder.
 #                                         This is the preferred method for live trading.
 # # If performTraining is false, the following settings apply:
 # 1. [populationDAO]                 -> Nothing happens. There is no population to make predictions with.
 # 2. [populationDAO ram:user/path/]  -> Existing robots are loaded and tested in RAM (faster).
 #                                         The population in the given folder remains unchanged.
 # 3. [populationDAO disk:user/path/] -> Existing robots are loaded and tested on the hard drive (slower).
-#    or [populationDAO user/path/         The population in the given folder remains unchanged.
+#    or [populationDAO user/path/]        The population in the given folder remains unchanged.
 populationDAO
 
 # Desired size for the population. Should be at least in the thousands to get satisfactory results.
