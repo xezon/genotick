@@ -57,16 +57,6 @@ public class SimpleEngine implements Engine {
         account.closeAccount();
     }
 
-    private void savePopulation() {
-        String dirName = getSavedPopulationDirName();
-        File dirFile = new File(dirName);
-        if (!dirFile.exists() && !dirFile.mkdirs()) {
-            output.errorMessage("Unable to create directory " + dirName);
-        } else {
-            population.savePopulation(dirName);
-        }
-    }
-
     @Override
     public void setSettings(EngineSettings engineSettings,
                             TimePointExecutor timePointExecutor,
@@ -89,6 +79,15 @@ public class SimpleEngine implements Engine {
     private void initPopulation() {
         if (population.getSize() == 0 && engineSettings.performTraining) {
             breeder.breedPopulation(population, Collections.emptyList());
+        }
+    }
+
+    private void savePopulation() {
+        if (!population.saveOnDisk()) {
+            String path = getSavedPopulationDirName();
+            if (!population.saveToFolder(path)) {
+                output.errorMessage("Failed to save population in " + path);
+            }
         }
     }
 

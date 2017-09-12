@@ -25,7 +25,7 @@ public class SimpleBreeder implements RobotBreeder {
 
     @Override
     public void breedPopulation(Population population, List<RobotInfo> list) {
-        if (population.haveSpaceToBreed()) {
+        if (population.hasSpaceToBreed()) {
             int before = population.getSize(), after;
             addRequiredRandomRobots(population);
             after = population.getSize();
@@ -94,7 +94,7 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private void breedPopulationFromList(Population population, List<RobotInfo> list) {
-        while (population.haveSpaceToBreed()) {
+        while (population.hasSpaceToBreed()) {
             Robot parent1 = getPossibleParent(population, list);
             Robot parent2 = getPossibleParent(population, list);
             if (parent1 == null || parent2 == null)

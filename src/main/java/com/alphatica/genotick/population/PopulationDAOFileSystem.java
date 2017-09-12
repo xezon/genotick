@@ -42,12 +42,20 @@ public class PopulationDAOFileSystem implements PopulationDAO {
 
     @Override
     public Iterable<Robot> getRobotList() {
+        return getRobotList(0, 0);
+    }
+
+    @Override
+    public Iterable<Robot> getRobotList(int fromIndex, int toIndex) {
         return new Iterable<Robot>() {
             class ListAvailableRobots implements Iterator<Robot> {
                 private final List<RobotName> names;
                 int index = 0;
-                ListAvailableRobots() {
-                    names = getAllRobotsNames();
+                ListAvailableRobots(int fromIndex, int toIndex) {
+                    List<RobotName> names = getAllRobotsNames();
+                    this.names = (fromIndex < toIndex && fromIndex >= 0 && toIndex < names.size())
+                            ? getAllRobotsNames().subList(fromIndex, toIndex)
+                            : getAllRobotsNames();
                 }
                 @Override
                 public boolean hasNext() {
@@ -69,7 +77,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
             }
             @Override
             public Iterator<Robot> iterator() {
-                return new ListAvailableRobots();
+                return new ListAvailableRobots(fromIndex, toIndex);
             }
         };
     }
@@ -95,9 +103,15 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         if(!result)
             throw new DAOException("Unable to remove file " + file.getAbsolutePath());
     }
+    
+    @Override
+    public void removeAllRobots() {
+        Set<RobotName> names = listRobotNames();
+        names.forEach(name -> removeRobot(name));
+    }
 
     public static Robot getRobotFromFile(File file) {
-        try(ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream( new FileInputStream(file)))) {
+        try(ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
             return (Robot) ois.readObject();
         } catch (ClassNotFoundException | IOException e) {
             throw new DAOException(e);
@@ -148,7 +162,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
 
     private void saveRobotToFile(Robot robot, File file)  {
         deleteFileIfExists(file);
-        try(ObjectOutputStream ous = new ObjectOutputStream(new BufferedOutputStream( new FileOutputStream(file)))) {
+        try(ObjectOutputStream ous = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
             ous.writeObject(robot);
         } catch (IOException ex) {
             throw new DAOException(ex);
@@ -162,6 +176,4 @@ public class PopulationDAOFileSystem implements PopulationDAO {
             throw new DAOException("Unable to delete file: " + file);
         }
     }
-
-
 }

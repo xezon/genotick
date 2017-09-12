@@ -1,8 +1,8 @@
 package com.alphatica.genotick.population;
 
 import com.alphatica.genotick.genotick.RandomGenerator;
-import com.alphatica.genotick.ui.UserOutput;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,11 +16,19 @@ public class PopulationDAORAM implements PopulationDAO {
     public PopulationDAORAM() {
         random = RandomGenerator.assignRandom();
     }
+    
     @Override
     public Iterable<Robot> getRobotList() {
         return () -> map.values().iterator();
     }
 
+    @Override
+    public Iterable<Robot> getRobotList(int fromIndex, int toIndex) {
+        return (fromIndex < toIndex && fromIndex >= 0 && toIndex < map.size())
+                ? () -> Collections.list(Collections.enumeration(map.values())).subList(fromIndex, toIndex).iterator()
+                : getRobotList();
+    }
+    
     @Override
     public int getAvailableRobotsCount() {
         return map.size();
@@ -44,6 +52,10 @@ public class PopulationDAORAM implements PopulationDAO {
         map.remove(robotName);
     }
 
+    @Override
+    public void removeAllRobots() {
+        map.clear();
+    }
 
     private RobotName getAvailableRobotName() {
         long l;

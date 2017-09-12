@@ -3,6 +3,7 @@ package com.alphatica.genotick.genotick;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.ui.UserOutput;
+import com.alphatica.genotick.population.PopulationSettings;
 
 import java.lang.reflect.Field;
 
@@ -10,10 +11,10 @@ public class MainSettings {
 
     public TimePoint startTimePoint = new TimePoint(0);
     public TimePoint endTimePoint = new TimePoint(Long.MAX_VALUE);
-    public String populationDAO = "";
+    public int populationDesiredSize = PopulationSettings.DEFAULT_DESIRED_SIZE;
+    public String populationDAO = PopulationSettings.DEFAULT_DATA_ACCESS;
     public boolean performTraining = true;
     public String dataSettings = Main.DEFAULT_DATA_DIR;
-    public int populationDesiredSize = 1_000;
     public int processorInstructionLimit = 256;
     public double maximumDeathByAge = 0.01;
     public double maximumDeathByWeight = 0.1;

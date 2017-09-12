@@ -6,7 +6,7 @@ import java.util.Set;
 
 public interface Population {
 
-    void setDesiredSize(int size);
+    void setSettings(PopulationSettings settings);
 
     int getDesiredSize();
 
@@ -24,9 +24,13 @@ public interface Population {
 
     List<RobotInfo> getRobotInfoList();
 
-    boolean haveSpaceToBreed();
+    boolean hasSpaceToBreed();
 
-    void savePopulation(String path);
+    void loadFromFolder(String path);
+    
+    boolean saveOnDisk();
+    
+    boolean saveToFolder(String path);
 
     Set<RobotName> listRobotsNames();
 
