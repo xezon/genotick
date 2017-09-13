@@ -5,6 +5,7 @@ import com.alphatica.genotick.genotick.RandomGenerator;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -24,17 +25,8 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     public PopulationDAOFileSystem(String path) {
         checkPath(path);
         robotsPath = path;
-        random = RandomGenerator.get();
         names = loadRobotNames();
-    }
-
-    @Override
-    public Set<RobotName> listRobotNames() {
-        String [] files = listFiles(robotsPath);
-        return Arrays.stream(files).map(file -> {
-            String longString = file.substring(0,file.indexOf('.'));
-            return new RobotName(Long.parseLong(longString));
-        }).collect(Collectors.toSet());
+        random = RandomGenerator.get();
     }
 
     @Override
@@ -44,8 +36,13 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     }
 
     @Override
-    public Stream<Robot> getRobotsStream() {
+    public Stream<Robot> getRobots() {
         return names.stream().map(this::getRobotByName);
+    }
+
+    @Override
+    public Stream<RobotName> getRobotNames() {
+        return names.stream();
     }
 
     @Override
@@ -98,7 +95,9 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     @Override
     public void saveRobot(Robot robot) {
         if(robot.getName() == null) {
-            robot.setName(getAvailableName());
+            RobotName name = getAvailableName();
+            robot.setName(name);
+            names.add(name);
         }
         File file = createFileForName(robot.getName());
         saveRobotToFile(robot,file);
@@ -107,6 +106,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     @Override
     public void removeRobot(RobotName robotName) {
         File file = createFileForName(robotName);
+        names.remove(robotName);
         boolean result = file.delete();
         if(!result)
             throw new DAOException("Unable to remove file " + file.getAbsolutePath());
@@ -114,8 +114,8 @@ public class PopulationDAOFileSystem implements PopulationDAO {
 
     @Override
     public void removeAllRobots() {
-        Set<RobotName> names = listRobotNames();
-        names.forEach(this::removeRobot);
+        Set<RobotName> tmpNames = new HashSet<>(names);
+        tmpNames.forEach(this::removeRobot);
     }
 
     public static Robot getRobotFromFile(File file) {
@@ -166,7 +166,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         File file;
         long l;
         do {
-            l = Math.abs(random.nextLong()-1);
+            l = Math.abs(random.nextLong() - 1);
             file = new File(robotsPath + String.valueOf(l) + FILE_EXTENSION);
         } while (file.exists());
         return new RobotName(l);

@@ -19,8 +19,13 @@ public class PopulationDAORAM implements PopulationDAO {
     }
 
     @Override
-    public Stream<Robot> getRobotsStream() {
+    public Stream<Robot> getRobots() {
         return map.values().stream();
+    }
+
+    @Override
+    public Stream<RobotName> getRobotNames() {
+        return map.keySet().stream();
     }
 
     @Override
@@ -77,8 +82,4 @@ public class PopulationDAORAM implements PopulationDAO {
         return name;
     }
 
-    @Override
-    public Set<RobotName> listRobotNames() {
-        return map.keySet();
-    }
 }

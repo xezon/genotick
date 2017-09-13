@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SimplePopulation implements Population {
     private PopulationSettings settings;
@@ -112,7 +113,7 @@ public class SimplePopulation implements Population {
 
     @Override
     public Set<RobotName> listRobotsNames() {
-        return dao.listRobotNames();
+        return dao.getRobotNames().collect(Collectors.toSet());
     }
 
     @Override
