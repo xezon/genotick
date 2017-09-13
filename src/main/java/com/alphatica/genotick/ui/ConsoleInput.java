@@ -50,7 +50,8 @@ class ConsoleInput extends BasicUserInput {
             settings.killNonPredictingRobots = getBoolean("Kill non-predicting robots", settings.killNonPredictingRobots);
             settings.randomRobotsAtEachUpdate = getDouble("Random robots at each update", settings.randomRobotsAtEachUpdate);
             settings.protectBestRobots = getDouble("Protect best robots", settings.protectBestRobots);
-            settings.ignoreColumns = getInteger("Ignore columns for training",settings.ignoreColumns);
+            settings.ignoreColumns = getInteger("Ignore columns for training", settings.ignoreColumns);
+            settings.randomSeed = getLong("Random seed", settings.randomSeed);
         }
         return settings;
     }

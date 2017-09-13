@@ -118,3 +118,6 @@ resultThreshold 1
 # 0         1    2    3   4    5
 # If 'ignoreColumns' is 3 then only the 4th and 5th columns (close and volume) will be used for learning.
 ignoreColumns 0
+
+# Random seed for developers. Useful for testing code changes. Zero for using default 'random' seed.
+randomSeed 0

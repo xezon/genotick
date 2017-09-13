@@ -22,7 +22,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     public PopulationDAOFileSystem(String path) {
         checkPath(path);
         robotsPath = path;
-        random = RandomGenerator.assignRandom();
+        random = RandomGenerator.get();
     }
 
     @Override

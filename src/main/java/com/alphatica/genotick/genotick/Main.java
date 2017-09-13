@@ -25,18 +25,18 @@ public class Main {
 
     public static void main(String... args) throws IOException, IllegalAccessException {
         Parameters parameters = new Parameters(args);
-        checkHelp(parameters);
-        checkVersionRequest(parameters);
-        checkShowPopulation(parameters);
-        checkShowRobot(parameters);
-        getUserIO(parameters);
-        checkReverse(parameters);
-        checkYahoo(parameters);
-        checkSimulation(parameters);
+        initHelp(parameters);
+        initVersionRequest(parameters);
+        initShowPopulation(parameters);
+        initShowRobot(parameters);
+        initUserIO(parameters);
+        initReverse(parameters);
+        initYahoo(parameters);
+        initSimulation(parameters);
     }
 
 
-    private static void checkShowRobot(Parameters parameters) {
+    private static void initShowRobot(Parameters parameters) {
         String value = parameters.getValue("showRobot");
         if(value != null) {
             try {
@@ -60,7 +60,7 @@ public class Main {
         return robot.showRobot();
     }
 
-    private static void checkShowPopulation(Parameters parameters) {
+    private static void initShowPopulation(Parameters parameters) {
         String value = parameters.getValue("showPopulation");
         if(value != null) {
             try {
@@ -131,14 +131,14 @@ public class Main {
         return sb.toString();
     }
 
-    private static void checkVersionRequest(Parameters parameters) {
+    private static void initVersionRequest(Parameters parameters) {
         if(parameters.getValue("showVersion") != null) {
             System.out.println(Main.VERSION);
             System.exit(0);
         }
     }
     
-    private static void checkHelp(Parameters parameters) {
+    private static void initHelp(Parameters parameters) {
         if(parameters.getValue("help") != null
         		|| parameters.getValue("--help") != null
         		|| parameters.getValue("-h") != null) {
@@ -161,7 +161,7 @@ public class Main {
         }
     }
 
-    private static void checkYahoo(Parameters parameters) {
+    private static void initYahoo(Parameters parameters) {
         String yahooValue = parameters.getValue("fixYahoo");
         if(yahooValue == null) {
             return;
@@ -171,7 +171,7 @@ public class Main {
         System.exit(0);
     }
 
-    private static void getUserIO(Parameters parameters) throws IOException {
+    private static void initUserIO(Parameters parameters) throws IOException {
         input = UserInputOutputFactory.getUserInput(parameters);
         if(input == null) {
             exit(errorCodes.NO_INPUT);
@@ -183,7 +183,7 @@ public class Main {
         }
     }
 
-    private static void checkReverse(Parameters parameters) {
+    private static void initReverse(Parameters parameters) {
         String reverseValue = parameters.getValue("reverse");
         if(reverseValue == null)
             return;
@@ -192,7 +192,7 @@ public class Main {
         System.exit(0);
     }
 
-    private static void checkSimulation(Parameters parameters) throws IllegalAccessException {
+    private static void initSimulation(Parameters parameters) throws IllegalAccessException {
         if(!parameters.allConsumed()) {
             output.errorMessage("Not all arguments processed: " + parameters.getUnconsumed());
             exit(errorCodes.UNKNOWN_ARGUMENT);
@@ -204,7 +204,6 @@ public class Main {
         settings.validateTimePoints(data);
         simulation.start(settings,data);
     }
-
 
     private static void exit(errorCodes code) {
         System.exit(code.getValue());

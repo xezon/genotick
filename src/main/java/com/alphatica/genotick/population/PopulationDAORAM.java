@@ -14,7 +14,7 @@ public class PopulationDAORAM implements PopulationDAO {
     private final Random random;
 
     public PopulationDAORAM() {
-        random = RandomGenerator.assignRandom();
+        random = RandomGenerator.get();
     }
     
     @Override

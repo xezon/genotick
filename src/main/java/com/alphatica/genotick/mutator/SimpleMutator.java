@@ -16,7 +16,7 @@ class SimpleMutator implements Mutator {
     private int totalInstructions;
 
     private SimpleMutator() throws ClassNotFoundException {
-        random = RandomGenerator.assignRandom();
+        random = RandomGenerator.get();
         instructionList = new ArrayList<>();
         buildInstructionList(instructionList);
     }

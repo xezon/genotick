@@ -34,6 +34,7 @@ public class MainSettings {
     public boolean requireSymmetricalRobots = true;
     public double resultThreshold = 1;
     public int ignoreColumns = 0;
+    public long randomSeed = 0;
 
     private MainSettings() {
         /* Empty */

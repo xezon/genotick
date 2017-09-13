@@ -22,7 +22,7 @@ public class InstructionList implements Serializable {
     }
 
     private InstructionList() {
-        random = RandomGenerator.assignRandom();
+        random = RandomGenerator.get();
         list = new ArrayList<>();
         variablesCount = 1 + Math.abs(random.nextInt() % 1024);
         variables = new double[variablesCount];

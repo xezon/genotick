@@ -10,7 +10,7 @@ import java.util.Random;
 
 @SuppressWarnings("unused")
 class RandomParametersInput extends BasicUserInput {
-    private Random r = RandomGenerator.assignRandom();
+    private Random r = RandomGenerator.get();
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
 
     @Override

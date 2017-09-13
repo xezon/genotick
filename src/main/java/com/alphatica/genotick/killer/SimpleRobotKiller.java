@@ -18,7 +18,7 @@ class SimpleRobotKiller implements RobotKiller {
         return new SimpleRobotKiller();
     }
     private SimpleRobotKiller() {
-        random = RandomGenerator.assignRandom();
+        random = RandomGenerator.get();
     }
 
     @Override

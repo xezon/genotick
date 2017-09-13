@@ -3,14 +3,24 @@ package com.alphatica.genotick.genotick;
 import java.util.Random;
 
 public class RandomGenerator {
-    public static Random assignRandom() {
-        Random random = new Random();
+
+    private static long SEED = 0;
+
+    private RandomGenerator() {}
+
+    public static void suggestSeed(long seed) {
         String seedString = System.getenv("GENOTICK_RANDOM_SEED");
-        if( seedString != null) {
-            long seed = Long.parseLong(seedString);
-            random.setSeed(seed);
+        if (seedString != null && !seedString.isEmpty()) {
+            seed = Long.parseLong(seedString);
+        }
+        SEED = seed;
+    }
+
+    public static Random get() {
+        Random random = new Random();
+        if (0 != SEED) {
+            random.setSeed(SEED);
         }
         return random;
     }
-
 }
