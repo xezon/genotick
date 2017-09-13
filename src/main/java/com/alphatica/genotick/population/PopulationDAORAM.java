@@ -2,11 +2,9 @@ package com.alphatica.genotick.population;
 
 import com.alphatica.genotick.genotick.RandomGenerator;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public class PopulationDAORAM implements PopulationDAO {
@@ -28,18 +26,6 @@ public class PopulationDAORAM implements PopulationDAO {
         return map.keySet().stream();
     }
 
-    @Override
-    public Iterable<Robot> getRobotList() {
-        return () -> map.values().iterator();
-    }
-
-    @Override
-    public Iterable<Robot> getRobotList(int fromIndex, int toIndex) {
-        return (fromIndex < toIndex && fromIndex >= 0 && toIndex < map.size())
-                ? () -> Collections.list(Collections.enumeration(map.values())).subList(fromIndex, toIndex).iterator()
-                : getRobotList();
-    }
-    
     @Override
     public int getAvailableRobotsCount() {
         return map.size();

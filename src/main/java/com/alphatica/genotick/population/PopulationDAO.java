@@ -8,10 +8,6 @@ public interface PopulationDAO {
 
     Stream<RobotName> getRobotNames();
 
-    Iterable<Robot> getRobotList();
-    
-    Iterable<Robot> getRobotList(int fromIndex, int toIndex);
-
     int getAvailableRobotsCount();
 
     Robot getRobotByName(RobotName name);

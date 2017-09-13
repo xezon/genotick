@@ -2,7 +2,6 @@ package com.alphatica.genotick.population;
 
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,12 +47,7 @@ public class SimplePopulation implements Population {
 
     @Override
     public List<RobotInfo> getRobotInfoList() {
-        List<RobotInfo> list = new ArrayList<>(dao.getAvailableRobotsCount());
-        for(Robot robot : dao.getRobotList()) {
-            RobotInfo robotInfo = new RobotInfo(robot);
-            list.add(robotInfo);
-        }
-        return list;
+        return dao.getRobots().map(RobotInfo::new).collect(Collectors.toList());
     }
 
     @Override
@@ -67,9 +61,7 @@ public class SimplePopulation implements Population {
             dao.removeAllRobots();
             PopulationDAO fs = new PopulationDAOFileSystem(path);
             int size = settings.desiredSize();
-            for(Robot robot : fs.getRobotList(0, size)) {
-                dao.saveRobot(robot);
-            }
+            fs.getRobots().limit(size).forEach(dao::saveRobot);
         }
     }
     
@@ -102,9 +94,7 @@ public class SimplePopulation implements Population {
     private void saveToExistingFolder(String path) {
         PopulationDAO fs = new PopulationDAOFileSystem(path);
         fs.removeAllRobots();
-        for(Robot robot : dao.getRobotList()) {
-            fs.saveRobot(robot);
-        }
+        dao.getRobots().forEach(fs::saveRobot);
     }
     
     private boolean canSave() {
@@ -117,12 +107,7 @@ public class SimplePopulation implements Population {
     }
 
     @Override
-    public double getAverageAge()
-    {
-        double age = 0;
-        for(Robot robot : dao.getRobotList()) {
-            age += robot.getTotalPredictions();
-        }
-        return age / this.getSize();
+    public double getAverageAge() {
+        return dao.getRobots().map(Robot::getTotalPredictions).collect(Collectors.averagingDouble(Integer::doubleValue));
     }
 }

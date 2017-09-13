@@ -2,13 +2,18 @@ package com.alphatica.genotick.population;
 
 import com.alphatica.genotick.genotick.RandomGenerator;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,48 +48,6 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     @Override
     public Stream<RobotName> getRobotNames() {
         return names.stream();
-    }
-
-    @Override
-    public Iterable<Robot> getRobotList() {
-        return getRobotList(0, 0);
-    }
-
-    @Override
-    public Iterable<Robot> getRobotList(int fromIndex, int toIndex) {
-        return new Iterable<Robot>() {
-            class ListAvailableRobots implements Iterator<Robot> {
-                private final List<RobotName> names;
-                int index = 0;
-                ListAvailableRobots(int fromIndex, int toIndex) {
-                    List<RobotName> names = getAllRobotsNames();
-                    this.names = (fromIndex < toIndex && fromIndex >= 0 && toIndex < names.size())
-                            ? getAllRobotsNames().subList(fromIndex, toIndex)
-                            : getAllRobotsNames();
-                }
-                @Override
-                public boolean hasNext() {
-                    return names.size() > index;
-                }
-
-                @Override
-                public Robot next() {
-                    if(!hasNext()) {
-                        throw new NoSuchElementException(format("Unable to get element %d", index+1));
-                    }
-                    return getRobotByName(names.get(index++));
-                }
-
-                @Override
-                public void remove() {
-                    throw new UnsupportedOperationException("remove() not supported");
-                }
-            }
-            @Override
-            public Iterator<Robot> iterator() {
-                return new ListAvailableRobots(fromIndex, toIndex);
-            }
-        };
     }
 
     @Override
