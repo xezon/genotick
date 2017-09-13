@@ -85,9 +85,7 @@ public class SimpleEngine implements Engine {
     private void savePopulation() {
         if (!population.saveOnDisk()) {
             String path = getSavedPopulationDirName();
-            if (!population.saveToFolder(path)) {
-                output.errorMessage("Failed to save population in " + path);
-            }
+            population.saveToFolder(path);
         }
     }
 

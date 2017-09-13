@@ -30,7 +30,7 @@ public interface Population {
     
     boolean saveOnDisk();
     
-    boolean saveToFolder(String path);
+    void saveToFolder(String path);
 
     Set<RobotName> listRobotsNames();
 

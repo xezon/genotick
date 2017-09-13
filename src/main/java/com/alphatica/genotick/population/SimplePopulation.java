@@ -76,30 +76,6 @@ public class SimplePopulation implements Population {
         }
         return false;
     }
-    
-    @Override
-    public boolean saveToFolder(String path) {
-        if (canSave()) {
-            File dirFile = new File(path);
-            if (!dirFile.exists() && !dirFile.mkdirs()) {
-                return false;
-            }
-            else {
-                saveToExistingFolder(path);
-            }
-        }
-        return true;
-    }
-    
-    private void saveToExistingFolder(String path) {
-        PopulationDAO fs = new PopulationDAOFileSystem(path);
-        fs.removeAllRobots();
-        dao.getRobots().forEach(fs::saveRobot);
-    }
-    
-    private boolean canSave() {
-        return !(dao instanceof PopulationDAOFileSystem);
-    }
 
     @Override
     public Set<RobotName> listRobotsNames() {
@@ -109,5 +85,28 @@ public class SimplePopulation implements Population {
     @Override
     public double getAverageAge() {
         return dao.getRobots().map(Robot::getTotalPredictions).collect(Collectors.averagingDouble(Integer::doubleValue));
+    }
+
+    @Override
+    public void saveToFolder(String path) {
+        if (canSave() && validatePath(path)) {
+            saveToExistingFolder(path);
+        }
+        throw new DAOException("Unable to save to path " + path);
+    }
+
+    private boolean validatePath(String path) {
+        File dirFile = new File(path);
+        return dirFile.exists() || dirFile.mkdirs();
+    }
+
+    private void saveToExistingFolder(String path) {
+        PopulationDAO fs = new PopulationDAOFileSystem(path);
+        fs.removeAllRobots();
+        dao.getRobots().forEach(fs::saveRobot);
+    }
+
+    private boolean canSave() {
+        return !(dao instanceof PopulationDAOFileSystem);
     }
 }
