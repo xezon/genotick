@@ -68,17 +68,21 @@ public class PopulationDAOFileSystem implements PopulationDAO {
 
     @Override
     public void removeRobot(RobotName robotName) {
-        File file = createFileForName(robotName);
         names.remove(robotName);
-        boolean result = file.delete();
-        if(!result)
-            throw new DAOException("Unable to remove file " + file.getAbsolutePath());
+        deleteFile(robotName);
     }
 
     @Override
     public void removeAllRobots() {
-        Set<RobotName> tmpNames = new HashSet<>(names);
-        tmpNames.forEach(this::removeRobot);
+        names.forEach(this::deleteFile);
+        names.clear();
+    }
+
+    private void deleteFile(RobotName robotName) {
+        File file = createFileForName(robotName);
+        boolean result = file.delete();
+        if(!result)
+            throw new DAOException("Unable to remove file " + file.getAbsolutePath());
     }
 
     public static Robot getRobotFromFile(File file) {
