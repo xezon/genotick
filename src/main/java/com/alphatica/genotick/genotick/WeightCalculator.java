@@ -7,27 +7,23 @@ public class WeightCalculator {
     private WeightCalculator() {}
 
     public static double calculateWeight(Robot robot) {
-        return calculateSquareOfDifference(robot);
-        //return calculateCorrectVsIncorrectPredictions(robot);
+        Double weight = getWinsDeltaSquared(robot);
+        assert(!weight.isNaN());
+        return weight;
     }
 
-    @SuppressWarnings("unused")
-    private static double calculateCorrectVsIncorrectPredictions(Robot robot) {
-        int totalPrediction = robot.getTotalPredictions();
-        if(totalPrediction == 0)
-            return 0;
-        double correct = robot.getCorrectPredictions();
-        double incorrect = robot.getTotalPredictions() - correct;
-        return correct - incorrect;
+    private static double getWinsDelta(Robot robot) {
+        int total = robot.getTotalPredictions();
+        if(total == 0)
+            return 0.0;
+        double wins = robot.getCorrectPredictions();
+        double losses = robot.getTotalPredictions() - wins;
+        return wins - losses;
     }
 
-    private static double calculateSquareOfDifference(Robot robot) {
-        double correct = robot.getCorrectPredictions();
-        double incorrect = robot.getTotalPredictions() - correct;
-        boolean positive = correct > incorrect;
-        double weightAbs = Math.pow(correct - incorrect,2);
-        return positive ? weightAbs : -weightAbs;
+    private static double getWinsDeltaSquared(Robot robot) {
+        double delta = getWinsDelta(robot);
+        double deltaSqr = delta * delta;
+        return (delta >= 0.0) ? deltaSqr : -deltaSqr;
     }
-
-
 }

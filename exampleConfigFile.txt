@@ -61,7 +61,13 @@ probabilityOfDeathByWeight	0.5
 # When a child robot is born its weight is zero because it has no predictions yet. 
 # This setting enables the child robot to inherit a percentage (in range 0..1) of its parents' average weight.
 # This is done to protect new robots from getting removed when they had a few predictions only.
-inheritedChildWeight	0
+inheritedChildWeight 0
+
+# [inheritedChildWeightMode PARENTS] inherits the average weight from 2 parents to the child
+# [inheritedChildWeightMode ANCESTORS] inherits the average weight from 2 parents and their ancestors to the child
+# [inheritedChildWeightMode ANCESTORS_LOG] inherits the logarithmic average weight from 2 parents and their ancestors to the child
+# Weight inheritance is scaled by [inheritedChildWeight]
+inheritedChildWeightMode ANCESTORS_LOG
 
 # Value of how far a robot can read data into the past. Set it to something reasonable, depending on your time frame.
 dataMaximumOffset	256

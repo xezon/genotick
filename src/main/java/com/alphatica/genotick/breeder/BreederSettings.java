@@ -1,17 +1,26 @@
 package com.alphatica.genotick.breeder;
 
 public class BreederSettings {
-    public final long outcomesBetweenBreeding;
+    public final int minimumOutcomesBetweenBreeding;
+    public final int minimumOutcomesToAllowBreeding;
     public final double inheritedWeightPercent;
-    public final long minimumOutcomesToAllowBreeding;
+    public final InheritedWeightMode inheritedWeightMode;
     public final double randomRobots;
     public final int dataMaximumOffset;
     public final int ignoreColumns;
 
-    public BreederSettings(long timeBetweenChildren, double inheritedWeightPercent, long minimumParentAge, double randomRobots, int dataMaximumOffset, int ignoreColumns) {
-        this.outcomesBetweenBreeding = timeBetweenChildren;
+    public BreederSettings(
+            int minimumOutcomesBetweenBreeding,
+            int minimumOutcomesToAllowBreeding,
+            double inheritedWeightPercent,
+            InheritedWeightMode inheritedWeightMode,
+            double randomRobots,
+            int dataMaximumOffset,
+            int ignoreColumns) {
+        this.minimumOutcomesBetweenBreeding = minimumOutcomesBetweenBreeding;
+        this.minimumOutcomesToAllowBreeding = minimumOutcomesToAllowBreeding;
         this.inheritedWeightPercent = inheritedWeightPercent;
-        this.minimumOutcomesToAllowBreeding = minimumParentAge;
+        this.inheritedWeightMode = inheritedWeightMode;
         this.randomRobots = randomRobots;
         this.dataMaximumOffset = dataMaximumOffset;
         this.ignoreColumns = ignoreColumns;

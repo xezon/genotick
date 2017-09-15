@@ -4,6 +4,7 @@ import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.ui.UserOutput;
 import com.alphatica.genotick.population.PopulationSettings;
+import com.alphatica.genotick.breeder.InheritedWeightMode;
 
 import java.lang.reflect.Field;
 
@@ -21,13 +22,14 @@ public class MainSettings {
     public double probabilityOfDeathByAge = 0.5;
     public double probabilityOfDeathByWeight = 0.5;
     public double inheritedChildWeight = 0;
+    public InheritedWeightMode inheritedChildWeightMode = InheritedWeightMode.ANCESTORS_LOG;
     public int dataMaximumOffset = 256;
     public int protectRobotsUntilOutcomes = 100;
     public double newInstructionProbability = 0.01;
     public double instructionMutationProbability = 0.01;
     public double skipInstructionProbability = 0.01;
-    public long minimumOutcomesToAllowBreeding = 50;
-    public long minimumOutcomesBetweenBreeding = 50;
+    public int minimumOutcomesToAllowBreeding = 50;
+    public int minimumOutcomesBetweenBreeding = 50;
     public boolean killNonPredictingRobots = true;
     public double randomRobotsAtEachUpdate = 0.02;
     public double protectBestRobots = 0.02;

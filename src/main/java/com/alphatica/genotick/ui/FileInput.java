@@ -1,5 +1,6 @@
 package com.alphatica.genotick.ui;
 
+import com.alphatica.genotick.breeder.InheritedWeightMode;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
@@ -13,6 +14,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static java.lang.String.format;
 
 class FileInput extends BasicUserInput {
     static final String delimiter = ":";
@@ -65,17 +67,45 @@ class FileInput extends BasicUserInput {
             String value = map.get(field.getName());
             parsedKeys.add(field.getName());
             field.setAccessible(true);
-            switch(field.getType().getName()) {
-                case "java.lang.String": setString(field,settings,value); break;
-                case "com.alphatica.genotick.timepoint.TimePoint": setTimePoint(field,settings,value); break;
-                case "boolean": setBoolean(field, settings, value); break;
-                case "int": setInt(field, settings, value); break;
-                case "double": setDouble(field,settings,value); break;
-                case "long": setLong(field, settings, value); break;
-                default: throw new RuntimeException("File config: Unable to match type " + field.getType().getName());
+            Class<?> type = field.getType();
+            if (type.isEnum()) {
+                if (!setEnumValue(field, settings, value)) {
+                    reportFailure(field, value);
+                }
+            }
+            else {
+                switch(type.getName()) {
+                    case "java.lang.String": setString(field,settings,value); break;
+                    case "com.alphatica.genotick.timepoint.TimePoint": setTimePoint(field,settings,value); break;
+                    case "boolean": setBoolean(field, settings, value); break;
+                    case "int": setInt(field, settings, value); break;
+                    case "double": setDouble(field,settings,value); break;
+                    case "long": setLong(field, settings, value); break;
+                    default: reportFailure(field, value); break;
+                }
             }
             field.setAccessible(false);
         }
+    }
+
+    private void reportFailure(Field field, String value) {
+        final String typeName = field.getType().getName();
+        final String varName = field.getName();
+        throw new RuntimeException(format("%s: failed to interpret setting: %s %s = %s", fileName, typeName, varName, value));
+    }
+
+    private boolean setEnumValue(Field field, final MainSettings settings, final String value) throws IllegalArgumentException, IllegalAccessException {
+        Class<?> classType = field.getType();
+        @SuppressWarnings("unchecked")
+        Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>)classType;
+        final Enum<?>[] enumValues = enumType.getEnumConstants();
+        for (Enum<?> enumValue : enumValues) {
+            if (enumValue.name().equals(value)) {
+                field.set(settings, enumValue);
+                return true;
+            }
+        }
+        return false;
     }
 
     private void setLong(Field field, MainSettings settings, String value) throws IllegalAccessException {

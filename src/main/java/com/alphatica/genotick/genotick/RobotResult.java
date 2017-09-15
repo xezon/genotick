@@ -8,7 +8,7 @@ public class RobotResult {
     private final Prediction prediction;
     private final RobotName name;
     private final RobotData data;
-    private final Double weight;
+    private final double weight;
 
     public RobotResult(Prediction prediction, Robot robot, RobotData data) {
 
@@ -31,7 +31,7 @@ public class RobotResult {
         return prediction;
     }
 
-    public Double getWeight() {
+    public double getWeight() {
         return weight;
     }
 

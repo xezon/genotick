@@ -88,7 +88,7 @@ public class SimpleBreeder implements RobotBreeder {
         Iterator<RobotInfo> iterator = robotInfos.iterator();
         while (iterator.hasNext()) {
             RobotInfo robotInfo = iterator.next();
-            if (!robotInfo.canBeParent(settings.minimumOutcomesToAllowBreeding, settings.outcomesBetweenBreeding))
+            if (!robotInfo.canBeParent(settings.minimumOutcomesToAllowBreeding, settings.minimumOutcomesBetweenBreeding))
                 iterator.remove();
         }
     }
@@ -110,14 +110,34 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private void makeChild(Robot parent1, Robot parent2, Robot child) {
-        double weight = getParentsWeight(parent1, parent2);
+        double weight = calculateWeightForChild(parent1, parent2);
         child.setInheritedWeight(weight);
         InstructionList instructionList = mixMainInstructionLists(parent1, parent2);
         child.setMainInstructionList(instructionList);
     }
 
-    private double getParentsWeight(Robot parent1, Robot parent2) {
-        return settings.inheritedWeightPercent * (parent1.getWeight() + parent2.getWeight()) / 2;
+    private double calculateWeightForChild(final Robot parent1, final Robot parent2) {
+        double weight = 0.0;
+        if (settings.inheritedWeightPercent > 0.0) {
+            switch (settings.inheritedWeightMode) {
+                case PARENTS: weight = getMeanEarnedWeight(parent1, parent2) * settings.inheritedWeightPercent; break;
+                case ANCESTORS: weight = getMeanInheritedWeight(parent1, parent2) + getMeanEarnedWeight(parent1, parent2) * settings.inheritedWeightPercent; break;
+                case ANCESTORS_LOG: weight = getMeanWeight(parent1, parent2) * settings.inheritedWeightPercent; break;
+            }
+        }
+        return weight;
+    }
+    
+    private double getMeanEarnedWeight(final Robot parent1, final Robot parent2) {
+        return (parent1.getEarnedWeight() + parent2.getEarnedWeight()) * 0.5;
+    }
+    
+    private double getMeanInheritedWeight(final Robot parent1, final Robot parent2) {
+        return (parent1.getInheritedWeight() + parent2.getInheritedWeight()) * 0.5;
+    }
+    
+    private double getMeanWeight(final Robot parent1, final Robot parent2) {
+        return (parent1.getWeight() + parent2.getWeight()) * 0.5;
     }
 
     private InstructionList mixMainInstructionLists(Robot parent1, Robot parent2) {

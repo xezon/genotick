@@ -86,8 +86,9 @@ public class Simulation {
     private RobotBreeder wireBreeder(MainSettings settings, Mutator mutator) {
         BreederSettings breederSettings = new BreederSettings(
                 settings.minimumOutcomesBetweenBreeding,
-                settings.inheritedChildWeight,
                 settings.minimumOutcomesToAllowBreeding,
+                settings.inheritedChildWeight,
+                settings.inheritedChildWeightMode,
                 settings.randomRobotsAtEachUpdate,
                 settings.dataMaximumOffset,
                 settings.ignoreColumns);

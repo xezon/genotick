@@ -10,9 +10,9 @@ public class RobotInfo {
     private static final DecimalFormat format = new DecimalFormat("0.00");
     private final RobotName name;
     private final double weight;
-    private final long lastChildOutcomes;
-    private final long totalChildren;
-    private final long length;
+    private final int lastChildOutcomes;
+    private final int totalChildren;
+    private final int length;
     private final int totalPredictions;
     private final int totalOutcomes;
 
@@ -56,11 +56,11 @@ public class RobotInfo {
 
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean canBeParent(long minimumParentAge, long timeBetweenChildren) {
-        if(totalPredictions < minimumParentAge)
+    public boolean canBeParent(int outcomesToAllowBreeding, int outcomesBetweenBreeding) {
+        if(totalPredictions < outcomesToAllowBreeding)
             return false;
         long outcomesSinceLastChild = totalPredictions - lastChildOutcomes;
-        return outcomesSinceLastChild >= timeBetweenChildren;
+        return outcomesSinceLastChild >= outcomesBetweenBreeding;
     }
 
     public int getTotalOutcomes() {

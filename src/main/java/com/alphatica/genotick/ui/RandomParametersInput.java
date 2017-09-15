@@ -5,12 +5,13 @@ import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.breeder.InheritedWeightMode;
 
 import java.util.Random;
 
 @SuppressWarnings("unused")
 class RandomParametersInput extends BasicUserInput {
-    private Random r = RandomGenerator.get();
+    private Random random = RandomGenerator.get();
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
 
     @Override
@@ -29,29 +30,36 @@ class RandomParametersInput extends BasicUserInput {
         TimePoint first = data.getFirstTimePoint();
         TimePoint last = data.getLastTimePoint();
         long diff = last.getValue() - first.getValue();
-        long count = Math.abs(r.nextLong() % diff);
+        long count = Math.abs(random.nextLong() % diff);
         defaults.startTimePoint = new TimePoint(last.getValue() - count);
         defaults.endTimePoint = last;
+    }
+    
+    private <E extends Enum<E>> E nextEnum(Class<E> enumType) {
+        final E[] enumValues = enumType.getEnumConstants();
+        final int index = random.nextInt(enumValues.length);
+        return enumValues[index];
     }
 
     private MainSettings assignRandom(MainSettings settings) {
 
-        settings.dataMaximumOffset = r.nextInt(256) + 1;
-        settings.processorInstructionLimit = r.nextInt(256) + 1;
-        settings.maximumDeathByAge = r.nextDouble();
-        settings.maximumDeathByWeight = r.nextDouble();
-        settings.probabilityOfDeathByAge = r.nextDouble();
-        settings.probabilityOfDeathByWeight = r.nextDouble();
-        settings.inheritedChildWeight = r.nextDouble();
-        settings.protectRobotsUntilOutcomes = r.nextInt(100);
-        settings.protectBestRobots = r.nextDouble();
-        settings.newInstructionProbability = r.nextDouble();
-        settings.instructionMutationProbability = r.nextDouble();
+        settings.dataMaximumOffset = random.nextInt(256) + 1;
+        settings.processorInstructionLimit = random.nextInt(256) + 1;
+        settings.maximumDeathByAge = random.nextDouble();
+        settings.maximumDeathByWeight = random.nextDouble();
+        settings.probabilityOfDeathByAge = random.nextDouble();
+        settings.probabilityOfDeathByWeight = random.nextDouble();
+        settings.inheritedChildWeight = random.nextDouble();
+        settings.inheritedChildWeightMode = nextEnum(InheritedWeightMode.class);
+        settings.protectRobotsUntilOutcomes = random.nextInt(100);
+        settings.protectBestRobots = random.nextDouble();
+        settings.newInstructionProbability = random.nextDouble();
+        settings.instructionMutationProbability = random.nextDouble();
         settings.skipInstructionProbability = settings.newInstructionProbability;
-        settings.minimumOutcomesToAllowBreeding = r.nextInt(50);
-        settings.minimumOutcomesBetweenBreeding = r.nextInt(50);
-        settings.randomRobotsAtEachUpdate = r.nextDouble();
-        settings.resultThreshold = 1 + (r.nextDouble() * 9);
+        settings.minimumOutcomesToAllowBreeding = random.nextInt(50);
+        settings.minimumOutcomesBetweenBreeding = random.nextInt(50);
+        settings.randomRobotsAtEachUpdate = random.nextDouble();
+        settings.resultThreshold = 1 + (random.nextDouble() * 9);
         return settings;
 
     }

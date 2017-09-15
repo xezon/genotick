@@ -34,7 +34,7 @@ public class Robot implements Serializable {
     private int correctPredictions;
     private double inheritedWeight;
     private int totalOutcomes;
-    private long outcomesAtLastChild;
+    private int outcomesAtLastChild;
     private int bias;
     private boolean isPredicting = false;
 
@@ -65,9 +65,16 @@ public class Robot implements Serializable {
         return mainFunction;
     }
 
+    public double getEarnedWeight() {
+        return WeightCalculator.calculateWeight(this);
+    }
+    
+    public double getInheritedWeight() {
+        return inheritedWeight;
+    }
+    
     public double getWeight() {
-        double earnedWeight = WeightCalculator.calculateWeight(this);
-        return inheritedWeight + earnedWeight;
+        return getInheritedWeight() + getEarnedWeight();
     }
 
     public void setMainInstructionList(InstructionList newMainFunction) {
@@ -145,7 +152,7 @@ public class Robot implements Serializable {
         return totalChildren;
     }
 
-    long getOutcomesAtLastChild() {
+    int getOutcomesAtLastChild() {
         return outcomesAtLastChild;
     }
 

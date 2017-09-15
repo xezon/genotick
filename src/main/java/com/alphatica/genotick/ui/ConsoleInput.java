@@ -4,6 +4,7 @@ import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.breeder.InheritedWeightMode;
 
 import java.io.Console;
 
@@ -39,14 +40,15 @@ class ConsoleInput extends BasicUserInput {
             settings.probabilityOfDeathByAge = getDouble("Probability of death by age", settings.probabilityOfDeathByAge);
             settings.probabilityOfDeathByWeight = getDouble("Probability of death by weight", settings.probabilityOfDeathByWeight);
             settings.inheritedChildWeight = getDouble("Inherited child's weight", settings.inheritedChildWeight);
+            settings.inheritedChildWeightMode = getEnumValue(InheritedWeightMode.class, "Inherited child's weight mode", settings.inheritedChildWeightMode);
             settings.protectRobotsUntilOutcomes = getInteger("Protect robots until outcomes", settings.protectRobotsUntilOutcomes);
             settings.newInstructionProbability = getDouble("Probability of new instruction", settings.newInstructionProbability);
             // This looks like an error but it's not. Default value for 'skipInstruction...' is same as 'newInstruction'
             // to keep robots more or less constant size.
             settings.skipInstructionProbability = getDouble("Probability of skipping instruction", settings.newInstructionProbability);
             settings.instructionMutationProbability = getDouble("Instruction mutation probability", settings.instructionMutationProbability);
-            settings.minimumOutcomesToAllowBreeding = getLong("Minimum outcomes to allow breeding", settings.minimumOutcomesToAllowBreeding);
-            settings.minimumOutcomesBetweenBreeding = getLong("Minimum outcomes between breeding", settings.minimumOutcomesBetweenBreeding);
+            settings.minimumOutcomesToAllowBreeding = getInteger("Minimum outcomes to allow breeding", settings.minimumOutcomesToAllowBreeding);
+            settings.minimumOutcomesBetweenBreeding = getInteger("Minimum outcomes between breeding", settings.minimumOutcomesBetweenBreeding);
             settings.killNonPredictingRobots = getBoolean("Kill non-predicting robots", settings.killNonPredictingRobots);
             settings.randomRobotsAtEachUpdate = getDouble("Random robots at each update", settings.randomRobotsAtEachUpdate);
             settings.protectBestRobots = getDouble("Protect best robots", settings.protectBestRobots);
@@ -56,9 +58,22 @@ class ConsoleInput extends BasicUserInput {
         return settings;
     }
 
-    private double getDouble(String s, double value) {
-        String str = String.valueOf(value);
-        displayMessage(s,str);
+    private <E extends Enum<E>> E getEnumValue(Class<E> enumType, String message, E def) {
+        String str = def.name();
+        displayMessage(message,str);
+        String response = getString(null,str);
+        final E[] enumValues = enumType.getEnumConstants();
+        for (E enumValue : enumValues) {
+            if (enumValue.name().equals(response)) {
+                return enumValue;
+            }
+        }
+        return def;
+    }
+    
+    private double getDouble(String message, double def) {
+        String str = String.valueOf(def);
+        displayMessage(message,str);
         String response = getString(null,str);
         return Double.parseDouble(response);
     }
@@ -72,7 +87,7 @@ class ConsoleInput extends BasicUserInput {
 
     private boolean getBoolean(String message, boolean def) {
         String str = String.valueOf(def);
-        displayMessage(message, str);
+        displayMessage(message,str);
         String response = getString(null,str);
         return Boolean.valueOf(response);
     }
