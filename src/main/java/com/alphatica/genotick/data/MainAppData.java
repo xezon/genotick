@@ -10,18 +10,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static java.util.Collections.binarySearch;
+import java.util.stream.Stream;
 
 // TODO change nulls to optional
 public class MainAppData {
-    private final Map<DataSetName, DataSet> sets;
 
+    public static final int INVALID_BAR = -1;
+    
+    private final Map<DataSetName, DataSet> sets;
     private List<TimePoint> timePoints;
+    private final Map<TimePoint, Integer> bars;
 
     public MainAppData() {
         sets = new HashMap<>();
         timePoints = new ArrayList<>();
+        bars = new HashMap<TimePoint, Integer>();
     }
 
     public void addDataSet(DataSet set) {
@@ -30,12 +33,25 @@ public class MainAppData {
     }
 
     private void updateTimePoints(List<TimePoint> newTimePoints) {
-        timePoints.addAll(newTimePoints);
-        timePoints = timePoints.stream().distinct().collect(Collectors.toList());
-        timePoints.sort(TimePoint::compareTo);
+        if (timePoints.isEmpty()) {
+            timePoints.addAll(newTimePoints);
+        }
+        else {
+            timePoints.addAll(newTimePoints);
+            timePoints = timePoints.stream().distinct().collect(Collectors.toList());
+            timePoints.sort(TimePoint::compareTo);
+        }
+        updateBars();
+    }
+    
+    private void updateBars() {
+        bars.clear();
+        for (int bar = 0, size = timePoints.size(); bar < size; ++bar) {
+            bars.put(timePoints.get(bar), bar);
+        }
     }
 
-    public List<RobotData> prepareRobotDataList(final TimePoint timePoint) {
+    public List<RobotData> createRobotDataList(final TimePoint timePoint) {
         List<RobotData> list = Collections.synchronizedList(new ArrayList<>());
         sets.entrySet().parallelStream().forEach((Map.Entry<DataSetName, DataSet> entry) -> {
             RobotData robotData = entry.getValue().getRobotData(timePoint);
@@ -47,29 +63,33 @@ public class MainAppData {
     }
 
     public TimePoint getFirstTimePoint() {
-        if (sets.isEmpty())
+        if (timePoints.isEmpty())
             return null;
         return timePoints.get(0);
     }
 
-    public TimePoint getNextTimePint(TimePoint now) {
-        int index = binarySearch(timePoints, now);
-        if(index < 0) {
-            index = Math.abs(index + 1);
-        }
-        if(index > timePoints.size() - 2) {
-            return null;
-        } else  {
-            return timePoints.get(index+1);
-        }
-    }
-
     public TimePoint getLastTimePoint() {
-        if (sets.isEmpty())
+        if (timePoints.isEmpty())
             return null;
-        return timePoints.get(timePoints.size()-1);
+        return timePoints.get(timePoints.size() - 1);
+    }
+    
+    public boolean isValidBar(int bar) {
+        return (bar >= 0) && (bar < timePoints.size());
+    }
+    
+    public TimePoint getTimePoint(int bar) {
+        return isValidBar(bar) ? timePoints.get(bar) : null;
+    }
+    
+    public int getBar(TimePoint timePoint) {
+        Integer bar = bars.get(timePoint);
+        return (bar != null) ? bar.intValue() : INVALID_BAR;
     }
 
+    public Stream<TimePoint> getTimePoints(final TimePoint startTime, final TimePoint endTime) {
+        return timePoints.stream().filter(time -> time.isGreaterOrEqual(startTime) && time.isLessThan(endTime));
+    }
 
     public Collection<DataSet> listSets() {
         return sets.values();

@@ -6,14 +6,35 @@ public class TimePoint implements Comparable<TimePoint>, Serializable {
 
     private static final long serialVersionUID = -6541300869299964665L;
     private final long value;
-    public TimePoint(long i) {
-        this.value = i;
+    
+    public TimePoint(long value) {
+        this.value = value;
     }
 
     public TimePoint(TimePoint startTimePoint) {
         this(startTimePoint.value);
     }
 
+    public long getValue() {
+        return value;
+    }
+
+    public boolean isLessThan(TimePoint other) {
+        return this.compareTo(other) < 0;
+    }
+    
+    public boolean isGreaterThan(TimePoint other) {
+        return this.compareTo(other) > 0;
+    }
+    
+    public boolean isLessOrEqual(TimePoint other) {
+        return this.compareTo(other) <= 0;
+    }
+    
+    public boolean isGreaterOrEqual(TimePoint other) {
+        return this.compareTo(other) >= 0;
+    }
+    
     @Override
     public String toString() {
         return Long.toString(value);
@@ -24,26 +45,18 @@ public class TimePoint implements Comparable<TimePoint>, Serializable {
         return Long.compare(this.value, timePoint.value);
     }
 
-    public long getValue() {
-        return value;
-    }
-
-    public TimePoint next() {
-        return new TimePoint(value + 1);
-    }
-
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TimePoint timePoint = (TimePoint) o;
-
+    public boolean equals(Object other) {
+        if (this == other)
+            return true;
+        if (other == null || getClass() != other.getClass())
+            return false;
+        TimePoint timePoint = (TimePoint)other;
         return value == timePoint.value;
     }
 
     @Override
-    public int hashCode() {
-        return (int) (value ^ (value >>> 32));
+    public int hashCode() {        
+        return Long.hashCode(value);
     }
 }

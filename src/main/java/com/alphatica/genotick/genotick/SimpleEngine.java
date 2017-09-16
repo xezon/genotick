@@ -16,12 +16,12 @@ import com.alphatica.genotick.timepoint.TimePointResult;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class SimpleEngine implements Engine {
@@ -43,18 +43,15 @@ public class SimpleEngine implements Engine {
     public void start() {
         Thread.currentThread().setName("Main engine execution thread");
         initPopulation();
-        TimePoint timePoint = new TimePoint(engineSettings.startTimePoint);
-        while (engineSettings.endTimePoint.compareTo(timePoint) >= 0) {
-            executeTimePoint(timePoint);
-            timePoint = data.getNextTimePint(timePoint);
-            if(timePoint == null) {
-                break;
-            }
-        }
+        final Stream<TimePoint> filteredTimePoints = data.getTimePoints(
+                engineSettings.startTimePoint,
+                engineSettings.endTimePoint);
+        filteredTimePoints.forEach(this::executeTimePoint);
         if (engineSettings.performTraining) {
             savePopulation();
         }
         account.closeAccount();
+        profitRecorder.onFinish();
     }
 
     @Override
@@ -89,25 +86,29 @@ public class SimpleEngine implements Engine {
         }
     }
 
+    // TODO To simplify algorithms consider working with bars instead of time points
+    
     private void executeTimePoint(TimePoint timePoint) {
-        List<RobotData> robotDataList = data.prepareRobotDataList(timePoint);
-        if (robotDataList.isEmpty())
-            return;
-        output.reportStartingTimePoint(timePoint);
-        updateAccount(robotDataList);
-        List<RobotInfo> list = population.getRobotInfoList();
-        recordMarketChangesInRobots(robotDataList);
-        Map<RobotName, List<RobotResult>> map = timePointExecutor.execute(robotDataList, population);
-        updatePredictions(list, map);
-        recordRobotsPredictions(map);
-        TimePointResult timePointResult = new TimePointResult(map);
-        timePointResult.listDataSetResults().forEach(dataSetResult -> {
-            Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
-            account.addPendingOrder(dataSetResult.getName(), prediction);
-            output.showPrediction(timePoint, dataSetResult, prediction);
-        });
-        checkTraining(list);
-        output.reportFinishedTimePoint(timePoint, account.getValue());
+        final int bar = data.getBar(timePoint);
+        final List<RobotData> robotDataList = data.createRobotDataList(timePoint);
+        if (!robotDataList.isEmpty()) {
+            output.reportStartingTimePoint(timePoint);
+            updateAccount(robotDataList);
+            List<RobotInfo> list = population.getRobotInfoList();
+            recordMarketChangesInRobots(robotDataList);
+            Map<RobotName, List<RobotResult>> map = timePointExecutor.execute(robotDataList, population);
+            updatePredictions(list, map);
+            recordRobotsPredictions(map);
+            TimePointResult timePointResult = new TimePointResult(map);
+            timePointResult.listDataSetResults().forEach(dataSetResult -> {
+                Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
+                account.addPendingOrder(dataSetResult.getName(), prediction);
+                output.showPrediction(timePoint, dataSetResult, prediction);
+            });
+            checkTraining(list);
+            output.reportFinishedTimePoint(timePoint, account.getValue());
+        }
+        profitRecorder.onUpdate(bar);
     }
 
     private void updatePredictions(List<RobotInfo> list, Map<RobotName, List<RobotResult>> map) {

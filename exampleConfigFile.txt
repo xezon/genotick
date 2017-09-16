@@ -127,3 +127,9 @@ ignoreColumns 0
 
 # Random seed for developers. Useful for testing code changes. Zero for using default 'random' seed.
 randomSeed 0
+
+# [chartMode NONE] Do not draw any charts.
+# [chartMode JFREECHART_DRAW] Draw genotick charts on screen with JFreeChart.
+# [chartMode JFREECHART_SAVE] Save genotick charts in the user's working directory with JFreeChart.
+# [chartMode JFREECHART_DRAW_SAVE] Draw and save genotick charts with JFreeChart.
+chartMode NONE

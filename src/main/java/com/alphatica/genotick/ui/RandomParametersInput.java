@@ -6,6 +6,7 @@ import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.breeder.InheritedWeightMode;
+import com.alphatica.genotick.chart.GenoChartMode;
 
 import java.util.Random;
 
@@ -21,6 +22,7 @@ class RandomParametersInput extends BasicUserInput {
         defaults.requireSymmetricalRobots = true;
         defaults.killNonPredictingRobots = true;
         defaults.performTraining = true;
+        defaults.chartMode = GenoChartMode.NONE;
         MainAppData data = getData(Main.DEFAULT_DATA_DIR);
         assignTimePoints(defaults, data);
         return assignRandom(defaults);

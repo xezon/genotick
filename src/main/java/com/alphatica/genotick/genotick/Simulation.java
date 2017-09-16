@@ -3,6 +3,7 @@ package com.alphatica.genotick.genotick;
 import com.alphatica.genotick.breeder.BreederSettings;
 import com.alphatica.genotick.breeder.RobotBreeder;
 import com.alphatica.genotick.breeder.RobotBreederFactory;
+import com.alphatica.genotick.chart.GenoChartFactory;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.killer.RobotKiller;
 import com.alphatica.genotick.killer.RobotKillerFactory;
@@ -33,6 +34,7 @@ public class Simulation {
     public void start(MainSettings mainSettings, MainAppData data) throws IllegalAccessException {
         if(validateSettings(mainSettings)) {
             initRandomGenerator(mainSettings);
+            initChart(mainSettings);
             logSettings(mainSettings);
             RobotKiller killer = getRobotKiller(mainSettings);
             Mutator mutator = getMutator(mainSettings);
@@ -60,6 +62,10 @@ public class Simulation {
 
     private void initRandomGenerator(MainSettings mainSettings) {
         RandomGenerator.suggestSeed(mainSettings.randomSeed);
+    }
+    
+    private void initChart(MainSettings mainSettings) {
+        GenoChartFactory.initialize(mainSettings.chartMode);
     }
 
     private Engine wireEngine(MainSettings mainSettings, MainAppData data, RobotKiller killer,

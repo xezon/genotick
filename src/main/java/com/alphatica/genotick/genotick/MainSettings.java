@@ -5,6 +5,7 @@ import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.ui.UserOutput;
 import com.alphatica.genotick.population.PopulationSettings;
 import com.alphatica.genotick.breeder.InheritedWeightMode;
+import com.alphatica.genotick.chart.GenoChartMode;
 
 import java.lang.reflect.Field;
 
@@ -37,6 +38,7 @@ public class MainSettings {
     public double resultThreshold = 1;
     public int ignoreColumns = 0;
     public long randomSeed = 0;
+    public GenoChartMode chartMode = GenoChartMode.NONE;
 
     private MainSettings() {
         /* Empty */

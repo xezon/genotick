@@ -2,6 +2,7 @@ package com.alphatica.genotick.account;
 
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.ui.UserOutput;
+import com.alphatica.genotick.chart.GenoChartFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,17 +16,28 @@ import static java.util.Optional.ofNullable;
 
 public class ProfitRecorder {
 
+    private static final String PROFIT_CHART_NAME = "Profit Chart";
     private final List<Double> profits = new ArrayList<>();
     private final Map<DataSetName, Integer> wins = new HashMap<>();
     private final Map<DataSetName, Integer> losses = new HashMap<>();
     private final Set<DataSetName> names = new HashSet<>();
     private final UserOutput output;
+    private double accumulatedProfit = 0.0;
     
     public ProfitRecorder(UserOutput output) {
         this.output = output;
     }
     
+    public void onUpdate(final int bar) {
+        GenoChartFactory.get().addXYLineChart(PROFIT_CHART_NAME, "Bar", "Profit", "Total", (double)bar, accumulatedProfit);
+    }
+    
+    public void onFinish() {
+        GenoChartFactory.get().plot(PROFIT_CHART_NAME);
+    }
+    
     void addTradeResult(DataSetName name, double profit) {
+        accumulatedProfit += profit;
         names.add(name);
         profits.add(profit);
         if (profit > 0) {
@@ -62,27 +74,27 @@ public class ProfitRecorder {
     }
 
     private double calculateProfit(List<Double> profits) {
-        double account = 1;
+        double account = 1.0;
         for(Double percentEarned: profits) {
-            double change = (percentEarned / 100.0) + 1;
+            double change = (percentEarned / 100.0) + 1.0;
             account *= change;
         }
-        return (account - 1) * 100;
+        return (account - 1.0) * 100.0;
     }
 
     private double calculateMaxDrawdown(List<Double> profits) {
-        double account = 1;
+        double account = 1.0;
         double maxAccount = account;
-        double maxDrawdown = 0;
+        double maxDrawdown = 0.0;
 
         for(Double percentEarned: profits) {
-            double change = (percentEarned / 100) + 1;
+            double change = (percentEarned / 100.0) + 1.0;
             account *= change;
             if(account > maxAccount) {
                 maxAccount = account;
                 continue;
             }
-            double drawdown = 100 * Math.abs(account - maxAccount) / maxAccount;
+            double drawdown = 100.0 * Math.abs(account - maxAccount) / maxAccount;
             if(drawdown > maxDrawdown) {
                 maxDrawdown = drawdown;
             }

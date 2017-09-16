@@ -5,6 +5,7 @@ import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.breeder.InheritedWeightMode;
+import com.alphatica.genotick.chart.GenoChartMode;
 
 import java.io.Console;
 
@@ -32,6 +33,7 @@ class ConsoleInput extends BasicUserInput {
         settings.processorInstructionLimit = getInteger("Processor instruction limit", settings.processorInstructionLimit);
         settings.resultThreshold = getDouble("Result threshold",settings.resultThreshold);
         settings.requireSymmetricalRobots = getBoolean("Require symmetrical robots", settings.requireSymmetricalRobots);
+        settings.chartMode = getEnumValue(GenoChartMode.class, "Chart mode", settings.chartMode);
         if (settings.performTraining) {
             settings.dataMaximumOffset = getInteger("Data maximum offset", settings.dataMaximumOffset);
             settings.populationDesiredSize = getInteger("Population desired size", settings.populationDesiredSize);
