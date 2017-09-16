@@ -88,7 +88,7 @@ public class MainAppData {
     }
 
     public Stream<TimePoint> getTimePoints(final TimePoint startTime, final TimePoint endTime) {
-        return timePoints.stream().filter(time -> time.isGreaterOrEqual(startTime) && time.isLessThan(endTime));
+        return timePoints.stream().filter(time -> time.isGreaterOrEqual(startTime) && time.isLessOrEqual(endTime));
     }
 
     public Collection<DataSet> listSets() {
