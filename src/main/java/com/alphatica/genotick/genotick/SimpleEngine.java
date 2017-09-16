@@ -104,7 +104,7 @@ public class SimpleEngine implements Engine {
         timePointResult.listDataSetResults().forEach(dataSetResult -> {
             Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
             account.addPendingOrder(dataSetResult.getName(), prediction);
-            output.showPrediction(timePoint, dataSetResult.getName(), prediction);
+            output.showPrediction(timePoint, dataSetResult, prediction);
         });
         checkTraining(list);
         output.reportFinishedTimePoint(timePoint, account.getValue());

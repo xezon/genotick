@@ -1,6 +1,7 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.DataSetName;
+import com.alphatica.genotick.genotick.DataSetResult;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.timepoint.TimePoint;
 
@@ -14,7 +15,7 @@ public interface UserOutput {
     
     void debugMessage(String message);
 
-    void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction);
+    void showPrediction(TimePoint timePoint, DataSetResult result, Prediction prediction);
 
     void reportAccountOpening(BigDecimal cash);
 

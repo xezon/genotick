@@ -1,6 +1,7 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.DataSetName;
+import com.alphatica.genotick.genotick.DataSetResult;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.genotick.Tools;
 import com.alphatica.genotick.timepoint.TimePoint;
@@ -38,8 +39,11 @@ public class CsvOutput implements UserOutput {
     }
 
     @Override
-    public void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction) {
-        String line = format("%s,%s,%s",timePoint.toString(),name.toString(),prediction.toString());
+    public void showPrediction(TimePoint timePoint, DataSetResult result, Prediction prediction) {
+        String line = format("%s,%s,%s,%s,%s,%.2f,%.2f",
+                timePoint.toString(),result.getName().toString(),prediction.toString(),
+                result.getCountUp(),result.getCountDown(),result.getWeightUp(),result.getWeightDown()
+        );
         predictionWriter.writeLine(line);
     }
 

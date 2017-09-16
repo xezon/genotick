@@ -2,6 +2,7 @@ package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.exceptions.ExecutionException;
+import com.alphatica.genotick.genotick.DataSetResult;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.genotick.Tools;
 import com.alphatica.genotick.timepoint.TimePoint;
@@ -9,10 +10,10 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import static java.lang.String.format;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 
-import static java.lang.String.format;
 
 class ConsoleOutput implements UserOutput {
 
@@ -30,11 +31,13 @@ class ConsoleOutput implements UserOutput {
     }
 
     @Override
-    public void showPrediction(TimePoint timePoint, DataSetName name, Prediction prediction) {
-        log(format("%s prediction on %s for the next trade: %s",
-                name.toString(),timePoint.toString(),prediction.toString()));
+    public void showPrediction(TimePoint timePoint, DataSetResult result, Prediction prediction) {
+        log(format("%s prediction on %s for the next trade: %s, count up/dn: %s/%s, weight up/dn: %.2f/%.2f",
+                result.getName().toString(),timePoint.toString(),prediction.toString(),
+                result.getCountUp(),result.getCountDown(),result.getWeightUp(),result.getWeightDown()
+        ));
     }
-
+    
     @Override
     public void reportAccountOpening(BigDecimal cash) {
         log(format("Opening account with %s cash", cash.toPlainString()));
