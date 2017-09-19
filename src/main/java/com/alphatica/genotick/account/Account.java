@@ -17,14 +17,11 @@ import static java.lang.String.format;
 public class Account {
     private Map<DataSetName, Prediction> pendingOrders = new HashMap<>();
     private Map<DataSetName, Trade> trades = new HashMap<>();
-    @SuppressWarnings("unused")
-    private final BigDecimal initialBalance;
     private BigDecimal balance;
     private final UserOutput output;
     private final ProfitRecorder profitRecorder;
 
     public Account(BigDecimal balance, UserOutput output, ProfitRecorder profitRecorder) {
-        this.initialBalance = balance;
         this.balance = balance;
         this.output = output;
         this.profitRecorder = profitRecorder;

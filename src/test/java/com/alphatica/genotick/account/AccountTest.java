@@ -216,6 +216,30 @@ public class AccountTest {
         account.openTrades(map1);
     }
 
+    @Test
+    public void exception1HasMessage() {
+        try {
+            account.addPendingOrder(name1, Prediction.DOWN);
+            account.addPendingOrder(name1, Prediction.DOWN);
+        } catch (AccountException e) {
+            assertTrue(!e.getMessage().isEmpty());
+            assertTrue(e.getMessage().contains(name1.getName()));
+        }
+    }
+    
+    @Test
+    public void exception2HasMessage() {
+        try {
+            account.addPendingOrder(name1, Prediction.DOWN);
+            account.openTrades(map1);
+            account.addPendingOrder(name1, Prediction.DOWN);
+            account.openTrades(map1);
+        } catch (AccountException e) {
+            assertTrue(!e.getMessage().isEmpty());
+            assertTrue(e.getMessage().contains(name1.getName()));
+        }
+    }
+    
     private void compare(BigDecimal one, BigDecimal two) {
         assertEquals(
                 one.setScale(10, BigDecimal.ROUND_HALF_DOWN),
