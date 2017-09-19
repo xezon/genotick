@@ -15,10 +15,9 @@ public class RobotInfo {
     private final int length;
     private final int totalPredictions;
     private final int totalOutcomes;
-
-    private boolean isPredicting;
-
     private final int bias;
+    private boolean isPredicting;
+    
     @Override
     public String toString() {
         return name.toString() + ": Outcomes: " + String.valueOf(totalPredictions) + " weight: " + format.format(weight) +

@@ -3,6 +3,7 @@ package com.alphatica.genotick.ui;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
+import com.alphatica.genotick.genotick.WeightMode;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.breeder.InheritedWeightMode;
 import com.alphatica.genotick.chart.GenoChartMode;
@@ -41,6 +42,8 @@ class ConsoleInput extends BasicUserInput {
             settings.maximumDeathByWeight = getDouble("Maximum death rate by weight", settings.maximumDeathByWeight);
             settings.probabilityOfDeathByAge = getDouble("Probability of death by age", settings.probabilityOfDeathByAge);
             settings.probabilityOfDeathByWeight = getDouble("Probability of death by weight", settings.probabilityOfDeathByWeight);
+            settings.weightMode = getEnumValue(WeightMode.class, "Weight mode", settings.weightMode);
+            settings.weightExponent = getDouble("Weight exponent", settings.weightExponent);
             settings.inheritedChildWeight = getDouble("Inherited child's weight", settings.inheritedChildWeight);
             settings.inheritedChildWeightMode = getEnumValue(InheritedWeightMode.class, "Inherited child's weight mode", settings.inheritedChildWeightMode);
             settings.protectRobotsUntilOutcomes = getInteger("Protect robots until outcomes", settings.protectRobotsUntilOutcomes);

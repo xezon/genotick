@@ -8,8 +8,8 @@ import java.util.List;
 
 public class RobotData {
     private final List<double[]> priceData;
-    private final double lastPriceChange;
     private final DataSetName name;
+    private final double lastPriceChange;
 
     public static RobotData createData(List<double[]> priceData, DataSetName name) {
         return new RobotData(priceData, name);
@@ -24,42 +24,46 @@ public class RobotData {
     private RobotData(List<double[]> priceData, DataSetName name) {
         this.priceData = priceData;
         this.name = name;
-        this.lastPriceChange = calculateLastPriceChange(priceData);
-    }
-
-    public double getLastPriceChange() {
-        return lastPriceChange;
-    }
-
-    public double getPriceData(int dataColumn, int dataOffset) {
-        if (dataOffset >= priceData.get(dataColumn).length)
-            throw new NotEnoughDataException();
-        else
-            return priceData.get(dataColumn)[dataOffset];
+        this.lastPriceChange = calculateLastPriceChange();
     }
 
     public DataSetName getName() {
         return name;
     }
 
-    public boolean isEmpty() {
-        return priceData.get(0).length == 0;
+    public double getPriceData(int column, int offset) {
+        if (offset >= priceData.get(column).length)
+            throw new NotEnoughDataException();
+        else
+            return priceData.get(column)[offset];
     }
-
-    public int getColumns() {
+    
+    public int getColumnCount() {
         return priceData.size();
     }
 
+    private int getAssetDataLength(int column) {
+        return priceData.get(column).length;
+    }
+
+    public boolean isEmpty() {
+        return getAssetDataLength(0) == 0;
+    }
+    
     double getLastPriceOpen() {
         return priceData.get(0)[0];
     }
 
-    private static double calculateLastPriceChange(List<double[]> priceData) {
-        if(priceData.get(0).length < 2) {
-            return 0;
+    public double getLastPriceChange() {
+        return lastPriceChange;
+    }
+
+    private double calculateLastPriceChange() {
+        if (getAssetDataLength(0) < 2) {
+            return 0.0;
         }
-        double last = priceData.get(0)[0];
-        double previous = priceData.get(0)[1];
-        return 100 * (last - previous) / previous;
+        final double currentOpen = priceData.get(0)[0];
+        final double previousOpen = priceData.get(0)[1];
+        return currentOpen - previousOpen;
     }
 }

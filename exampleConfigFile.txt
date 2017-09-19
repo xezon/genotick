@@ -58,6 +58,18 @@ probabilityOfDeathByAge	0.5
 # Currently, removal by weight happens only if there is no more space to breed in the population.
 probabilityOfDeathByWeight	0.5
 
+# The weight mode determines how a robot's performance is measured and weighted.
+# All modes account for inverted results, where a bad performance flips the prediction.
+# [weightMode WIN_COUNT] Robot performance is measured by its win count (wins minus losses)
+# [weightMode WIN_RATE] Robot performance is measured by its win rate (wins devided by losses)
+# [weightMode PROFIT_COUNT] Robot performance is measured by its profit (profits minus losses)
+# [weightMode PROFIT_FACTOR] Robot performance is measured by its profit factor (profits devided by losses)
+weightMode WIN_COUNT
+
+# The weight can be scaled by exponentiation.
+# The greater the exponent, the more will well performing robots outweigh poorly performing robots.
+weightExponent 2.0
+
 # When a child robot is born its weight is zero because it has no predictions yet. 
 # This setting enables the child robot to inherit a percentage (in range 0..1) of its parents' average weight.
 # This is done to protect new robots from getting removed when they had a few predictions only.

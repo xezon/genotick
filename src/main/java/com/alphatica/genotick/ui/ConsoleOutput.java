@@ -39,8 +39,8 @@ class ConsoleOutput implements UserOutput {
     }
     
     @Override
-    public void reportAccountOpening(BigDecimal cash) {
-        log(format("Opening account with %s cash", cash.toPlainString()));
+    public void reportAccountOpening(BigDecimal balance) {
+        log(format("Opening account with %s balance", balance.toPlainString()));
     }
 
     @Override
@@ -54,19 +54,19 @@ class ConsoleOutput implements UserOutput {
     }
 
     @Override
-    public void reportClosingTrade(DataSetName name, BigDecimal quantity, BigDecimal price, BigDecimal profit, BigDecimal cash) {
-        log(format("Closing %s trade. Quantity %s, price: %s, profit: %s, current cash: %s",
-                name, scale(quantity), scale(price), scale(profit), scale(cash)));
+    public void reportClosingTrade(DataSetName name, BigDecimal quantity, BigDecimal price, BigDecimal profit, BigDecimal balance) {
+        log(format("Closing %s trade. Quantity %s, price: %s, profit: %s, current balance: %s",
+                name, scale(quantity), scale(price), scale(profit), scale(balance)));
     }
 
     @Override
-    public void reportAccountClosing(BigDecimal cash) {
-        log(format("Closing account with %s cash", scale(cash)));
+    public void reportAccountClosing(BigDecimal balance) {
+        log(format("Closing account with %s balance", scale(balance)));
     }
 
     @Override
-    public void infoMessage(String s) {
-        log(s);
+    public void infoMessage(String message) {
+        log(message);
     }
 
     @Override
@@ -75,8 +75,8 @@ class ConsoleOutput implements UserOutput {
     }
 
     @Override
-    public void reportFinishedTimePoint(TimePoint timePoint, BigDecimal value) {
-        log(format("Finished time point %s with account value %s", timePoint, scale(value)));
+    public void reportFinishedTimePoint(TimePoint timePoint, BigDecimal equity) {
+        log(format("Finished time point %s with account value %s", timePoint, scale(equity)));
     }
 
     private void log(String string) {

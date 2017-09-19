@@ -135,7 +135,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     private void prepare(RobotData robotData, Robot robot) {
         this.robot = robot;
         this.data = robotData;
-        dataColumns = data.getColumns();
+        dataColumns = data.getColumnCount();
         finished = false;
         instructionList = null;
         terminateInstructionList = false;

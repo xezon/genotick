@@ -12,29 +12,36 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
+import static java.lang.String.format;
 
 public class Account {
     private Map<DataSetName, Prediction> pendingOrders = new HashMap<>();
     private Map<DataSetName, Trade> trades = new HashMap<>();
-
-    private BigDecimal cash;
+    @SuppressWarnings("unused")
+    private final BigDecimal initialBalance;
+    private BigDecimal balance;
     private final UserOutput output;
     private final ProfitRecorder profitRecorder;
 
-    public Account(BigDecimal cash, UserOutput output, ProfitRecorder profitRecorder) {
-        this.cash = cash;
+    public Account(BigDecimal balance, UserOutput output, ProfitRecorder profitRecorder) {
+        this.initialBalance = balance;
+        this.balance = balance;
         this.output = output;
         this.profitRecorder = profitRecorder;
-        output.reportAccountOpening(cash);
+        output.reportAccountOpening(balance);
     }
 
-    public BigDecimal getValue() {
-        return cash.add(trades.values().stream().map(Trade::value).reduce(BigDecimal.ZERO, BigDecimal::add));
+    public BigDecimal getEquity() {
+        return balance.add(trades.values().stream().map(Trade::value).reduce(BigDecimal.ZERO, BigDecimal::add));
+    }
+    
+    BigDecimal getBalance() {
+        return balance;
     }
 
     public void openTrades(Map<DataSetName, Double> prices) {
         if(!pendingOrders.isEmpty()) {
-            BigDecimal cashPerTrade = cash.divide(BigDecimal.valueOf(pendingOrders.size()), MathContext.DECIMAL128);
+            final BigDecimal cashPerTrade = balance.divide(BigDecimal.valueOf(pendingOrders.size()), MathContext.DECIMAL128);
             prices.forEach((name, price) -> openTrade(cashPerTrade, name, BigDecimal.valueOf(price)));
         }
     }
@@ -46,7 +53,7 @@ public class Account {
     public void closeAccount() {
         List<DataSetName> openedTradesNames = new ArrayList<>(trades.keySet());
         openedTradesNames.forEach(name -> closeTrade(name, trades.get(name).getPrice()));
-        output.reportAccountClosing(cash);
+        output.reportAccountClosing(balance);
         profitRecorder.outputWinRateForAllRecords();
     }
 
@@ -56,10 +63,6 @@ public class Account {
             output.reportPendingTrade(name, prediction);
             pendingOrders.put(name, prediction);
         }
-    }
-
-    BigDecimal getCash() {
-        return cash;
     }
 
     private void openTrade(BigDecimal cashPerTrade, DataSetName name, BigDecimal price) {
@@ -73,7 +76,7 @@ public class Account {
             Trade trade = new Trade(quantity, price);
             trades.put(name, trade);
             pendingOrders.remove(name);
-            cash = cash.subtract(cashPerTrade);
+            balance = balance.subtract(cashPerTrade);
         });
     }
 
@@ -82,8 +85,8 @@ public class Account {
             BigDecimal priceDifference = price.subtract(trade.getPrice());
             BigDecimal profit = trade.getQuantity().multiply(priceDifference);
             BigDecimal initial = trade.getQuantity().abs().multiply(trade.getPrice());
-            cash = cash.add(profit).add(initial);
-            output.reportClosingTrade(name, trade.getQuantity(), price, profit, cash);
+            balance = balance.add(profit).add(initial);
+            output.reportClosingTrade(name, trade.getQuantity(), price, profit, balance);
             profitRecorder.addTradeResult(name, profit.doubleValue());
             trades.remove(name);
         });
@@ -91,13 +94,13 @@ public class Account {
 
     private void validateAddPending(DataSetName name) {
         if(pendingOrders.containsKey(name)) {
-            throw new AccountException("results exist");
+            throw new AccountException(format("Pending order for asset '%s' does exist already", name.getName()));
         }
     }
 
     private void validateOpenTrade(DataSetName name) {
         if(trades.containsKey(name)) {
-            throw new AccountException("Previous trade not closed");
+            throw new AccountException(format("Open order for asset '%s' does exist already", name.getName()));
         }
     }
 }

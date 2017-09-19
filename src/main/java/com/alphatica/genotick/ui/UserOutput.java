@@ -17,19 +17,19 @@ public interface UserOutput {
 
     void showPrediction(TimePoint timePoint, DataSetResult result, Prediction prediction);
 
-    void reportAccountOpening(BigDecimal cash);
+    void reportAccountOpening(BigDecimal balance);
 
     void reportPendingTrade(DataSetName name, Prediction prediction);
 
     void reportOpeningTrade(DataSetName name, BigDecimal quantity, Double price);
 
-    void reportClosingTrade(DataSetName name, BigDecimal quantity, BigDecimal price, BigDecimal profit, BigDecimal cash);
+    void reportClosingTrade(DataSetName name, BigDecimal quantity, BigDecimal price, BigDecimal profit, BigDecimal balance);
 
-    void reportAccountClosing(BigDecimal cash);
+    void reportAccountClosing(BigDecimal balance);
 
-    void infoMessage(String s);
+    void infoMessage(String message);
 
     void reportStartingTimePoint(TimePoint timePoint);
 
-    void reportFinishedTimePoint(TimePoint timePoint, BigDecimal accountValue);
+    void reportFinishedTimePoint(TimePoint timePoint, BigDecimal equity);
 }

@@ -48,7 +48,7 @@ public class CsvOutput implements UserOutput {
     }
 
     @Override
-    public void reportAccountOpening(BigDecimal cash) {
+    public void reportAccountOpening(BigDecimal balance) {
 
     }
 
@@ -63,12 +63,12 @@ public class CsvOutput implements UserOutput {
     }
 
     @Override
-    public void reportClosingTrade(DataSetName name, BigDecimal quantity, BigDecimal price, BigDecimal profit, BigDecimal cash) {
+    public void reportClosingTrade(DataSetName name, BigDecimal quantity, BigDecimal price, BigDecimal profit, BigDecimal balance) {
 
     }
 
     @Override
-    public void reportAccountClosing(BigDecimal cash) {
+    public void reportAccountClosing(BigDecimal balance) {
 
     }
 
@@ -78,8 +78,8 @@ public class CsvOutput implements UserOutput {
     }
 
     @Override
-    public void reportFinishedTimePoint(TimePoint timePoint, BigDecimal accountValue) {
-        String line = format("%s,%s", timePoint.toString(), accountValue.toPlainString());
+    public void reportFinishedTimePoint(TimePoint timePoint, BigDecimal equity) {
+        String line = format("%s,%s", timePoint.toString(), equity.toPlainString());
         profitWriter.writeLine(line);
     }
 
@@ -91,8 +91,8 @@ public class CsvOutput implements UserOutput {
 
 
     @Override
-    public void infoMessage(String s) {
-        console.infoMessage(s);
+    public void infoMessage(String message) {
+        console.infoMessage(message);
     }
 }
 

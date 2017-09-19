@@ -15,7 +15,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
@@ -29,13 +28,15 @@ public class Robot implements Serializable {
     private final int maximumDataOffset;
     private final int ignoreColumns;
     private InstructionList mainFunction;
-    private int totalChildren;
-    private int totalPredictions;
-    private int correctPredictions;
-    private double inheritedWeight;
-    private int totalOutcomes;
-    private int outcomesAtLastChild;
-    private int bias;
+    private int totalChildren = 0;
+    private int correctPredictions = 0;
+    private int incorrectPredictions = 0;
+    private double profitablePriceMove = 0.0;
+    private double unprofitablePriceMove = 0.0;
+    private double inheritedWeight = 0.0;
+    private int totalOutcomes = 0;
+    private int outcomesAtLastChild = 0;
+    private int bias = 0;
     private boolean isPredicting = false;
 
     private final Map<DataSetName, Prediction> current = new HashMap<>();
@@ -64,6 +65,30 @@ public class Robot implements Serializable {
     public InstructionList getMainFunction() {
         return mainFunction;
     }
+    
+    public int getTotalPredictions() {
+        return correctPredictions + incorrectPredictions;
+    }
+    
+    public int getCorrectPredictions() {
+        return correctPredictions;
+    }
+    
+    public int getIncorrectPredictions() {
+        return incorrectPredictions;
+    }
+    
+    public double getTotalPriceMove() {
+        return profitablePriceMove + unprofitablePriceMove;
+    }
+    
+    public double getProfitablePriceMove() {
+        return profitablePriceMove;
+    }
+    
+    public double getUnprofitablePriceMove() {
+        return unprofitablePriceMove;
+    }
 
     public double getEarnedWeight() {
         return WeightCalculator.calculateWeight(this);
@@ -91,15 +116,17 @@ public class Robot implements Serializable {
     }
 
     public void recordMarketChange(RobotData robotData) {
-        ofNullable(current.get(robotData.getName())).ifPresent(prediction -> {
-            current.remove(robotData.getName());
-            Outcome outcome = Outcome.getOutcome(prediction, robotData.getLastPriceChange());
+        ofNullable(current.remove(robotData.getName())).ifPresent(prediction -> {
+            final double priceChange = robotData.getLastPriceChange();
+            final Outcome outcome = Outcome.getOutcome(prediction, priceChange);
             totalOutcomes++;
-            if(outcome != Outcome.OUT) {
-                totalPredictions++;
-            }
-            if(outcome == Outcome.CORRECT) {
+            if (outcome == Outcome.CORRECT) {
+                profitablePriceMove += Math.abs(priceChange);
                 correctPredictions++;
+            }
+            else if (outcome == Outcome.INCORRECT) {
+                unprofitablePriceMove += Math.abs(priceChange);
+                incorrectPredictions++;
             }
         });
     }
@@ -115,10 +142,6 @@ public class Robot implements Serializable {
         bias += result.getPrediction().getValue();
     }
 
-    public int getTotalPredictions() {
-        return totalPredictions;
-    }
-
     @Override
     public String toString() {
         int length = mainFunction.getSize();
@@ -127,10 +150,6 @@ public class Robot implements Serializable {
                 + " Weight: " + weightFormat.format(getWeight())
                 + " Length: " + String.valueOf(length)
                 + " Children: " + String.valueOf(totalChildren);
-    }
-
-    public int getCorrectPredictions() {
-        return correctPredictions;
     }
 
     public void setName(RobotName name) {

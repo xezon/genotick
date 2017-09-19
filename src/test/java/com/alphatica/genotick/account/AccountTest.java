@@ -100,7 +100,7 @@ public class AccountTest {
         compare(initial.divide(closePrice, MathContext.DECIMAL128), output.quantity);
         compare(closePrice, output.closePrice);
         compare(BigDecimal.ZERO, output.profit);
-        compare(initial, output.cash);
+        compare(initial, output.balance);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class AccountTest {
         account.addPendingOrder(name2, Prediction.DOWN);
         account.addPendingOrder(new DataSetName("no_such_market"), Prediction.UP);
         account.openTrades(map2);
-        compare(account.getValue(), initial);
+        compare(account.getEquity(), initial);
     }
 
     @Test
@@ -119,15 +119,15 @@ public class AccountTest {
         output.clear();
         account.closeAccount();
         assertEquals(profitRecorder.addTradeResultCount, map1.size());
-        assertEquals(initial, account.getCash());
+        assertEquals(initial, account.getBalance());
     }
 
     @Test
     public void ignoresOpenTradesIfNoPendingOrders() {
-        BigDecimal cashStart = account.getCash();
+        BigDecimal balanceBegin = account.getBalance();
         account.openTrades(map1);
-        BigDecimal cashEnd = account.getCash();
-        assertEquals(cashStart, cashEnd);
+        BigDecimal balanceEnd = account.getBalance();
+        assertEquals(balanceBegin, balanceEnd);
     }
 
     @Test
@@ -138,7 +138,7 @@ public class AccountTest {
         account.closeTrades(map1);
         output.clear();
         account.closeAccount();
-        assertEquals(initial, account.getCash());
+        assertEquals(initial, account.getBalance());
     }
 
     @Test
@@ -153,8 +153,7 @@ public class AccountTest {
         account.closeTrades(map);
         output.clear();
         account.closeAccount();
-        BigDecimal closed = account.getCash();
-        compare(closed, initial.multiply(BigDecimal.valueOf(profit)));
+        compare(account.getBalance(), initial.multiply(BigDecimal.valueOf(profit)));
         assertTrue(profitRecorder.calledWinRate);
     }
 
@@ -166,7 +165,7 @@ public class AccountTest {
         account.addPendingOrder(name1, Prediction.DOWN);
         account.openTrades(map1);
         account.closeTrades(Collections.singletonMap(name1, finalPrice));
-        compare(finalAccount, account.getCash());
+        compare(finalAccount, account.getBalance());
     }
 
     @Test
@@ -254,7 +253,7 @@ public class AccountTest {
         BigDecimal quantity;
         BigDecimal profit;
         BigDecimal closePrice;
-        BigDecimal cash;
+        BigDecimal balance;
 
         Prediction prediction;
         DataSetName name;
@@ -270,7 +269,7 @@ public class AccountTest {
             cashPerTrade = null;
             quantity = null;
             profit = null;
-            cash = null;
+            balance = null;
             prediction = null;
             name = null;
             price = Double.NaN;
@@ -278,13 +277,13 @@ public class AccountTest {
         }
 
         @Override
-        public void reportAccountOpening(BigDecimal cash) {
-            accountOpening = cash;
+        public void reportAccountOpening(BigDecimal balance) {
+            accountOpening = balance;
         }
 
         @Override
-        public void reportAccountClosing(BigDecimal cash) {
-            accountClosing = cash;
+        public void reportAccountClosing(BigDecimal balance) {
+            accountClosing = balance;
         }
 
 
@@ -307,7 +306,7 @@ public class AccountTest {
             this.quantity = quantity;
             this.closePrice = closePrice;
             this.profit = profit;
-            this.cash = cash;
+            this.balance = cash;
         }
 
     }

@@ -106,7 +106,7 @@ public class SimpleEngine implements Engine {
                 output.showPrediction(timePoint, dataSetResult, prediction);
             });
             checkTraining(list);
-            output.reportFinishedTimePoint(timePoint, account.getValue());
+            output.reportFinishedTimePoint(timePoint, account.getEquity());
         }
         profitRecorder.onUpdate(bar);
     }

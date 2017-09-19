@@ -2,7 +2,6 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.timepoint.TimePoint;
-import com.alphatica.genotick.ui.UserOutput;
 import com.alphatica.genotick.population.PopulationSettings;
 import com.alphatica.genotick.breeder.InheritedWeightMode;
 import com.alphatica.genotick.chart.GenoChartMode;
@@ -22,6 +21,8 @@ public class MainSettings {
     public double maximumDeathByWeight = 0.1;
     public double probabilityOfDeathByAge = 0.5;
     public double probabilityOfDeathByWeight = 0.5;
+    public WeightMode weightMode = WeightMode.WIN_COUNT;
+    public double weightExponent = 2.0;
     public double inheritedChildWeight = 0;
     public InheritedWeightMode inheritedChildWeightMode = InheritedWeightMode.ANCESTORS_LOG;
     public int dataMaximumOffset = 256;
