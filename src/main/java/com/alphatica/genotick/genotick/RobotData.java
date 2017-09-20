@@ -1,5 +1,6 @@
 package com.alphatica.genotick.genotick;
 
+import com.alphatica.genotick.data.Column;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.processor.NotEnoughDataException;
 
@@ -16,7 +17,7 @@ public class RobotData {
     }
 
     public static RobotData createEmptyData(DataSetName name) {
-        List<double []> list = new ArrayList<>();
+        List<double[]> list = new ArrayList<>();
         list.add(new double[0]);
         return createData(list, name);
     }
@@ -47,11 +48,11 @@ public class RobotData {
     }
 
     public boolean isEmpty() {
-        return getAssetDataLength(0) == 0;
+        return getAssetDataLength(Column.OHLCV.OPEN) == 0;
     }
     
     double getLastPriceOpen() {
-        return priceData.get(0)[0];
+        return priceData.get(Column.OHLCV.OPEN)[0];
     }
 
     public double getLastPriceChange() {
@@ -59,11 +60,11 @@ public class RobotData {
     }
 
     private double calculateLastPriceChange() {
-        if (getAssetDataLength(0) < 2) {
+        if (getAssetDataLength(Column.OHLCV.OPEN) < 2) {
             return 0.0;
         }
-        final double currentOpen = priceData.get(0)[0];
-        final double previousOpen = priceData.get(0)[1];
+        final double currentOpen = priceData.get(Column.OHLCV.OPEN)[0];
+        final double previousOpen = priceData.get(Column.OHLCV.OPEN)[1];
         return currentOpen - previousOpen;
     }
 }

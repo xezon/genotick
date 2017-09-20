@@ -1,5 +1,6 @@
 package com.alphatica.genotick.reversal;
 
+import com.alphatica.genotick.data.Column;
 import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.FileSystemDataLoader;
@@ -93,29 +94,29 @@ public class Reversal {
     private static Number[] reverseLineOHLCV(Number[] table, Number[] lastOriginal, Number[] lastReversed) {
         Number [] reversed = new Number[table.length];
         // Column 0 is unchanged
-        reversed[0] = table[0];
+        reversed[Column.TOHLCV.TIME] = table[Column.TOHLCV.TIME];
         // Column 1. Rewrite if first line
         if(lastOriginal == null) {
-            reversed[1] = table[1];
+            reversed[Column.TOHLCV.OPEN] = table[Column.TOHLCV.OPEN];
         } else {
             // Change by % if not first line
-            reversed[1] = getReverseValue(table[1],lastOriginal[1],lastReversed[1]);
+            reversed[Column.TOHLCV.OPEN] = getReverseValue(table[Column.TOHLCV.OPEN], lastOriginal[Column.TOHLCV.OPEN], lastReversed[Column.TOHLCV.OPEN]);
         }
         // Check if 4 columns here, because we need time, open, high, low to do swapping later.
-        if(table.length < 4)
+        if(table.length < Column.TOHLCV.CLOSE)
             return reversed;
         // Column 2. Change by % comparing to open
         // Write into 3 - we swap 2 & 3
-        reversed[3] = getReverseValue(table[2], table[1], reversed[1]);
+        reversed[Column.TOHLCV.LOW] = getReverseValue(table[Column.TOHLCV.HIGH], table[Column.TOHLCV.OPEN], reversed[Column.TOHLCV.OPEN]);
         // Column 3. Change by % comparing to open
         // Write into 2 - we swap 2 & 3
-        reversed[2] = getReverseValue(table[3],table[1],reversed[1]);
-        if(table.length == 4)
+        reversed[Column.TOHLCV.HIGH] = getReverseValue(table[Column.TOHLCV.LOW], table[Column.TOHLCV.OPEN], reversed[Column.TOHLCV.OPEN]);
+        if(table.length == Column.TOHLCV.CLOSE)
             return reversed;
         // Column 4. Change by % comparing to open.
-        reversed[4] = getReverseValue(table[4],table[1],reversed[1]);
+        reversed[Column.TOHLCV.CLOSE] = getReverseValue(table[Column.TOHLCV.CLOSE], table[Column.TOHLCV.OPEN], reversed[Column.TOHLCV.OPEN]);
         // Rewrite rest
-        System.arraycopy(table, 5, reversed, 5, table.length - 5);
+        System.arraycopy(table, Column.TOHLCV.VOLUME, reversed, Column.TOHLCV.VOLUME, table.length - Column.TOHLCV.VOLUME);
         return reversed;
     }
 

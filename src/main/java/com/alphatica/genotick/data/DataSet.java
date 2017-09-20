@@ -10,10 +10,10 @@ import java.util.List;
 
 public class DataSet {
     private final TimePoint[] timePoints;
-    private final List<double []> values;
+    private final List<double[]> values;
     private final DataSetName name;
 
-    public DataSet(List<Number []> lines, String fileName) {
+    public DataSet(List<Number[]> lines, String fileName) {
         this.name = new DataSetName(fileName);
         timePoints = new TimePoint[lines.size()];
         values = new ArrayList<>();
@@ -43,11 +43,11 @@ public class DataSet {
     }
 
     private void fillValuesArrays(int lineNumber, Number[] line, int firstLineCount) {
-        for(int j = 1; j < firstLineCount; j++)
-            values.get(j-1)[lineNumber -1] = line[j].doubleValue();
+        for(int i = Column.TOHLCV.OPEN; i < firstLineCount; i++)
+            values.get(i-1)[lineNumber - 1] = line[i].doubleValue();
     }
 
-    private void fillFirstNumberAsTimePoint(int lineNumber, Number [] line) {
+    private void fillFirstNumberAsTimePoint(int lineNumber, Number[] line) {
         TimePoint timePoint = new TimePoint(line[0].longValue());
         validateTimePoint(lineNumber, timePoint);
         timePoints[lineNumber - 1] = timePoint;
@@ -61,7 +61,7 @@ public class DataSet {
             throw new DataException("Time (first number) is equal or less than previous. Line: " + lineNumber);
     }
 
-    private void checkNumberOfFieldsInLine(int lineNumber, Number [] line, int firstLineCount) {
+    private void checkNumberOfFieldsInLine(int lineNumber, Number[] line, int firstLineCount) {
         if(line.length != firstLineCount)
             throw new DataException("Invalid number of fields in line: " + lineNumber);
     }
@@ -73,16 +73,16 @@ public class DataSet {
     }
 
     private RobotData createDataUpToTimePoint(int i) {
-        List<double []> list = new ArrayList<>();
+        List<double[]> list = new ArrayList<>();
         for(double[] original: values) {
-            double [] copy = copyReverseArray(original, i);
+            double[] copy = copyReverseArray(original, i);
             list.add(copy);
         }
         return RobotData.createData(list, name);
     }
 
     private double[] copyReverseArray(double[] original, int i) {
-        double [] array = new double[i+1];
+        double[] array = new double[i+1];
         for(int k = 0; k <= i; k++)
             array[k] = original[i-k];
         return array;
@@ -92,8 +92,8 @@ public class DataSet {
         return timePoints.length;
     }
 
-    public Number [] getLine(int lineNumber) {
-        Number [] line = new Number[1 + values.size()];
+    public Number[] getLine(int lineNumber) {
+        Number[] line = new Number[1 + values.size()];
         line[0] = timePoints[lineNumber].getValue();
         for(int i = 1; i < line.length; i++) {
             line[i] = values.get(i-1)[lineNumber];
