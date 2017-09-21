@@ -8,6 +8,7 @@ public class BreederSettings {
     public final double randomRobots;
     public final int dataMaximumOffset;
     public final int ignoreColumns;
+    public final int robotInstructionLimit;
 
     public BreederSettings(
             int minimumOutcomesBetweenBreeding,
@@ -16,7 +17,8 @@ public class BreederSettings {
             InheritedWeightMode inheritedWeightMode,
             double randomRobots,
             int dataMaximumOffset,
-            int ignoreColumns) {
+            int ignoreColumns,
+            int breederInstructionLimit) {
         this.minimumOutcomesBetweenBreeding = minimumOutcomesBetweenBreeding;
         this.minimumOutcomesToAllowBreeding = minimumOutcomesToAllowBreeding;
         this.inheritedWeightPercent = inheritedWeightPercent;
@@ -24,5 +26,6 @@ public class BreederSettings {
         this.randomRobots = randomRobots;
         this.dataMaximumOffset = dataMaximumOffset;
         this.ignoreColumns = ignoreColumns;
+        this.robotInstructionLimit = breederInstructionLimit;
     }
 }

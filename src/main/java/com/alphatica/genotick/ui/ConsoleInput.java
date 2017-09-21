@@ -33,6 +33,7 @@ class ConsoleInput extends BasicUserInput {
             settings.startTimePoint = new TimePoint(getLong("Start time point",data.getFirstTimePoint().getValue()));
             settings.endTimePoint = new TimePoint(getLong("End time point", data.getLastTimePoint().getValue()));
             settings.populationDAO = getString("Population storage", settings.populationDAO);
+            settings.robotInstructionLimit = getInteger("Robot instruction limit", settings.robotInstructionLimit);
             settings.processorInstructionLimit = getInteger("Processor instruction limit", settings.processorInstructionLimit);
             settings.resultThreshold = getDouble("Result threshold",settings.resultThreshold);
             settings.requireSymmetricalRobots = getBoolean("Require symmetrical robots", settings.requireSymmetricalRobots);

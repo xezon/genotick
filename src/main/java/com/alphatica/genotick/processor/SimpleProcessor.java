@@ -96,28 +96,31 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     private static final int MAX_JUMP = 255;
     private final double[] registers = new double[totalRegisters];
-    private Robot robot;
+    private final int processorInstructionLimit;
+
     private RobotData data;
     private int dataColumns;
     private double robotResult;
     private boolean finished;
     private InstructionList instructionList;
+    private int instructionLimit;
     private boolean terminateInstructionList;
     private int changeInstructionPointer;
     private int totalInstructionExecuted;
-    private int instructionLimitMultiplier;
-    private int robotInstructionLimit;
     private int dataMaximumOffset;
     private int ignoreColumns;
 
-    public static SimpleProcessor createProcessor() {
-        return new SimpleProcessor();
+    private SimpleProcessor(RobotExecutorSettings settings) {
+        processorInstructionLimit = settings.processorInstructionLimit;
+    }
+    
+    public static SimpleProcessor createProcessor(RobotExecutorSettings settings) {
+        return new SimpleProcessor(settings);
     }
 
     @Override
     public Prediction executeRobot(RobotData robotData, Robot robot) {
         prepare(robotData, robot);
-        robotInstructionLimit = robot.getLength() * instructionLimitMultiplier;
         try {
             return executeRobotMain();
         } catch (NotEnoughDataException |
@@ -127,17 +130,14 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         }
     }
 
-    @Override
-    public void setSettings(RobotExecutorSettings settings) {
-        instructionLimitMultiplier = settings.instructionLimit;
-    }
-
     private void prepare(RobotData robotData, Robot robot) {
-        this.robot = robot;
         this.data = robotData;
         dataColumns = data.getColumnCount();
+        robotResult = 0.0;
         finished = false;
-        instructionList = null;
+        instructionList = robot.getMainFunction();
+        instructionList.zeroOutVariables();
+        instructionLimit = robot.getLength() * processorInstructionLimit;
         terminateInstructionList = false;
         changeInstructionPointer = 0;
         totalInstructionExecuted = 0;
@@ -151,7 +151,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     }
 
     private Prediction executeRobotMain()  {
-        executeInstructionList(robot.getMainFunction());
+        executeInstructionList();
         if (finished) {
             return Prediction.getPrediction(robotResult);
         } else {
@@ -159,25 +159,18 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         }
     }
 
-    private void executeInstructionList(InstructionList list)  {
-        list.zeroOutVariables();
-        terminateInstructionList = false;
+    private void executeInstructionList()  {
         int instructionPointer = 0;
-        instructionList = list;
         do {
-            Instruction instruction = list.getInstruction(instructionPointer++);
+            Instruction instruction = instructionList.getInstruction(instructionPointer++);
             instruction.executeOn(this);
             totalInstructionExecuted++;
-            if(totalInstructionExecuted > robotInstructionLimit) {
+            if(totalInstructionExecuted > instructionLimit) {
                 break;
             }
-            //instructionPointer =  Math.abs((instructionPointer + changeInstructionPointer) % instructionList.getSize());
-            changeInstructionPointer = 0;
+            //instructionPointer = Math.abs((instructionPointer + changeInstructionPointer) % instructionList.getSize());
+            //changeInstructionPointer = 0;
         } while (!terminateInstructionList && !finished);
-    }
-
-
-    private SimpleProcessor() {
     }
 
     @Override

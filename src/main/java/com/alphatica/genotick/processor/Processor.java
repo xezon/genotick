@@ -98,7 +98,7 @@ abstract public class Processor {
 
     abstract public void execute(JumpIfVariableLessThanRegister ins);
 
-    abstract public void  execute(JumpIfVariableEqualRegister ins);
+    abstract public void execute(JumpIfVariableEqualRegister ins);
 
     abstract public void execute(JumpIfVariableNotEqualRegister ins);
 

@@ -40,10 +40,12 @@ populationDAO
 # The more the merrier.
 populationDesiredSize	1000
 
-# This setting prevents robots to run forever. The given number is used to calculate the
-# maximum instructions that can be executed for a robot on each TimePoint for each data file.
-# The current algorithm is simply: processorInstructionLimit * robotLength
-processorInstructionLimit	256
+# The maximum amount of instructions that are generated for each robot.
+robotInstructionLimit 1024
+
+# The maximum amount of instructions that can be executed on each timepoint for each robot for each data file.
+# Jumps can cause long loops, or even infinite loops. The final limit is: processorInstructionLimit * robotInstructionCount
+processorInstructionLimit 256
 
 # This setting is used to calculate how many robots are considered to be removed based on their age.
 maximumDeathByAge	0.01

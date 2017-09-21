@@ -64,7 +64,7 @@ public class SimpleBreeder implements RobotBreeder {
 
     private void createNewRobot(Population population) {
         Robot robot = Robot.createEmptyRobot(settings.dataMaximumOffset, settings.ignoreColumns);
-        int instructionsCount = Math.abs(mutator.getNextInt() % 1024);
+        int instructionsCount = Math.abs(mutator.getNextInt() % settings.robotInstructionLimit);
         InstructionList main = robot.getMainFunction();
         while (instructionsCount-- > 0) {
             addInstructionToMain(main);

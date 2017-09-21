@@ -103,7 +103,8 @@ public class Simulation {
                 settings.inheritedChildWeightMode,
                 settings.randomRobotsAtEachUpdate,
                 settings.dataMaximumOffset,
-                settings.ignoreColumns);
+                settings.ignoreColumns,
+                settings.robotInstructionLimit);
         return RobotBreederFactory.getDefaultBreeder(breederSettings, mutator);
     }
 

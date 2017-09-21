@@ -7,6 +7,4 @@ public interface RobotExecutor {
     byte totalRegisters = 4;
 
     Prediction executeRobot(RobotData robotData, Robot robot);
-
-    void setSettings(RobotExecutorSettings settings);
 }

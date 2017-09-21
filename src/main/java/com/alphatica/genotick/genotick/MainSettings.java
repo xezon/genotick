@@ -16,6 +16,7 @@ public class MainSettings {
     public String populationDAO = PopulationSettings.DEFAULT_DATA_ACCESS;
     public boolean performTraining = true;
     public String dataDirectory = Main.DEFAULT_DATA_DIR;
+    public int robotInstructionLimit = 1024;
     public int processorInstructionLimit = 256;
     public double maximumDeathByAge = 0.01;
     public double maximumDeathByWeight = 0.1;
@@ -75,6 +76,7 @@ public class MainSettings {
                 "End Time Point must be higher or equal Start Time Point");
         ensure(populationDesiredSize > 0, greaterThanZeroString("Population desired size"));
         ensure(dataMaximumOffset > 0, greaterThanZeroString("Data Maximum Offset"));
+        ensure(robotInstructionLimit > 0, greaterThanZeroString("Processor Instruction Limit"));
         ensure(processorInstructionLimit > 0, greaterThanZeroString("Processor Instruction Limit"));
         ensure(checkZeroToOne(maximumDeathByAge), zeroToOneString("Maximum Death by Age"));
         ensure(checkZeroToOne(maximumDeathByWeight), zeroToOneString("Maximum Death by Weight"));

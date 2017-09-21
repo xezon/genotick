@@ -11,8 +11,7 @@ public class RobotExecutorFactory {
     }
 
     public RobotExecutor getDefaultRobotExecutor() {
-        RobotExecutor executor = SimpleProcessor.createProcessor();
-        executor.setSettings(settings);
+        RobotExecutor executor = SimpleProcessor.createProcessor(settings);
         return executor;
     }
 }
