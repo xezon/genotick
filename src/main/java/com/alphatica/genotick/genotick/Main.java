@@ -177,17 +177,16 @@ public class Main {
             exit(errorCodes.NO_INPUT);
         }
         output = UserInputOutputFactory.getUserOutput(parameters);
-        //noinspection ConstantConditions
         if(output == null) {
             exit(errorCodes.NO_OUTPUT);
         }
     }
 
     private static void initReverse(Parameters parameters) {
-        String reverseValue = parameters.getValue("reverse");
-        if(reverseValue == null)
+        String dataPath = parameters.getValue("reverse");
+        if(dataPath == null)
             return;
-        Reversal reversal = new Reversal(reverseValue);
+        Reversal reversal = new Reversal(dataPath);
         reversal.reverse();
         System.exit(0);
     }
@@ -198,11 +197,10 @@ public class Main {
             exit(errorCodes.UNKNOWN_ARGUMENT);
         }
         Simulation simulation = new Simulation();
-        input.setSimulation(simulation);
         MainSettings settings = input.getSettings();
-        MainAppData data = input.getData(settings.dataSettings);
+        MainAppData data = input.getData(settings.dataDirectory);
         settings.validateTimePoints(data);
-        simulation.start(settings,data);
+        simulation.start(settings, data);
     }
 
     private static void exit(errorCodes code) {

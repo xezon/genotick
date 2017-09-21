@@ -18,15 +18,20 @@ class RandomParametersInput extends BasicUserInput {
 
     @Override
     public MainSettings getSettings() {
-        MainSettings defaults = MainSettings.getSettings();
-        defaults.populationDAO = "";
-        defaults.requireSymmetricalRobots = true;
-        defaults.killNonPredictingRobots = true;
-        defaults.performTraining = true;
-        defaults.chartMode = GenoChartMode.NONE;
-        MainAppData data = getData(Main.DEFAULT_DATA_DIR);
-        assignTimePoints(defaults, data);
-        return assignRandom(defaults);
+        MainSettings settings = getMainSettings();
+        if (settings == null) {
+            MainSettings defaults = MainSettings.getSettings();
+            defaults.populationDAO = "";
+            defaults.requireSymmetricalRobots = true;
+            defaults.killNonPredictingRobots = true;
+            defaults.performTraining = true;
+            defaults.chartMode = GenoChartMode.NONE;
+            MainAppData data = getData(defaults.dataDirectory);
+            assignTimePoints(defaults, data);
+            settings = assignRandom(defaults);
+            setMainSettings(settings);
+        }
+        return settings;
     }
 
     private void assignTimePoints(MainSettings defaults, MainAppData data) {

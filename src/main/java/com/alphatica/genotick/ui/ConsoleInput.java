@@ -23,42 +23,46 @@ class ConsoleInput extends BasicUserInput {
 
     @Override
     public MainSettings getSettings() {
-        String dataDirectory = getString("Data directory", Main.DEFAULT_DATA_DIR);
-        MainAppData data = getData(dataDirectory);
-        MainSettings settings = MainSettings.getSettings();
-        settings.dataSettings = dataDirectory;
-        settings.performTraining = getBoolean("Perform training", settings.performTraining);
-        settings.startTimePoint = new TimePoint(getLong("Start time point",data.getFirstTimePoint().getValue()));
-        settings.endTimePoint = new TimePoint(getLong("End time point", data.getLastTimePoint().getValue()));
-        settings.populationDAO = getString("Population storage", settings.populationDAO);
-        settings.processorInstructionLimit = getInteger("Processor instruction limit", settings.processorInstructionLimit);
-        settings.resultThreshold = getDouble("Result threshold",settings.resultThreshold);
-        settings.requireSymmetricalRobots = getBoolean("Require symmetrical robots", settings.requireSymmetricalRobots);
-        settings.chartMode = getEnumValue(GenoChartMode.class, "Chart mode", settings.chartMode);
-        if (settings.performTraining) {
-            settings.dataMaximumOffset = getInteger("Data maximum offset", settings.dataMaximumOffset);
-            settings.populationDesiredSize = getInteger("Population desired size", settings.populationDesiredSize);
-            settings.maximumDeathByAge = getDouble("Maximum death rate by age", settings.maximumDeathByAge);
-            settings.maximumDeathByWeight = getDouble("Maximum death rate by weight", settings.maximumDeathByWeight);
-            settings.probabilityOfDeathByAge = getDouble("Probability of death by age", settings.probabilityOfDeathByAge);
-            settings.probabilityOfDeathByWeight = getDouble("Probability of death by weight", settings.probabilityOfDeathByWeight);
-            settings.weightMode = getEnumValue(WeightMode.class, "Weight mode", settings.weightMode);
-            settings.weightExponent = getDouble("Weight exponent", settings.weightExponent);
-            settings.inheritedChildWeight = getDouble("Inherited child's weight", settings.inheritedChildWeight);
-            settings.inheritedChildWeightMode = getEnumValue(InheritedWeightMode.class, "Inherited child's weight mode", settings.inheritedChildWeightMode);
-            settings.protectRobotsUntilOutcomes = getInteger("Protect robots until outcomes", settings.protectRobotsUntilOutcomes);
-            settings.newInstructionProbability = getDouble("Probability of new instruction", settings.newInstructionProbability);
-            // This looks like an error but it's not. Default value for 'skipInstruction...' is same as 'newInstruction'
-            // to keep robots more or less constant size.
-            settings.skipInstructionProbability = getDouble("Probability of skipping instruction", settings.newInstructionProbability);
-            settings.instructionMutationProbability = getDouble("Instruction mutation probability", settings.instructionMutationProbability);
-            settings.minimumOutcomesToAllowBreeding = getInteger("Minimum outcomes to allow breeding", settings.minimumOutcomesToAllowBreeding);
-            settings.minimumOutcomesBetweenBreeding = getInteger("Minimum outcomes between breeding", settings.minimumOutcomesBetweenBreeding);
-            settings.killNonPredictingRobots = getBoolean("Kill non-predicting robots", settings.killNonPredictingRobots);
-            settings.randomRobotsAtEachUpdate = getDouble("Random robots at each update", settings.randomRobotsAtEachUpdate);
-            settings.protectBestRobots = getDouble("Protect best robots", settings.protectBestRobots);
-            settings.ignoreColumns = getInteger("Ignore columns for training", settings.ignoreColumns);
-            settings.randomSeed = getLong("Random seed", settings.randomSeed);
+        MainSettings settings = getMainSettings();
+        if (settings == null) {
+            String dataDirectory = getString("Data directory", Main.DEFAULT_DATA_DIR);
+            MainAppData data = getData(dataDirectory);
+            settings = MainSettings.getSettings();
+            settings.dataDirectory = dataDirectory;
+            settings.performTraining = getBoolean("Perform training", settings.performTraining);
+            settings.startTimePoint = new TimePoint(getLong("Start time point",data.getFirstTimePoint().getValue()));
+            settings.endTimePoint = new TimePoint(getLong("End time point", data.getLastTimePoint().getValue()));
+            settings.populationDAO = getString("Population storage", settings.populationDAO);
+            settings.processorInstructionLimit = getInteger("Processor instruction limit", settings.processorInstructionLimit);
+            settings.resultThreshold = getDouble("Result threshold",settings.resultThreshold);
+            settings.requireSymmetricalRobots = getBoolean("Require symmetrical robots", settings.requireSymmetricalRobots);
+            settings.chartMode = getEnumValue(GenoChartMode.class, "Chart mode", settings.chartMode);
+            if (settings.performTraining) {
+                settings.dataMaximumOffset = getInteger("Data maximum offset", settings.dataMaximumOffset);
+                settings.populationDesiredSize = getInteger("Population desired size", settings.populationDesiredSize);
+                settings.maximumDeathByAge = getDouble("Maximum death rate by age", settings.maximumDeathByAge);
+                settings.maximumDeathByWeight = getDouble("Maximum death rate by weight", settings.maximumDeathByWeight);
+                settings.probabilityOfDeathByAge = getDouble("Probability of death by age", settings.probabilityOfDeathByAge);
+                settings.probabilityOfDeathByWeight = getDouble("Probability of death by weight", settings.probabilityOfDeathByWeight);
+                settings.weightMode = getEnumValue(WeightMode.class, "Weight mode", settings.weightMode);
+                settings.weightExponent = getDouble("Weight exponent", settings.weightExponent);
+                settings.inheritedChildWeight = getDouble("Inherited child's weight", settings.inheritedChildWeight);
+                settings.inheritedChildWeightMode = getEnumValue(InheritedWeightMode.class, "Inherited child's weight mode", settings.inheritedChildWeightMode);
+                settings.protectRobotsUntilOutcomes = getInteger("Protect robots until outcomes", settings.protectRobotsUntilOutcomes);
+                settings.newInstructionProbability = getDouble("Probability of new instruction", settings.newInstructionProbability);
+                // This looks like an error but it's not. Default value for 'skipInstruction...' is same as 'newInstruction'
+                // to keep robots more or less constant size.
+                settings.skipInstructionProbability = getDouble("Probability of skipping instruction", settings.newInstructionProbability);
+                settings.instructionMutationProbability = getDouble("Instruction mutation probability", settings.instructionMutationProbability);
+                settings.minimumOutcomesToAllowBreeding = getInteger("Minimum outcomes to allow breeding", settings.minimumOutcomesToAllowBreeding);
+                settings.minimumOutcomesBetweenBreeding = getInteger("Minimum outcomes between breeding", settings.minimumOutcomesBetweenBreeding);
+                settings.killNonPredictingRobots = getBoolean("Kill non-predicting robots", settings.killNonPredictingRobots);
+                settings.randomRobotsAtEachUpdate = getDouble("Random robots at each update", settings.randomRobotsAtEachUpdate);
+                settings.protectBestRobots = getDouble("Protect best robots", settings.protectBestRobots);
+                settings.ignoreColumns = getInteger("Ignore columns for training", settings.ignoreColumns);
+                settings.randomSeed = getLong("Random seed", settings.randomSeed);
+            }
+            setMainSettings(settings);
         }
         return settings;
     }

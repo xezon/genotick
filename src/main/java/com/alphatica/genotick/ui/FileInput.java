@@ -1,6 +1,5 @@
 package com.alphatica.genotick.ui;
 
-import com.alphatica.genotick.breeder.InheritedWeightMode;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
@@ -20,7 +19,6 @@ class FileInput extends BasicUserInput {
     static final String delimiter = ":";
     private static final String DATA_DIRECTORY_KEY = "dataDirectory";
     private String fileName;
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
 
     FileInput(String input) {
         if(!input.contains(delimiter))
@@ -28,25 +26,29 @@ class FileInput extends BasicUserInput {
         int pos = input.indexOf(delimiter);
         fileName = input.substring(pos+1);
     }
+    
     @Override
     public MainSettings getSettings() {
-        Set<String> parsedKeys = new HashSet<>();
-        try {
-            Map<String,String> map = buildFileMap();
-            MainSettings settings = MainSettings.getSettings();
-            MainAppData data = createData(map,parsedKeys);
-            settings.startTimePoint = data.getFirstTimePoint();
-            settings.endTimePoint = data.getLastTimePoint();
-            settings.dataSettings = getDataDir(map,parsedKeys);
-            applySettingsFromMap(settings,map,parsedKeys);
-            checkAllSettingsParsed(map,parsedKeys);
-            return settings;
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to read file " + fileName, e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+        MainSettings settings = getMainSettings();
+        if (settings == null) {
+            Set<String> parsedKeys = new HashSet<>();
+            try {
+                Map<String,String> map = buildFileMap();
+                settings = MainSettings.getSettings();
+                settings.dataDirectory = getDataDir(map,parsedKeys);
+                MainAppData data = getData(settings.dataDirectory);
+                settings.startTimePoint = data.getFirstTimePoint();
+                settings.endTimePoint = data.getLastTimePoint();
+                applySettingsFromMap(settings,map,parsedKeys);
+                checkAllSettingsParsed(map,parsedKeys);
+                setMainSettings(settings);
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to read file " + fileName, e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
-
+        return settings;
     }
 
     private void checkAllSettingsParsed(Map<String, String> map, Set<String> parsedKeys) {
@@ -136,12 +138,6 @@ class FileInput extends BasicUserInput {
 
     private void setString(Field field, MainSettings settings, String value) throws IllegalAccessException {
         field.set(settings,value);
-    }
-
-
-    private MainAppData createData(Map<String, String> map, Set<String> parsedKeys) {
-        String dataDir = getDataDir(map,parsedKeys);
-        return getData(dataDir);
     }
 
     private String getDataDir(Map<String, String> map, Set<String> parsedKeys) {

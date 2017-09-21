@@ -16,15 +16,15 @@ import java.util.*;
 import static java.lang.String.format;
 
 public class Reversal {
-    private final String reverseValue;
+    private final String dataPath;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
 
-    public Reversal(String reverseValue) {
-        this.reverseValue = reverseValue;
+    public Reversal(String dataPath) {
+        this.dataPath = dataPath;
     }
 
     public void reverse() {
-        FileSystemDataLoader loader = new FileSystemDataLoader(reverseValue);
+        FileSystemDataLoader loader = new FileSystemDataLoader(dataPath);
         MainAppData data = loader.createRobotData();
         reverseData(data);
     }
@@ -33,14 +33,15 @@ public class Reversal {
     public static MainAppData reverse(MainAppData data) {
         MainAppData reversedData = new MainAppData();
         for(DataSet set: data.listSets()) {
-            List<Number []> originalNumbers = getOriginalNumbers(set);
-            List<Number []> reversedNumbers = reverseList(originalNumbers);
+            List<Number[]> originalNumbers = getOriginalNumbers(set);
+            List<Number[]> reversedNumbers = reverseList(originalNumbers);
             String reverseName = getReverseFileName(set.getName());
             DataSet reversedSet = new DataSet(reversedNumbers,reverseName);
             reversedData.addDataSet(reversedSet);
         }
         return reversedData;
     }
+
     private void reverseData(MainAppData data) {
         data.listSets().forEach(this::reverseSet);
     }
@@ -65,9 +66,9 @@ public class Reversal {
     }
 
     private static List<Number[]> reverseList(List<Number[]> original) {
-        List<Number []> reverse = new ArrayList<>();
-        Number [] lastOriginal = null;
-        Number [] lastReversed = null;
+        List<Number[]> reverse = new ArrayList<>();
+        Number[] lastOriginal = null;
+        Number[] lastReversed = null;
         for(Number[] table: original) {
             Number[] last = reverseLineOHLCV(table, lastOriginal, lastReversed);
             reverse.add(last);
@@ -92,7 +93,7 @@ public class Reversal {
      */
 
     private static Number[] reverseLineOHLCV(Number[] table, Number[] lastOriginal, Number[] lastReversed) {
-        Number [] reversed = new Number[table.length];
+        Number[] reversed = new Number[table.length];
         // Column 0 is unchanged
         reversed[Column.TOHLCV.TIME] = table[Column.TOHLCV.TIME];
         // Column 1. Rewrite if first line
