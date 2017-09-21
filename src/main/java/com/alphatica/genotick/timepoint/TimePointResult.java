@@ -14,9 +14,14 @@ import java.util.Map;
 public class TimePointResult {
     private final Map<DataSetName, DataSetResult> dataSetResultMap;
 
-    public TimePointResult(Map<RobotName, List<RobotResult>> map) {
+    public TimePointResult(Map<RobotName, List<RobotResult>> map, boolean requireSymmetricalRobots) {
         dataSetResultMap = new HashMap<>();
-        map.values().stream().filter(this::resultsSymmetrical).flatMap(Collection::stream).forEach(this::addRobotResult);
+        if (requireSymmetricalRobots) {
+            map.values().stream().filter(this::resultsSymmetrical).flatMap(Collection::stream).forEach(this::addRobotResult);
+        }
+        else {
+            map.values().stream().flatMap(Collection::stream).forEach(this::addRobotResult);
+        }
     }
 
     public Collection<DataSetResult> listDataSetResults() {

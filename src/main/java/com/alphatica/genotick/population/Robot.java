@@ -133,13 +133,14 @@ public class Robot implements Serializable {
 
     public void recordPrediction(RobotResult result) {
         DataSetName dataSetName = result.getData().getName();
+        Prediction newPrediction = result.getPrediction();
         Prediction pendingPrediction = pending.get(dataSetName);
         current.put(dataSetName, pendingPrediction);
-        pending.put(dataSetName, result.getPrediction());
-        if(result.getPrediction() != Prediction.OUT) {
+        pending.put(dataSetName, newPrediction);
+        if(newPrediction != Prediction.OUT) {
             isPredicting = true;
         }
-        bias += result.getPrediction().getValue();
+        bias += newPrediction.getValue();
     }
 
     @Override

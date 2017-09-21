@@ -94,18 +94,18 @@ public class SimpleEngine implements Engine {
         if (!robotDataList.isEmpty()) {
             output.reportStartingTimePoint(timePoint);
             updateAccount(robotDataList);
-            List<RobotInfo> list = population.getRobotInfoList();
+            List<RobotInfo> robotInfoList = population.getRobotInfoList();
             recordMarketChangesInRobots(robotDataList);
-            Map<RobotName, List<RobotResult>> map = timePointExecutor.execute(robotDataList, population);
-            updatePredictions(list, map);
-            recordRobotsPredictions(map);
-            TimePointResult timePointResult = new TimePointResult(map);
+            Map<RobotName, List<RobotResult>> robotResultMap = timePointExecutor.execute(robotDataList, population);
+            updatePredictions(robotInfoList, robotResultMap);
+            recordRobotsPredictions(robotResultMap);
+            TimePointResult timePointResult = new TimePointResult(robotResultMap, engineSettings.requireSymmetricalRobots);
             timePointResult.listDataSetResults().forEach(dataSetResult -> {
                 Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
                 account.addPendingOrder(dataSetResult.getName(), prediction);
                 output.showPrediction(timePoint, dataSetResult, prediction);
             });
-            checkTraining(list);
+            checkTraining(robotInfoList);
             output.reportFinishedTimePoint(timePoint, account.getEquity());
         }
         profitRecorder.onUpdate(bar);
