@@ -91,8 +91,12 @@ public class MainAppData {
         return timePoints.stream().filter(time -> time.isGreaterOrEqual(startTime) && time.isLessOrEqual(endTime));
     }
 
-    public Collection<DataSet> listSets() {
+    public Collection<DataSet> getDataSets() {
         return sets.values();
+    }
+
+    public boolean containsDataSet(DataSetName name) {
+        return sets.containsKey(name);
     }
 
     boolean isEmpty() {

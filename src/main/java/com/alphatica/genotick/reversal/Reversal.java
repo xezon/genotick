@@ -3,66 +3,66 @@ package com.alphatica.genotick.reversal;
 import com.alphatica.genotick.data.Column;
 import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
-import com.alphatica.genotick.data.FileSystemDataLoader;
 import com.alphatica.genotick.data.MainAppData;
-import com.alphatica.genotick.ui.UserInputOutputFactory;
-import com.alphatica.genotick.ui.UserOutput;
 
-import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-
-import static java.lang.String.format;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Reversal {
-    private final String dataPath;
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
+    private static final String REVERSE_DATA_IDENTIFIER = "reverse_";
+    private final DataSet originalSet;
+    private DataSet reversedSet;
+    private final DataSetName reversedName;
+    private final boolean isReversed;
 
-    public Reversal(String dataPath) {
-        this.dataPath = dataPath;
+    public Reversal(DataSet dataSet) {
+        final DataSetName name = dataSet.getName();
+        this.originalSet = dataSet;
+        this.reversedSet = null;
+        this.reversedName = new DataSetName(getReversedDataPath(name.getPath()));
+        this.isReversed = isReversedDataName(name.getName());
     }
 
-    public void reverse() {
-        FileSystemDataLoader loader = new FileSystemDataLoader(dataPath);
-        MainAppData data = loader.createRobotData();
-        reverseData(data);
+    public DataSetName getReversedName() {
+        return reversedName;
     }
 
-    @SuppressWarnings("unused")
-    public static MainAppData reverse(MainAppData data) {
-        MainAppData reversedData = new MainAppData();
-        for(DataSet set: data.listSets()) {
-            List<Number[]> originalNumbers = getOriginalNumbers(set);
-            List<Number[]> reversedNumbers = reverseList(originalNumbers);
-            String reverseName = getReverseFileName(set.getName());
-            DataSet reversedSet = new DataSet(reversedNumbers,reverseName);
-            reversedData.addDataSet(reversedSet);
+    public boolean isReversed() {
+        return isReversed;
+    }
+
+    public boolean addReversedDataSetTo(MainAppData data) {
+        if (!isReversed) {
+            if (!data.containsDataSet(reversedName)) {
+                data.addDataSet(getReversedDataSet());
+                return true;
+            }
         }
-        return reversedData;
+        return false;
     }
 
-    private void reverseData(MainAppData data) {
-        data.listSets().forEach(this::reverseSet);
-    }
-
-    private void reverseSet(DataSet set) {
-        String reverseFileName = getReverseFileName(set.getName());
-        File reverseFile = new File(reverseFileName);
-        if(reverseFile.exists()) {
-            output.warningMessage("File " + reverseFileName + " already exists. Not reversing " + set.getName());
-            return;
+    public DataSet getReversedDataSet() {
+        if (null == reversedSet) {
+            final List<Number[]> original = originalSet.getAllLines();
+            final List<Number[]> reversed = reverseList(original);
+            reversedSet = new DataSet(reversed, reversedName);
         }
-        List<Number[]> original = getOriginalNumbers(set);
-        List<Number[]> reverse = reverseList(original);
-        writeReverseToFile(reverse, reverseFileName);
+        return reversedSet;
+    }
+    
+    private static boolean isReversedDataName(String name) {
+        return name.startsWith(REVERSE_DATA_IDENTIFIER);
     }
 
-    private static String getReverseFileName(DataSetName name) {
-        Path full = Paths.get(name.getPath());
-        Path parent = full.getParent();
-        String newName = "reverse_" + full.getFileName().toString();
-        return Paths.get(parent.toString(), newName).toString();
+    private static String getReversedDataPath(String path) {
+        Path originalPath = Paths.get(path);
+        Path fileNameOnly = originalPath.getFileName();
+        Path directoryOnly = originalPath.getParent();
+        String newName = REVERSE_DATA_IDENTIFIER + fileNameOnly.toString();
+        Path reversedPath = Paths.get(directoryOnly.toString(), newName);
+        return reversedPath.toString();
     }
 
     private static List<Number[]> reverseList(List<Number[]> original) {
@@ -124,38 +124,5 @@ public class Reversal {
     private static Number getReverseValue(Number from, Number to, Number compare) {
         double diff = Math.abs((from.doubleValue() / to.doubleValue()) -2);
         return diff * compare.doubleValue();
-    }
-
-    private void writeReverseToFile(List<Number[]> reverse, String reversedFileName) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(reversedFileName))) {
-            for(Number[] table: reverse) {
-                String row = mkString(table,",");
-                bw.write(row + "\n");
-            }
-        } catch (IOException e) {
-            UserInputOutputFactory.getUserOutput().errorMessage(format("Exception while reversing file: %s", e.getMessage()));
-            e.printStackTrace();
-        }
-    }
-
-    private String mkString(Number[] table, @SuppressWarnings("SameParameterValue") String string) {
-        StringBuilder sb = new StringBuilder();
-        int count = 0;
-        for(Number number: table) {
-            sb.append(number);
-            count++;
-            if(count < table.length) {
-                sb.append(string);
-            }
-        }
-        return sb.toString();
-    }
-
-    private static List<Number[]> getOriginalNumbers(DataSet set) {
-        List<Number[]> list = new ArrayList<>();
-        for (int i = 0; i < set.getLinesCount(); i++) {
-            list.add(set.getLine(i));
-        }
-        return list;
     }
 }

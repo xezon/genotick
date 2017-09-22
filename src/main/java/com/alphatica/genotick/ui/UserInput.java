@@ -5,6 +5,6 @@ import com.alphatica.genotick.genotick.MainSettings;
 
 public interface UserInput {
     MainSettings getSettings();
-    MainAppData getData(String dataDirectory);
+    MainAppData getData(String... sources);
     void clearCache();
 }

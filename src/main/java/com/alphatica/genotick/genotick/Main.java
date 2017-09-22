@@ -15,6 +15,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Main {
@@ -35,7 +36,6 @@ public class Main {
         initSimulation(parameters);
     }
 
-
     private static void initShowRobot(Parameters parameters) {
         String value = parameters.getValue("showRobot");
         if(value != null) {
@@ -45,7 +45,7 @@ public class Main {
                 e.printStackTrace();
                 output.errorMessage(e.getMessage());
             }
-            System.exit(0);
+            exit(errorCodes.NO_ERROR);
         }
     }
 
@@ -69,7 +69,7 @@ public class Main {
                 e.printStackTrace();
                 output.errorMessage(e.getMessage());
             }
-            System.exit(0);
+            exit(errorCodes.NO_ERROR);
         }
     }
 
@@ -134,7 +134,7 @@ public class Main {
     private static void initVersionRequest(Parameters parameters) {
         if(parameters.getValue("showVersion") != null) {
             System.out.println(Main.VERSION);
-            System.exit(0);
+            exit(errorCodes.NO_ERROR);
         }
     }
     
@@ -157,7 +157,7 @@ public class Main {
         	System.out.println("contact: 		lukasz.wojtow@gmail.com");
         	System.out.println("more info: 		genotick.com");       	
 
-            System.exit(0);
+        	exit(errorCodes.NO_ERROR);
         }
     }
 
@@ -168,7 +168,7 @@ public class Main {
         }
         YahooFixer yahooFixer = new YahooFixer(yahooValue);
         yahooFixer.fixFiles();
-        System.exit(0);
+        exit(errorCodes.NO_ERROR);
     }
 
     private static void initUserIO(Parameters parameters) throws IOException {
@@ -183,12 +183,23 @@ public class Main {
     }
 
     private static void initReverse(Parameters parameters) {
-        String dataPath = parameters.getValue("reverse");
-        if(dataPath == null)
+        String dataDirectory = parameters.getValue("reverse");
+        if(dataDirectory == null) {
             return;
-        Reversal reversal = new Reversal(dataPath);
-        reversal.reverse();
-        System.exit(0);
+        }
+        DataLoader loader = new FileSystemDataLoader();
+        DataSaver saver = new FileSystemDataSaver();
+        MainAppData data = loader.loadAll(dataDirectory);
+        for (DataSet loadedSet : data.getDataSets()) {
+            Reversal reversal = new Reversal(loadedSet);
+            if (!reversal.isReversed()) {
+                if (!data.containsDataSet(reversal.getReversedName())) {
+                    DataSet reversedSet = reversal.getReversedDataSet();
+                    saver.save(reversedSet);
+                }
+            }
+        }
+        exit(errorCodes.NO_ERROR);
     }
 
     private static void initSimulation(Parameters parameters) throws IllegalAccessException {
@@ -199,8 +210,23 @@ public class Main {
         Simulation simulation = new Simulation();
         MainSettings settings = input.getSettings();
         MainAppData data = input.getData(settings.dataDirectory);
+        generateMissingData(settings, data);
         settings.validateTimePoints(data);
         simulation.start(settings, data);
+    }
+    
+    private static void generateMissingData(MainSettings settings, MainAppData data) {
+        if (settings.requireSymmetricalRobots) {
+            Collection<DataSet> loadedSets = data.getDataSets();
+            DataSet[] loadedSetsCopy = loadedSets.toArray(new DataSet[data.getDataSets().size()]);
+            for (DataSet loadedSet : loadedSetsCopy) {
+                Reversal reversal = new Reversal(loadedSet);
+                if (reversal.addReversedDataSetTo(data)) {
+                    DataSaver saver = DataFactory.getDefaultSaver();
+                    saver.save(reversal.getReversedDataSet());
+                }
+            }
+        }
     }
 
     private static void exit(errorCodes code) {

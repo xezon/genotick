@@ -4,7 +4,6 @@ import com.alphatica.genotick.data.DataFactory;
 import com.alphatica.genotick.data.DataLoader;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.MainSettings;
-import com.alphatica.genotick.genotick.Simulation;
 
 @SuppressWarnings("WeakerAccess")
 abstract public class BasicUserInput implements UserInput {
@@ -12,10 +11,10 @@ abstract public class BasicUserInput implements UserInput {
     private MainAppData assetData = null;
 
     @Override
-    public MainAppData getData(String dataDirectory) {
+    public MainAppData getData(String... sources) {
         if (assetData == null) {
-            DataLoader dl = DataFactory.getDefaultLoader(dataDirectory);
-            assetData = dl.createRobotData();
+            DataLoader loader = DataFactory.getDefaultLoader();
+            assetData = loader.loadAll(sources);
         }
         return assetData;
     }

@@ -9,51 +9,54 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+import static java.lang.String.format;
+
 public class FileSystemDataLoader implements DataLoader {
-    private final String [] paths;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
-    public FileSystemDataLoader(String... args) {
-        paths = args;
+    
+    public FileSystemDataLoader() {
     }
 
     @Override
-    public MainAppData createRobotData() throws DataException {
-        return loadData();
+    public MainAppData loadAll(String... sources) throws DataException {
+        return loadData(sources);
     }
 
-    private MainAppData loadData() {
+    private MainAppData loadData(String... paths) {
         MainAppData data = new MainAppData();
         String extension = ".csv";
         List<String> names = DataUtils.listFiles(extension,paths);
-        if(names == null) {
+        if (names == null) {
             throw new DataException("Unable to list files");
         }
         for (String fileName : names) {
-            output.infoMessage("Reading file " + fileName);
-            data.addDataSet(createDataSet(fileName));
+            DataSet dataSet = load(fileName);
+            data.addDataSet(dataSet);
         }
-        if(data.isEmpty()) {
+        if (data.isEmpty()) {
             throw new DataException("No files to read!");
         }
         return data;
-
     }
-    private DataSet createDataSet(String fileName) {
+    
+    @Override
+    public DataSet load(String fileName) {
+        output.infoMessage(format("Loading file '%s'", fileName));
         File file = new File(fileName);
         dataFileSanityCheck(file);
-        try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             List<Number []> lines = DataUtils.createLineList(br);
-            output.infoMessage("Got " + lines.size() + " lines");
+            output.infoMessage(format("Read '%s' lines", lines.size()));
             return new DataSet(lines, fileName);
         } catch (IOException  | DataException e) {
-            DataException de = new DataException("Unable to process file: " + fileName);
+            DataException de = new DataException(format("Unable to process file '%s'", fileName));
             de.initCause(e);
             throw de;
         }
     }
 
     private void dataFileSanityCheck(File file) {
-        if(!file.isFile()) {
+        if (!file.isFile()) {
             String message = String.format("Unable to process file '%s' - not a file.", file.getName());
             output.errorMessage(message);
             throw new DataException(message);

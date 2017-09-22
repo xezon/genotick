@@ -14,9 +14,13 @@ public class DataSet {
     private final DataSetName name;
 
     public DataSet(List<Number[]> lines, String fileName) {
-        this.name = new DataSetName(fileName);
-        timePoints = new TimePoint[lines.size()];
-        values = new ArrayList<>();
+        this(lines, new DataSetName(fileName));
+    }
+
+    public DataSet(List<Number[]> lines, DataSetName name) {
+        this.name = name;
+        this.timePoints = new TimePoint[lines.size()];
+        this.values = new ArrayList<>();
 
         final int firstLineCount = lines.get(0).length;
         createValuesArrays(lines.size(),firstLineCount);
@@ -28,7 +32,7 @@ public class DataSet {
             fillValuesArrays(lineNumber, line, firstLineCount);
         }
     }
-
+    
     public DataSetName getName() {
         return name;
     }
@@ -99,6 +103,14 @@ public class DataSet {
             line[i] = values.get(i-1)[lineNumber];
         }
         return line;
+    }
+
+    public List<Number[]> getAllLines() {
+        List<Number[]> list = new ArrayList<>();
+        for (int i = 0; i < getLinesCount(); ++i) {
+            list.add(getLine(i));
+        }
+        return list;
     }
 
     @Override
