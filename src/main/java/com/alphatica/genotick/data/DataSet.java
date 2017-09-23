@@ -10,26 +10,26 @@ import java.util.List;
 
 public class DataSet {
     private final TimePoint[] timePoints;
-    private final List<double[]> values;
+    private final List<double[]> ohlcColumnsOfData;
     private final DataSetName name;
 
-    public DataSet(List<Number[]> lines, String fileName) {
-        this(lines, new DataSetName(fileName));
+    public DataSet(List<Number[]> tohlcLines, String fileName) {
+        this(tohlcLines, new DataSetName(fileName));
     }
 
-    public DataSet(List<Number[]> lines, DataSetName name) {
+    public DataSet(List<Number[]> tohlcLines, DataSetName name) {
+        this.timePoints = new TimePoint[tohlcLines.size()];
+        this.ohlcColumnsOfData = new ArrayList<>();
         this.name = name;
-        this.timePoints = new TimePoint[lines.size()];
-        this.values = new ArrayList<>();
 
-        final int firstLineCount = lines.get(0).length;
-        createValuesArrays(lines.size(),firstLineCount);
+        final int tohlcColumnCount = tohlcLines.get(Column.TOHLCV.TIME).length;
+        createColumnsOfData(tohlcLines.size(), tohlcColumnCount);
         int lineNumber = 0;
-        for(Number[] line: lines) {
+        for(Number[] tohlcLine: tohlcLines) {
             lineNumber++;
-            checkNumberOfFieldsInLine(lineNumber,line,firstLineCount);
-            fillFirstNumberAsTimePoint(lineNumber, line);
-            fillValuesArrays(lineNumber, line, firstLineCount);
+            checkNumberOfColumnsInLine(lineNumber, tohlcLine, tohlcColumnCount);
+            fillTimePoints(lineNumber, tohlcLine);
+            fillColumnsOfData(lineNumber, tohlcLine, tohlcColumnCount);
         }
     }
     
@@ -38,7 +38,7 @@ public class DataSet {
     }
 
     RobotData getRobotData(TimePoint timePoint) {
-        int i = Arrays.binarySearch(timePoints,timePoint);
+        int i = Arrays.binarySearch(timePoints, timePoint);
         if(i < 0) {
             return RobotData.createEmptyData(name);
         } else {
@@ -46,13 +46,13 @@ public class DataSet {
         }
     }
 
-    private void fillValuesArrays(int lineNumber, Number[] line, int firstLineCount) {
-        for(int i = Column.TOHLCV.OPEN; i < firstLineCount; i++)
-            values.get(i-1)[lineNumber - 1] = line[i].doubleValue();
+    private void fillColumnsOfData(int lineNumber, Number[] tohlcLine, int tohlcColumnCount) {
+        for(int i = Column.TOHLCV.OPEN; i < tohlcColumnCount; i++)
+            ohlcColumnsOfData.get(i-1)[lineNumber - 1] = tohlcLine[i].doubleValue();
     }
 
-    private void fillFirstNumberAsTimePoint(int lineNumber, Number[] line) {
-        TimePoint timePoint = new TimePoint(line[0].longValue());
+    private void fillTimePoints(int lineNumber, Number[] tohlcLine) {
+        TimePoint timePoint = new TimePoint(tohlcLine[Column.TOHLCV.TIME].longValue());
         validateTimePoint(lineNumber, timePoint);
         timePoints[lineNumber - 1] = timePoint;
     }
@@ -65,20 +65,20 @@ public class DataSet {
             throw new DataException("Time (first number) is equal or less than previous. Line: " + lineNumber);
     }
 
-    private void checkNumberOfFieldsInLine(int lineNumber, Number[] line, int firstLineCount) {
-        if(line.length != firstLineCount)
-            throw new DataException("Invalid number of fields in line: " + lineNumber);
+    private void checkNumberOfColumnsInLine(int lineNumber, Number[] tohlcLine, int tohlcColumnCount) {
+        if(tohlcLine.length != tohlcColumnCount)
+            throw new DataException("Invalid amount of columns in line: " + lineNumber);
     }
 
-    private void createValuesArrays(int size, int firstLineCount) {
-        for(int i = 0; i < firstLineCount -1; i++) {
-            values.add(new double[size]);
+    private void createColumnsOfData(int size, int tohlcColumnCount) {
+        for(int i = Column.TOHLCV.OPEN; i < tohlcColumnCount; i++) {
+            ohlcColumnsOfData.add(new double[size]);
         }
     }
 
     private RobotData createDataUpToTimePoint(int i) {
         List<double[]> list = new ArrayList<>();
-        for(double[] original: values) {
+        for(double[] original: ohlcColumnsOfData) {
             double[] copy = copyReverseArray(original, i);
             list.add(copy);
         }
@@ -97,29 +97,29 @@ public class DataSet {
     }
 
     public Number[] getLine(int lineNumber) {
-        Number[] line = new Number[1 + values.size()];
-        line[0] = timePoints[lineNumber].getValue();
-        for(int i = 1; i < line.length; i++) {
-            line[i] = values.get(i-1)[lineNumber];
+        Number[] tohlcLine = new Number[1 + ohlcColumnsOfData.size()];
+        tohlcLine[Column.TOHLCV.TIME] = timePoints[lineNumber].getValue();
+        for(int i = Column.TOHLCV.OPEN; i < tohlcLine.length; i++) {
+            tohlcLine[i] = ohlcColumnsOfData.get(i-1)[lineNumber];
         }
-        return line;
+        return tohlcLine;
     }
 
     public List<Number[]> getAllLines() {
-        List<Number[]> list = new ArrayList<>();
-        for (int i = 0; i < getLinesCount(); ++i) {
-            list.add(getLine(i));
+        List<Number[]> tohlcLines = new ArrayList<>();
+        for (int i = Column.OHLCV.OPEN, count = getLinesCount(); i < count; ++i) {
+            tohlcLines.add(getLine(i));
         }
-        return list;
+        return tohlcLines;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DataSet dataSet = (DataSet) o;
-
+    public boolean equals(Object other) {
+        if (this == other)
+            return true;
+        if (other == null || getClass() != other.getClass())
+            return false;
+        DataSet dataSet = (DataSet)other;
         return name.equals(dataSet.name);
 
     }

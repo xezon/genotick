@@ -27,74 +27,74 @@ class SimpleRobotKiller implements RobotKiller {
     }
 
     @Override
-    public void killRobots(Population population, List<RobotInfo> robotsInfos) {
+    public void killRobots(Population population, List<RobotInfo> robotInfos) {
         int before = population.getSize(), after;
-        killNonPredictingRobots(population, robotsInfos);
+        killNonPredictingRobots(population, robotInfos);
         after = population.getSize();
         output.debugMessage("killedByPrediction=" + (before - after));
         before = after;
-        killNonSymmetricalRobots(population, robotsInfos);
+        killNonSymmetricalRobots(population, robotInfos);
         after = population.getSize();
         output.debugMessage("killedBySymmetry=" + (before - after));
-        List<RobotInfo> listCopy = new ArrayList<>(robotsInfos);
+        List<RobotInfo> listCopy = new ArrayList<>(robotInfos);
         removeProtectedRobots(population,listCopy);
         output.debugMessage("protectedRobots=" + (population.getSize() - listCopy.size()));
         before = population.getSize();
-        killRobotsByWeight(population, listCopy, robotsInfos);
+        killRobotsByWeight(population, listCopy, robotInfos);
         after = population.getSize();
         output.debugMessage("killedByWeight=" + (before - after));
         before = after;
-        killRobotsByAge(population, listCopy, robotsInfos);
+        killRobotsByAge(population, listCopy, robotInfos);
         after = population.getSize();
         output.debugMessage("killedByAge=" + (before - after));
     }
 
-    private void killNonSymmetricalRobots(Population population, List<RobotInfo> list) {
-        if(!settings.requireSymmetricalRobots)
-            return;
-        for(int i = list.size() - 1; i >= 0; i--) {
-            RobotInfo info = list.get(i);
-            if(info.getBias() != 0) {
-                list.remove(i);
-                population.removeRobot(info.getName());
+    private void killNonSymmetricalRobots(Population population, List<RobotInfo> robotInfos) {
+        if(settings.requireSymmetricalRobots) {
+            for(int i = robotInfos.size() - 1; i >= 0; i--) {
+                RobotInfo info = robotInfos.get(i);
+                if(info.getBias() != 0) {
+                    robotInfos.remove(i);
+                    population.removeRobot(info.getName());
+                }
             }
         }
     }
 
-    private void killNonPredictingRobots(Population population, List<RobotInfo> list) {
-        if(!settings.killNonPredictingRobots)
-            return;
-        for(int i = list.size() - 1; i >= 0; i--) {
-            RobotInfo info = list.get(i);
-            if(!info.isPredicting()) {
-                list.remove(i);
-                population.removeRobot(info.getName());
+    private void killNonPredictingRobots(Population population, List<RobotInfo> robotInfos) {
+        if(settings.killNonPredictingRobots) {
+            for(int i = robotInfos.size() - 1; i >= 0; i--) {
+                RobotInfo info = robotInfos.get(i);
+                if(!info.isPredicting()) {
+                    robotInfos.remove(i);
+                    population.removeRobot(info.getName());
+                }
             }
         }
     }
 
-    private void removeProtectedRobots(Population population, List<RobotInfo> list) {
-        protectUntilOutcomes(list);
-        protectBest(population, list);
+    private void removeProtectedRobots(Population population, List<RobotInfo> robotInfos) {
+        protectUntilOutcomes(robotInfos);
+        protectBest(population, robotInfos);
     }
 
-    private void protectBest(Population population, List<RobotInfo> list) {
+    private void protectBest(Population population, List<RobotInfo> robotInfos) {
         if(settings.protectBestRobots > 0) {
-            list.sort(RobotInfo.comparatorByAbsoluteWeight);
+            robotInfos.sort(RobotInfo.comparatorByAbsoluteWeight);
             int i = (int)Math.round(settings.protectBestRobots * population.getDesiredSize());
             while(i-- > 0) {
-                RobotInfo robotInfo = getLastFromList(list);
+                RobotInfo robotInfo = getLastFromList(robotInfos);
                 if(robotInfo == null)
                     break;
             }
         }
     }
 
-    private void protectUntilOutcomes(List<RobotInfo> list) {
-        for(int i = list.size()-1; i >= 0; i--) {
-            RobotInfo robotInfo = list.get(i);
+    private void protectUntilOutcomes(List<RobotInfo> robotInfos) {
+        for(int i = robotInfos.size()-1; i >= 0; i--) {
+            RobotInfo robotInfo = robotInfos.get(i);
             if(robotInfo.getTotalOutcomes() < settings.protectRobotsUntilOutcomes)
-                list.remove(i);
+                robotInfos.remove(i);
         }
     }
 
@@ -127,10 +127,10 @@ class SimpleRobotKiller implements RobotKiller {
         return numberKilled;
     }
 
-    private RobotInfo getLastFromList(List<RobotInfo> list) {
-        int size = list.size();
+    private RobotInfo getLastFromList(List<RobotInfo> robotInfos) {
+        int size = robotInfos.size();
         if(size == 0)
             return null;
-        return list.remove(size-1);
+        return robotInfos.remove(size-1);
     }
 }

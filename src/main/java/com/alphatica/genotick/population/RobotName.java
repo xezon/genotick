@@ -32,6 +32,6 @@ public class RobotName implements Serializable {
 
     @Override
     public int hashCode() {
-        return (int) (name ^ (name >>> 32));
+        return Long.hashCode(name);
     }
 }
