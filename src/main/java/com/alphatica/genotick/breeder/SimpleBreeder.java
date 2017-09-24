@@ -86,12 +86,7 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private void removeNotAllowedRobots(List<RobotInfo> robotInfos) {
-        Iterator<RobotInfo> iterator = robotInfos.iterator();
-        while (iterator.hasNext()) {
-            RobotInfo robotInfo = iterator.next();
-            if (!robotInfo.canBeParent(settings.minimumOutcomesToAllowBreeding, settings.minimumOutcomesBetweenBreeding))
-                iterator.remove();
-        }
+        robotInfos.removeIf(robotInfo -> !robotInfo.canBeParent(settings.minimumOutcomesToAllowBreeding, settings.minimumOutcomesBetweenBreeding));
     }
 
     private void breedPopulationFromList(Population population, List<RobotInfo> list) {

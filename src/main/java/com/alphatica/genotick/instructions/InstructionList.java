@@ -1,7 +1,6 @@
 package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.genotick.RandomGenerator;
-import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.Serializable;
 import java.util.ArrayList;

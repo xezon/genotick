@@ -1,7 +1,6 @@
 package com.alphatica.genotick.ui;
 
 import java.io.IOException;
-import static java.lang.String.format;
 
 public class UserInputOutputFactory {
     private static final String INPUT_STRING = "input";

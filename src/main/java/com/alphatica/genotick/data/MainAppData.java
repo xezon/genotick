@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 // TODO change nulls to optional
 public class MainAppData {
 
-    public static final int INVALID_BAR = -1;
+    private static final int INVALID_BAR = -1;
     
     private final Map<DataSetName, DataSet> sets;
     private List<TimePoint> timePoints;
@@ -24,7 +24,7 @@ public class MainAppData {
     public MainAppData() {
         sets = new HashMap<>();
         timePoints = new ArrayList<>();
-        bars = new HashMap<TimePoint, Integer>();
+        bars = new HashMap<>();
     }
 
     public void addDataSet(DataSet set) {
@@ -57,7 +57,6 @@ public class MainAppData {
             RobotData robotData = entry.getValue().getRobotData(timePoint);
             if (!robotData.isEmpty())
                 list.add(robotData);
-
         });
         return list;
     }
@@ -74,17 +73,13 @@ public class MainAppData {
         return timePoints.get(timePoints.size() - 1);
     }
     
-    public boolean isValidBar(int bar) {
-        return (bar >= 0) && (bar < timePoints.size());
-    }
-    
     public TimePoint getTimePoint(int bar) {
         return isValidBar(bar) ? timePoints.get(bar) : null;
     }
-    
+
     public int getBar(TimePoint timePoint) {
         Integer bar = bars.get(timePoint);
-        return (bar != null) ? bar.intValue() : INVALID_BAR;
+        return (bar != null) ? bar : INVALID_BAR;
     }
 
     public Stream<TimePoint> getTimePoints(final TimePoint startTime, final TimePoint endTime) {
@@ -97,6 +92,10 @@ public class MainAppData {
 
     public boolean containsDataSet(DataSetName name) {
         return sets.containsKey(name);
+    }
+
+    private boolean isValidBar(int bar) {
+        return (bar >= 0) && (bar < timePoints.size());
     }
 
     boolean isEmpty() {

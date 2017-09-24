@@ -20,16 +20,17 @@ import com.alphatica.genotick.ui.UserOutput;
 import java.util.Map;
 import java.util.HashMap;
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 
 class GenoJFreeChart implements GenoChart {
     
     private class XYChartDefinition {
-        final Map<String, XYSeries> xySeriesMap = new HashMap<String, XYSeries>();
+        final Map<String, XYSeries> xySeriesMap = new HashMap<>();
         String xLabel;
         String yLabel;
     }
     
-    private final Map<String, XYChartDefinition> xyChartMap = new HashMap<String, XYChartDefinition>();
+    private final Map<String, XYChartDefinition> xyChartMap = new HashMap<>();
     private final boolean drawChart;
     private final boolean saveChart;
     private int numOpenedChartFrames;
@@ -44,8 +45,7 @@ class GenoJFreeChart implements GenoChart {
     @Override
     public void addXYLineChart(
             final String chartTitle, final String xLabel, final String yLabel,
-            final String seriesTitle, final double xValue, final double yValue)
-    {
+            final String seriesTitle, final double xValue, final double yValue) {
         XYChartDefinition chart = xyChartMap.get(chartTitle);
         if (null == chart) {
             chart = new XYChartDefinition();
@@ -53,11 +53,7 @@ class GenoJFreeChart implements GenoChart {
             chart.yLabel = yLabel;
             xyChartMap.put(chartTitle, chart);
         }
-        XYSeries series = chart.xySeriesMap.get(seriesTitle);
-        if (null == series) {
-            series = new XYSeries(seriesTitle);
-            chart.xySeriesMap.put(seriesTitle, series);
-        }
+        XYSeries series = chart.xySeriesMap.computeIfAbsent(seriesTitle, XYSeries::new);
         series.add(xValue, yValue);
     }
     
@@ -73,15 +69,13 @@ class GenoJFreeChart implements GenoChart {
     
     private void plotXYChart(final String title) {
         final XYChartDefinition definition = xyChartMap.remove(title);
-        if (null != definition) {
+        if (nonNull(definition)) {
             plotXYChart(title, definition);
         }
     }
     
     private void plotXYCharts() {
-        xyChartMap.forEach((title, definition) -> {
-            plotXYChart(title, definition);
-        });
+        xyChartMap.forEach(this::plotXYChart);
         xyChartMap.clear();
     }
     
@@ -103,10 +97,9 @@ class GenoJFreeChart implements GenoChart {
         final boolean tooltips = true;
         final boolean urls = false;
         final XYSeriesCollection collection = new XYSeriesCollection();
-        definition.xySeriesMap.forEach((seriesTitle, series) -> {
-            collection.addSeries(series);
-        });
-        final JFreeChart chartObject = ChartFactory.createXYLineChart(
+        definition.xySeriesMap.forEach((seriesTitle, series) -> collection.addSeries(series));
+        final JFreeChart chartObject;
+        chartObject = ChartFactory.createXYLineChart(
                 title, definition.xLabel, definition.yLabel, collection,
                 PlotOrientation.VERTICAL, legend, tooltips, urls);
         return chartObject;

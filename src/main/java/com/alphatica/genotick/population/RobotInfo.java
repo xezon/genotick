@@ -2,7 +2,6 @@ package com.alphatica.genotick.population;
 
 import java.text.DecimalFormat;
 import java.util.Comparator;
-import java.util.List;
 
 public class RobotInfo {
     public static final Comparator<RobotInfo> comparatorByAge = new AgeComparator();

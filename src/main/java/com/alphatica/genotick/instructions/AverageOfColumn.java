@@ -2,8 +2,6 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-import java.io.Serializable;
-
 public class AverageOfColumn extends RegRegInstruction {
 
     @SuppressWarnings("unused")

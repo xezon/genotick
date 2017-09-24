@@ -1,7 +1,6 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.MainAppData;
-import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.genotick.WeightMode;

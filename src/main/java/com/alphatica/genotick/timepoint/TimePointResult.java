@@ -41,12 +41,7 @@ public class TimePointResult {
     }
 
     private DataSetResult getDataSetResult(DataSetName name) {
-        DataSetResult dataSetResult = dataSetResultMap.get(name);
-        if(dataSetResult == null) {
-            dataSetResult = new DataSetResult(name);
-            dataSetResultMap.put(name,dataSetResult);
-        }
-        return dataSetResult;
+        return dataSetResultMap.computeIfAbsent(name, DataSetResult::new);
     }
 
 }
