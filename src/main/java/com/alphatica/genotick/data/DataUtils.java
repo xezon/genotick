@@ -1,10 +1,14 @@
 package com.alphatica.genotick.data;
 
+import com.alphatica.genotick.ui.UserInputOutputFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 @SuppressWarnings("WeakerAccess")
 public class DataUtils {
@@ -29,11 +33,20 @@ public class DataUtils {
     }
 
     private static List<String> getFullPaths(String path, final String extension) {
-        File file = new File(path);
-        String [] names = file.list((file1, name) -> name.endsWith(extension));
+        File directory = new File(path);
+        String [] names = getFilesNames(extension, directory);
         List<String> list = new ArrayList<>();
         for(String name: names) {
             list.add(path + File.separator + name);
+        }
+        return list;
+    }
+
+    private static String[] getFilesNames(String extension, File directory) {
+        String[] list = directory.list((dir, name) -> name.endsWith(extension));
+        if (isNull(list)) {
+            UserInputOutputFactory.getUserOutput().errorMessage("Unable to list files ");
+            throw new DataException("Unable to list files in " + directory.getAbsolutePath());
         }
         return list;
     }
