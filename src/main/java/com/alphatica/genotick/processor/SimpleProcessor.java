@@ -111,7 +111,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     private int ignoreColumns;
 
     private SimpleProcessor(RobotExecutorSettings settings) {
-        processorInstructionLimit = settings.processorInstructionLimit;
+        processorInstructionLimit = settings.maximumProcessorInstructionFactor;
     }
     
     public static SimpleProcessor createProcessor(RobotExecutorSettings settings) {

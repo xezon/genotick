@@ -63,9 +63,9 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private void createNewRobot(Population population) {
-        final Robot robot = Robot.createEmptyRobot(settings.dataMaximumOffset, settings.ignoreColumns);
-        final int robotInstructionMaxCount = settings.robotInstructionLimit - settings.robotInstructionMinCount;
-        int instructionCount = settings.robotInstructionMinCount + Math.abs(mutator.getNextInt() % robotInstructionMaxCount);
+        final Robot robot = Robot.createEmptyRobot(settings.maximumDataOffset, settings.ignoreColumns);
+        final int maximumRobotInstructionCount = settings.maximumRobotInstructions - settings.minimumRobotInstructions;
+        int instructionCount = settings.minimumRobotInstructions + Math.abs(mutator.getNextInt() % maximumRobotInstructionCount);
         final InstructionList main = robot.getMainFunction();
         while (--instructionCount >= 0) {
             addInstructionToMain(main);
@@ -100,7 +100,7 @@ public class SimpleBreeder implements RobotBreeder {
             Robot parent2 = getPossibleParent(population, list);
             if (parent1 == null || parent2 == null)
                 break;
-            Robot child = Robot.createEmptyRobot(settings.dataMaximumOffset, settings.ignoreColumns);
+            Robot child = Robot.createEmptyRobot(settings.maximumDataOffset, settings.ignoreColumns);
             makeChild(parent1, parent2, child);
             population.saveRobot(child);
             parent1.increaseChildren();

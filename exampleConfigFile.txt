@@ -41,14 +41,14 @@ populationDAO
 populationDesiredSize	1000
 
 # The minumum amount of instructions that are generated for each robot.
-robotInstructionMinCount 16
+minimumRobotInstructions 16
 
 # The maximum amount of instructions that are generated for each robot.
-robotInstructionLimit 1024
+maximumRobotInstructions 1024
 
 # The maximum amount of instructions that can be executed on each timepoint for each robot for each data file.
-# Jumps can cause long loops, or even infinite loops. The final limit is: processorInstructionLimit * robotInstructionCount
-processorInstructionLimit 256
+# Jumps can cause long loops, or even infinite loops. The final limit is: maximumProcessorInstructionFactor * robotInstructionCount
+maximumProcessorInstructionFactor 256
 
 # This setting is used to calculate how many robots are considered to be removed based on their age.
 maximumDeathByAge	0.01
@@ -87,7 +87,7 @@ inheritedChildWeight 0
 inheritedChildWeightMode ANCESTORS_LOG
 
 # Value of how far a robot can read data into the past. Set it to something reasonable, depending on your time frame.
-dataMaximumOffset	256
+maximumDataOffset	256
 
 # Value for how long a new robot is protected and cannot be removed.
 # This setting has no effect if it violates 'killNonPredictingRobots' and 'requireSymmetricalRobots'.

@@ -16,9 +16,9 @@ public class MainSettings {
     public String populationDAO = PopulationSettings.DEFAULT_DATA_ACCESS;
     public boolean performTraining = true;
     public String dataDirectory = Main.DEFAULT_DATA_DIR;
-    public int robotInstructionMinCount = 16;
-    public int robotInstructionLimit = 1024;
-    public int processorInstructionLimit = 256;
+    public int minimumRobotInstructions = 16;
+    public int maximumRobotInstructions = 1024;
+    public int maximumProcessorInstructionFactor = 256;
     public double maximumDeathByAge = 0.01;
     public double maximumDeathByWeight = 0.1;
     public double probabilityOfDeathByAge = 0.5;
@@ -27,7 +27,7 @@ public class MainSettings {
     public double weightExponent = 2.0;
     public double inheritedChildWeight = 0;
     public InheritedWeightMode inheritedChildWeightMode = InheritedWeightMode.ANCESTORS_LOG;
-    public int dataMaximumOffset = 256;
+    public int maximumDataOffset = 256;
     public int protectRobotsUntilOutcomes = 100;
     public double newInstructionProbability = 0.01;
     public double instructionMutationProbability = 0.01;
@@ -76,10 +76,10 @@ public class MainSettings {
         ensure(startTimePoint.compareTo(endTimePoint) <= 0,
                 "End Time Point must be higher or equal Start Time Point");
         ensure(populationDesiredSize > 0, greaterThanZeroString("Population desired size"));
-        ensure(dataMaximumOffset > 0, greaterThanZeroString("Data Maximum Offset"));
-        ensure(robotInstructionMinCount > 0, greaterThanZeroString("Robot Instruction Min Count"));
-        ensure(robotInstructionLimit > robotInstructionMinCount, greaterThanIntegerString("Robot Instruction Limit", robotInstructionMinCount));
-        ensure(processorInstructionLimit > 0, greaterThanZeroString("Processor Instruction Limit"));
+        ensure(maximumDataOffset > 0, greaterThanZeroString("Maximum Data Offset"));
+        ensure(minimumRobotInstructions > 0, greaterThanZeroString("Minimum robot instructions"));
+        ensure(maximumRobotInstructions > minimumRobotInstructions, greaterThanIntegerString("Maximum robot instructions", minimumRobotInstructions));
+        ensure(maximumProcessorInstructionFactor > 0, greaterThanZeroString("Maximum processor instruction factor"));
         ensure(checkZeroToOne(maximumDeathByAge), zeroToOneString("Maximum Death by Age"));
         ensure(checkZeroToOne(maximumDeathByWeight), zeroToOneString("Maximum Death by Weight"));
         ensure(checkZeroToOne(probabilityOfDeathByAge), zeroToOneString("Probability Death by Age"));
