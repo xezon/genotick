@@ -16,6 +16,7 @@ public class MainSettings {
     public String populationDAO = PopulationSettings.DEFAULT_DATA_ACCESS;
     public boolean performTraining = true;
     public String dataDirectory = Main.DEFAULT_DATA_DIR;
+    public int robotInstructionMinCount = 16;
     public int robotInstructionLimit = 1024;
     public int processorInstructionLimit = 256;
     public double maximumDeathByAge = 0.01;
@@ -76,7 +77,8 @@ public class MainSettings {
                 "End Time Point must be higher or equal Start Time Point");
         ensure(populationDesiredSize > 0, greaterThanZeroString("Population desired size"));
         ensure(dataMaximumOffset > 0, greaterThanZeroString("Data Maximum Offset"));
-        ensure(robotInstructionLimit > 0, greaterThanZeroString("Processor Instruction Limit"));
+        ensure(robotInstructionMinCount > 0, greaterThanZeroString("Robot Instruction Min Count"));
+        ensure(robotInstructionLimit > robotInstructionMinCount, greaterThanIntegerString("Robot Instruction Limit", robotInstructionMinCount));
         ensure(processorInstructionLimit > 0, greaterThanZeroString("Processor Instruction Limit"));
         ensure(checkZeroToOne(maximumDeathByAge), zeroToOneString("Maximum Death by Age"));
         ensure(checkZeroToOne(maximumDeathByWeight), zeroToOneString("Maximum Death by Weight"));
@@ -92,18 +94,28 @@ public class MainSettings {
         ensure(protectBestRobots >= 0, zeroToOneString("Protect Best Robots"));
         ensure(resultThreshold >= 1,atLeastOneString("Result threshold"));
         ensure(ignoreColumns >= 0, atLeastZeroString("Ignore columns"));
-
     }
+
     private String atLeastZeroString(String s) {
         return s + " must be at least 0";
     }
+
     private String zeroToOneString(String s) {
         return s + " must be between 0.0 and 1.0";
     }
+
     private String greaterThanZeroString(String s) {
         return s + " must be greater than 0";
     }
-    private String atLeastOneString(String s) {return s + " must be greater than 1";}
+
+    private String greaterThanIntegerString(String s, int value) {
+        return s + " must be greater than " + value;
+    }
+
+    private String atLeastOneString(String s) {
+        return s + " must be at least 1";
+    }
+
     private boolean checkZeroToOne(double value) {
         return value >= 0 && value <= 1;
     }

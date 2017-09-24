@@ -40,6 +40,9 @@ populationDAO
 # The more the merrier.
 populationDesiredSize	1000
 
+# The minumum amount of instructions that are generated for each robot.
+robotInstructionMinCount 16
+
 # The maximum amount of instructions that are generated for each robot.
 robotInstructionLimit 1024
 

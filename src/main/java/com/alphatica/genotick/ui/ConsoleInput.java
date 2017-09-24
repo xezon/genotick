@@ -33,7 +33,6 @@ class ConsoleInput extends BasicUserInput {
             settings.startTimePoint = new TimePoint(getLong("Start time point",data.getFirstTimePoint().getValue()));
             settings.endTimePoint = new TimePoint(getLong("End time point", data.getLastTimePoint().getValue()));
             settings.populationDAO = getString("Population storage", settings.populationDAO);
-            settings.robotInstructionLimit = getInteger("Robot instruction limit", settings.robotInstructionLimit);
             settings.processorInstructionLimit = getInteger("Processor instruction limit", settings.processorInstructionLimit);
             settings.resultThreshold = getDouble("Result threshold",settings.resultThreshold);
             settings.requireSymmetricalRobots = getBoolean("Require symmetrical robots", settings.requireSymmetricalRobots);
@@ -41,6 +40,8 @@ class ConsoleInput extends BasicUserInput {
             if (settings.performTraining) {
                 settings.dataMaximumOffset = getInteger("Data maximum offset", settings.dataMaximumOffset);
                 settings.populationDesiredSize = getInteger("Population desired size", settings.populationDesiredSize);
+                settings.robotInstructionMinCount = getInteger("Robot instruction min count", settings.robotInstructionMinCount);
+                settings.robotInstructionLimit = getInteger("Robot instruction limit", settings.robotInstructionLimit);
                 settings.maximumDeathByAge = getDouble("Maximum death rate by age", settings.maximumDeathByAge);
                 settings.maximumDeathByWeight = getDouble("Maximum death rate by weight", settings.maximumDeathByWeight);
                 settings.probabilityOfDeathByAge = getDouble("Probability of death by age", settings.probabilityOfDeathByAge);

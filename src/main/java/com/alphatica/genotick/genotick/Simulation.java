@@ -104,7 +104,8 @@ public class Simulation {
                 settings.randomRobotsAtEachUpdate,
                 settings.dataMaximumOffset,
                 settings.ignoreColumns,
-                settings.robotInstructionLimit);
+                settings.robotInstructionLimit,
+                settings.robotInstructionMinCount);
         return RobotBreederFactory.getDefaultBreeder(breederSettings, mutator);
     }
 
