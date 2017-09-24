@@ -24,24 +24,18 @@ import static java.util.Objects.nonNull;
 
 class GenoJFreeChart implements GenoChart {
     
-    private class XYChartDefinition {
-        final Map<String, XYSeries> xySeriesMap = new HashMap<>();
-        String xLabel;
-        String yLabel;
-    }
-    
     private final Map<String, XYChartDefinition> xyChartMap = new HashMap<>();
+
     private final boolean drawChart;
     private final boolean saveChart;
     private int numOpenedChartFrames;
-    
     GenoJFreeChart(final GenoChartMode mode) {
         drawChart = mode.contains(GenoChartMode.DRAW);
         saveChart = mode.contains(GenoChartMode.SAVE);
         numOpenedChartFrames = 0;
         assert(drawChart || saveChart);
     }
-    
+
     @Override
     public void addXYLineChart(
             final String chartTitle, final String xLabel, final String yLabel,
@@ -56,29 +50,29 @@ class GenoJFreeChart implements GenoChart {
         XYSeries series = chart.xySeriesMap.computeIfAbsent(seriesTitle, XYSeries::new);
         series.add(xValue, yValue);
     }
-    
+
     @Override
     public void plot(final String chartTitle) {
         plotXYChart(chartTitle);
     }
-    
+
     @Override
     public void plotAll() {
         plotXYCharts();
     }
-    
+
     private void plotXYChart(final String title) {
         final XYChartDefinition definition = xyChartMap.remove(title);
         if (nonNull(definition)) {
             plotXYChart(title, definition);
         }
     }
-    
+
     private void plotXYCharts() {
         xyChartMap.forEach(this::plotXYChart);
         xyChartMap.clear();
     }
-    
+
     private void plotXYChart(final String title, final XYChartDefinition definition) {
         // A JFreeChart object cannot be reused for drawing and saving
         // Thus individual objects must be created for each operation to avoid a memory corruption
@@ -91,7 +85,7 @@ class GenoJFreeChart implements GenoChart {
             saveChart(title, chartObject);
         }
     }
-        
+
     private JFreeChart createChartObject(final String title, final XYChartDefinition definition) {
         final boolean legend = true;
         final boolean tooltips = true;
@@ -104,7 +98,7 @@ class GenoJFreeChart implements GenoChart {
                 PlotOrientation.VERTICAL, legend, tooltips, urls);
         return chartObject;
     }
-    
+
     private void drawChart(final String title, final JFreeChart chartObject) {
         final ChartFrame frame = new ChartFrame(title, chartObject);
         frame.pack();
@@ -113,7 +107,7 @@ class GenoJFreeChart implements GenoChart {
         alignChartFrame(frame);
         numOpenedChartFrames++;
     }
-    
+
     private void saveChart(final String title, final JFreeChart chartObject) {
         final String filename = makeFileName(title);
         final File file = new File(filename);
@@ -125,11 +119,11 @@ class GenoJFreeChart implements GenoChart {
             userOutput.infoMessage(format("JFreeChart: Unable to save chart image %s", filename));
         }
     }
-    
+
     private String makeFileName(final String title) {
         return "genotick-" + title.toLowerCase().replace(" ", "-") + ".png";
     }
-    
+
     private void alignChartFrame(final ChartFrame frame) {
         final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         final double pixels = 40.0 * numOpenedChartFrames;
@@ -137,4 +131,13 @@ class GenoJFreeChart implements GenoChart {
         final double heightPercent = pixels / screenSize.getHeight();
         RefineryUtilities.positionFrameOnScreen(frame, widthPercent, heightPercent);
     }
+
+    private class XYChartDefinition {
+        final Map<String, XYSeries> xySeriesMap = new HashMap<>();
+        String xLabel;
+        String yLabel;
+    }
+
 }
+
+

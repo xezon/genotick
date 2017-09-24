@@ -2,6 +2,8 @@ package com.alphatica.genotick.ui;
 
 import java.io.IOException;
 
+import static java.lang.String.format;
+
 public class UserInputOutputFactory {
     private static final String INPUT_STRING = "input";
     private static final String OUTPUT_STRING = "output";
@@ -24,12 +26,12 @@ public class UserInputOutputFactory {
             case OPTION_RANDOM: return new RandomParametersInput();
             case OPTION_CONSOLE: return tryConsoleInput();
         }
-        System.out.println(String.format("'%s=%s' is not a valid option.", INPUT_STRING, input));
+        System.out.println(format("'%s=%s' is not a valid option.", INPUT_STRING, input));
         System.out.println("Options are:");
-        System.out.println(String.format("%s=%spath\\to\\file", INPUT_STRING, OPTION_FILE));
-        System.out.println(String.format("%s=%s", INPUT_STRING, OPTION_DEFAULT));
-        System.out.println(String.format("%s=%s", INPUT_STRING, OPTION_RANDOM));
-        System.out.println(String.format("%s=%s", INPUT_STRING, OPTION_CONSOLE));
+        System.out.println(format("%s=%spath\\to\\file", INPUT_STRING, OPTION_FILE));
+        System.out.println(format("%s=%s", INPUT_STRING, OPTION_DEFAULT));
+        System.out.println(format("%s=%s", INPUT_STRING, OPTION_RANDOM));
+        System.out.println(format("%s=%s", INPUT_STRING, OPTION_CONSOLE));
         return null;
     }
 

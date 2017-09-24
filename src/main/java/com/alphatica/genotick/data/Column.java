@@ -1,7 +1,7 @@
 package com.alphatica.genotick.data;
 
 public class Column {
-    public class TOHLCV {
+    public static class TOHLCV {
         public static final int
         TIME   = 0,
         OPEN   = 1,
@@ -11,7 +11,7 @@ public class Column {
         VOLUME = 5;
     }
 
-    public class OHLCV {
+    public static class OHLCV {
         public static final int
         OPEN   = 0,
         HIGH   = 1,

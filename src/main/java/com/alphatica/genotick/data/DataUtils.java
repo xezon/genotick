@@ -55,9 +55,8 @@ public class DataUtils {
         List<Number []> list = new ArrayList<>();
         int linesRead = 1;
         try {
-            String line;
-            line = br.readLine();
-            processFirstLine(line,list);
+            String line = br.readLine();
+            processFirstLine(line, list);
             linesRead++;
             while ((line = br.readLine())!=null){
                 linesRead++;
@@ -71,6 +70,7 @@ public class DataUtils {
     }
 
     private static void processFirstLine(String line, List<Number[]> list) {
+        validateFirstLine(line);
         try {
             Number [] row = processLine(line);
             list.add(row);
@@ -98,6 +98,13 @@ public class DataUtils {
         else
             return field;
 
+    }
+
+    private static void validateFirstLine(String line) {
+        if(isNull(line)) {
+            UserInputOutputFactory.getUserOutput().errorMessage("Unable to read line or file empty");
+            throw new DataException("Unable to read line or file empty");
+        }
     }
 
 }
