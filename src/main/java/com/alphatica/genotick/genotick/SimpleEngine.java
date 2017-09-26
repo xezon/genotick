@@ -17,6 +17,7 @@ import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.math.BigDecimal;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,9 @@ public class SimpleEngine implements Engine {
     }
 
     private String getSavedPopulationDirName() {
-        return "savedPopulation_" + Tools.getPidString();
+        final String path1 = output.getOutDir();
+        final String path2 = "savedPopulation_" + Tools.getPidString();
+        return (path1 == null) ? path2 : Paths.get(path1, path2).toString();
     }
 
     private void initPopulation() {

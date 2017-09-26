@@ -285,6 +285,7 @@ public class AccountTest {
         String message;
 
         MockUserOutput() throws IOException {
+            super(null);
         }
 
         void clear() {

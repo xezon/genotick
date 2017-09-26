@@ -109,19 +109,19 @@ class GenoJFreeChart implements GenoChart {
     }
 
     private void saveChart(final String title, final JFreeChart chartObject) {
+        final UserOutput output = UserInputOutputFactory.getUserOutput();
         final String filename = makeFileName(title);
-        final File file = new File(filename);
+        final File file = new File(output.getOutDir(), filename);
         try {
             ChartUtilities.saveChartAsPNG(file, chartObject, 512, 512);
         }
         catch (IOException exception) {
-            final UserOutput userOutput = UserInputOutputFactory.getUserOutput();
-            userOutput.infoMessage(format("JFreeChart: Unable to save chart image %s", filename));
+            output.errorMessage(format("JFreeChart: Unable to save chart image %s: %s", filename, exception.getMessage()));
         }
     }
 
     private String makeFileName(final String title) {
-        return "genotick-" + title.toLowerCase().replace(" ", "-") + ".png";
+        return "chart-" + title.toLowerCase().replace(" ", "-") + ".png";
     }
 
     private void alignChartFrame(final ChartFrame frame) {

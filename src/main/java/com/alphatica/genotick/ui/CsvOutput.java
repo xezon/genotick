@@ -21,13 +21,18 @@ public class CsvOutput implements UserOutput {
     private final String pidString;
     private Boolean debug = false;
 
-    public CsvOutput() throws IOException {
-        console = new ConsoleOutput();
+    public CsvOutput(String outdir) throws IOException {
+        console = new ConsoleOutput(outdir);
         pidString = Tools.getPidString();
-        profitWriter = new SimpleTextWriter("profit_" + pidString + ".csv");
-        predictionWriter = new SimpleTextWriter("predictions_" + pidString + ".csv");
+        profitWriter = new SimpleTextWriter(outdir, "profit_" + pidString + ".csv");
+        predictionWriter = new SimpleTextWriter(outdir, "predictions_" + pidString + ".csv");
     }
 
+    @Override
+    public String getOutDir() {
+        return console.getOutDir();
+    }
+    
     @Override
     public void errorMessage(String message) {
         console.errorMessage(message);
@@ -98,9 +103,9 @@ public class CsvOutput implements UserOutput {
 
 class SimpleTextWriter {
     private final PrintWriter writer;
-    SimpleTextWriter(String fileName) throws IOException {
-        File file = new File(fileName);
-        writer = new PrintWriter(new FileOutputStream(file));
+
+    SimpleTextWriter(String path, String fileName) throws IOException {
+        writer = new PrintWriter(new FileOutputStream(new File(path, fileName)));
     }
 
     void writeLine(String line) {

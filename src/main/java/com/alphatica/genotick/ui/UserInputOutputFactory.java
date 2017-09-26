@@ -1,37 +1,39 @@
 package com.alphatica.genotick.ui;
 
+import java.io.File;
 import java.io.IOException;
 
 import static java.lang.String.format;
 
 public class UserInputOutputFactory {
     private static final String INPUT_STRING = "input";
+    private static final String INPUT_OPTION_FILE = "file" + FileInput.delimiter;
+    private static final String INPUT_OPTION_DEFAULT = "default";
+    private static final String INPUT_OPTION_RANDOM = "random";
+    private static final String INPUT_OPTION_CONSOLE = "console";
     private static final String OUTPUT_STRING = "output";
-    private static final String OPTION_FILE = "file" + FileInput.delimiter;
-    private static final String OPTION_DEFAULT = "default";
-    private static final String OPTION_RANDOM = "random";
-    private static final String OPTION_CONSOLE = "console";
+    private static final String OUTDIR_STRING = "outdir";
+    private static final String OUTPUT_OPTION_CSV = "csv";
     private static UserOutput userOutput;
 
     public static UserInput getUserInput(Parameters parameters) {
-        String input = parameters.getValue(INPUT_STRING);
-        parameters.removeKey(INPUT_STRING);
-        if(input == null)
+        final String input = parameters.getAndRemoveValue(INPUT_STRING);
+        if (input == null)
             return tryConsoleInput();
-        if(input.startsWith(OPTION_FILE)) {
+        if (input.startsWith(INPUT_OPTION_FILE)) {
             return new FileInput(input);
         }
-        switch(input) {
-            case OPTION_DEFAULT: return new DefaultInputs();
-            case OPTION_RANDOM: return new RandomParametersInput();
-            case OPTION_CONSOLE: return tryConsoleInput();
+        switch (input) {
+            case INPUT_OPTION_DEFAULT: return new DefaultInputs();
+            case INPUT_OPTION_RANDOM: return new RandomParametersInput();
+            case INPUT_OPTION_CONSOLE: return tryConsoleInput();
         }
         System.out.println(format("'%s=%s' is not a valid option.", INPUT_STRING, input));
         System.out.println("Options are:");
-        System.out.println(format("%s=%spath\\to\\file", INPUT_STRING, OPTION_FILE));
-        System.out.println(format("%s=%s", INPUT_STRING, OPTION_DEFAULT));
-        System.out.println(format("%s=%s", INPUT_STRING, OPTION_RANDOM));
-        System.out.println(format("%s=%s", INPUT_STRING, OPTION_CONSOLE));
+        System.out.println(format("%s=%spath\\to\\file", INPUT_STRING, INPUT_OPTION_FILE));
+        System.out.println(format("%s=%s", INPUT_STRING, INPUT_OPTION_DEFAULT));
+        System.out.println(format("%s=%s", INPUT_STRING, INPUT_OPTION_RANDOM));
+        System.out.println(format("%s=%s", INPUT_STRING, INPUT_OPTION_CONSOLE));
         return null;
     }
 
@@ -47,19 +49,33 @@ public class UserInputOutputFactory {
     }
 
     public static UserOutput getUserOutput(Parameters parameters) throws IOException {
-        String output = parameters.getValue(OUTPUT_STRING);
-        parameters.removeKey(OUTPUT_STRING);
-        if (output != null && output.equals("csv"))
-        	userOutput = new CsvOutput();
-        else if(userOutput == null)
-            userOutput = new ConsoleOutput();
+        final String output = parameters.getAndRemoveValue(OUTPUT_STRING);
+        final String outdir = parameters.getAndRemoveValue(OUTDIR_STRING);
+        createDirsThrowable(outdir);
+        if (output != null && output.equals(OUTPUT_OPTION_CSV)) {
+        	userOutput = new CsvOutput(outdir);
+        }
+        else if (userOutput == null) {
+            userOutput = new ConsoleOutput(outdir);
+        }
         return userOutput;
     }
     
     public static UserOutput getUserOutput() {
     	if(userOutput == null) {
-    		userOutput = new ConsoleOutput();
-    	}    		
+    		userOutput = new ConsoleOutput(null);
+    	}
     	return userOutput;
+    }
+    
+    private static void createDirsThrowable(String path) throws IOException {
+        if (!createDirs(path)) {
+            throw new IOException(format("Unable to create output directory %s", path));
+        }
+    }
+    
+    private static boolean createDirs(String path) {
+        File dirFile = new File(path);
+        return dirFile.exists() || dirFile.mkdirs();
     }
 }

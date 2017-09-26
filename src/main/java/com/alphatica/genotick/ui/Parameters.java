@@ -37,8 +37,8 @@ public class Parameters {
         return map.get(key);
     }
 
-    public void removeKey(String key) {
-        map.remove(key);
+    public String getAndRemoveValue(String key) {
+        return map.remove(key);
     }
 
     public boolean allConsumed() {

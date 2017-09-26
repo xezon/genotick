@@ -17,9 +17,19 @@ import java.nio.charset.Charset;
 
 class ConsoleOutput implements UserOutput {
 
-    private File logFile = new File(format("genotick-log-%s.txt", Tools.getPidString()));
-    private Boolean debugEnabled = false;
+    private final File logFile;
+    private final Boolean debugEnabled = false;
 
+    ConsoleOutput(String outdir) {
+        final String filename = format("genotick-log-%s.txt", Tools.getPidString());
+        logFile = new File(outdir, filename);
+    }
+    
+    @Override
+    public String getOutDir() {
+        return logFile.getParent();
+    }
+    
     @Override
     public void errorMessage(String message) {
         log("Error: " + message);
@@ -79,14 +89,12 @@ class ConsoleOutput implements UserOutput {
         log(format("Finished time point %s with account value %s", timePoint, scale(equity)));
     }
 
-    private void log(String string) {
-        System.out.println(string);
+    private void log(String message) {
+        System.out.println(message);
         try {
-            FileUtils.write(logFile, string + System.lineSeparator(), Charset.defaultCharset(),true);
+            FileUtils.write(logFile, message + System.lineSeparator(), Charset.defaultCharset(), true);
         } catch (IOException e) {
-
-            System.err.println("Unable to write to file " + logFile.getPath() + ": " + e.getMessage());
-
+            System.err.println(format("Unable to write to file %s: %s", logFile.getPath(), e.getMessage()));
             throw new ExecutionException(format("Unable to write to file %s", logFile.getAbsoluteFile()), e);
         }
     }

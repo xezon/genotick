@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 
 public interface UserOutput {
 	
+    String getOutDir();
+    
     void errorMessage(String message);
 
     void warningMessage(String message);
