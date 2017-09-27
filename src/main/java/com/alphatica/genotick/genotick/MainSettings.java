@@ -44,8 +44,8 @@ public class MainSettings {
     public GenoChartMode chartMode = GenoChartMode.NONE;
 
     private MainSettings() {
-        /* Empty */
     }
+
     public static MainSettings getSettings() {
         return new MainSettings();
     }
