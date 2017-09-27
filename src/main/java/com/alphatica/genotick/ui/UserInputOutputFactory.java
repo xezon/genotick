@@ -51,7 +51,9 @@ public class UserInputOutputFactory {
     public static UserOutput getUserOutput(Parameters parameters) throws IOException {
         final String output = parameters.getAndRemoveValue(OUTPUT_STRING);
         final String outdir = parameters.getAndRemoveValue(OUTDIR_STRING);
-        createDirsThrowable(outdir);
+        if (outdir != null && !outdir.isEmpty()) {
+            createDirsThrowable(outdir);
+        }
         if (output != null && output.equals(OUTPUT_OPTION_CSV)) {
         	userOutput = new CsvOutput(outdir);
         }
