@@ -11,8 +11,8 @@ public class TimePoint implements Comparable<TimePoint>, Serializable {
         this.value = value;
     }
 
-    public TimePoint(TimePoint startTimePoint) {
-        this(startTimePoint.value);
+    public TimePoint(TimePoint timePoint) {
+        this(timePoint.value);
     }
 
     public long getValue() {
