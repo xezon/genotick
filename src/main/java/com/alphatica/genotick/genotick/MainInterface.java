@@ -18,12 +18,8 @@ public class MainInterface {
         final ErrorCode error = Main.init(args);
         return error.getValue();
     }
-    
-    public static void setSettings(MainSettings settings) {
-        MainInterface.settings = settings;
-    }
-    
-    public static MainSettings getSettings() {
+        
+    public static MainSettings getSettings() {        
         return settings;
     }
 }
