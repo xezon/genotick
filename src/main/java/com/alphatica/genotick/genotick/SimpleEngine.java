@@ -91,7 +91,7 @@ public class SimpleEngine implements Engine {
     private void executeBar(final int bar) {
         final TimePoint timePoint = data.getTimePoint(bar);
         assert(timePoint != null);
-        final List<RobotData> robotDataList = data.createRobotDataList(bar);
+        final List<RobotData> robotDataList = data.createRobotDataList(bar, engineSettings.maximumDataOffset);
         if (!robotDataList.isEmpty()) {
             output.reportStartingTimePoint(timePoint);
             updateAccount(robotDataList);
