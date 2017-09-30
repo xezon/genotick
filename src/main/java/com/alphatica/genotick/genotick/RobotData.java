@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RobotData {
-    private final List<double[]> priceData;
+    private final List<double[]> ohlcColumnsOfData;
     private final DataSetName name;
     private final double lastPriceChange;
 
@@ -22,8 +22,8 @@ public class RobotData {
         return createData(list, name);
     }
 
-    private RobotData(List<double[]> priceData, DataSetName name) {
-        this.priceData = priceData;
+    private RobotData(List<double[]> ohlcColumnsOfData, DataSetName name) {
+        this.ohlcColumnsOfData = ohlcColumnsOfData;
         this.name = name;
         this.lastPriceChange = calculateLastPriceChange();
     }
@@ -33,18 +33,18 @@ public class RobotData {
     }
 
     public double getPriceData(int column, int offset) {
-        if (offset >= priceData.get(column).length)
+        if (offset >= ohlcColumnsOfData.get(column).length)
             throw new NotEnoughDataException();
         else
-            return priceData.get(column)[offset];
+            return ohlcColumnsOfData.get(column)[offset];
     }
     
     public int getColumnCount() {
-        return priceData.size();
+        return ohlcColumnsOfData.size();
     }
 
     private int getAssetDataLength(int column) {
-        return priceData.get(column).length;
+        return ohlcColumnsOfData.get(column).length;
     }
 
     public boolean isEmpty() {
@@ -52,7 +52,7 @@ public class RobotData {
     }
     
     double getLastPriceOpen() {
-        return priceData.get(Column.OHLCV.OPEN)[0];
+        return ohlcColumnsOfData.get(Column.OHLCV.OPEN)[0];
     }
 
     public double getLastPriceChange() {
@@ -63,8 +63,8 @@ public class RobotData {
         if (getAssetDataLength(Column.OHLCV.OPEN) < 2) {
             return 0.0;
         }
-        final double currentOpen = priceData.get(Column.OHLCV.OPEN)[0];
-        final double previousOpen = priceData.get(Column.OHLCV.OPEN)[1];
+        final double currentOpen = ohlcColumnsOfData.get(Column.OHLCV.OPEN)[0];
+        final double previousOpen = ohlcColumnsOfData.get(Column.OHLCV.OPEN)[1];
         return currentOpen - previousOpen;
     }
 }

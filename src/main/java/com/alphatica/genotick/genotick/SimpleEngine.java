@@ -44,10 +44,11 @@ public class SimpleEngine implements Engine {
     public void start() {
         Thread.currentThread().setName("Main engine execution thread");
         initPopulation();
-        final Stream<TimePoint> filteredTimePoints = data.getTimePoints(
-                engineSettings.startTimePoint,
-                engineSettings.endTimePoint);
-        filteredTimePoints.forEach(this::executeTimePoint);
+        final int startBar = data.getBar(engineSettings.startTimePoint);
+        final int endBar = data.getBar(engineSettings.endTimePoint);
+        for (int bar = startBar; bar < endBar; ++bar) {
+            executeBar(bar);
+        }
         if (engineSettings.performTraining) {
             savePopulation();
         }
@@ -88,12 +89,11 @@ public class SimpleEngine implements Engine {
             population.saveToFolder(path);
         }
     }
-
-    // TODO To simplify algorithms consider working with bars instead of time points
     
-    private void executeTimePoint(TimePoint timePoint) {
-        final int bar = data.getBar(timePoint);
-        final List<RobotData> robotDataList = data.createRobotDataList(timePoint);
+    private void executeBar(final int bar) {
+        assert(data.isValidBar(bar));
+        final TimePoint timePoint = data.getTimePoint(bar);
+        final List<RobotData> robotDataList = data.createRobotDataList(bar);
         if (!robotDataList.isEmpty()) {
             output.reportStartingTimePoint(timePoint);
             updateAccount(robotDataList);
@@ -113,7 +113,7 @@ public class SimpleEngine implements Engine {
         }
         profitRecorder.onUpdate(bar);
     }
-
+    
     private void updatePredictions(List<RobotInfo> list, Map<RobotName, List<RobotResult>> map) {
         list.parallelStream().forEach(info -> {
             List<RobotResult> results = map.get(info.getName());
