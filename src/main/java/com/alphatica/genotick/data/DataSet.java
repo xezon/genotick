@@ -77,7 +77,7 @@ public class DataSet {
             double[] copy = copyReverseArray(original, bar);
             list.add(copy);
         }
-        return RobotData.createData(list, name);
+        return RobotData.create(list, name);
     }
 
     private double[] copyReverseArray(double[] original, int bar) {

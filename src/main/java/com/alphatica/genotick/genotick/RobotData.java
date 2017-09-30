@@ -4,7 +4,6 @@ import com.alphatica.genotick.data.Column;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.processor.NotEnoughDataException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RobotData {
@@ -12,18 +11,12 @@ public class RobotData {
     private final DataSetName name;
     private final double lastPriceChange;
 
-    public static RobotData createData(List<double[]> priceData, DataSetName name) {
-        return new RobotData(priceData, name);
+    public static RobotData create(List<double[]> ohlcLookbackData, DataSetName name) {
+        return new RobotData(ohlcLookbackData, name);
     }
 
-    public static RobotData createEmptyData(DataSetName name) {
-        List<double[]> list = new ArrayList<>();
-        list.add(new double[0]);
-        return createData(list, name);
-    }
-
-    private RobotData(List<double[]> ohlcColumnsOfData, DataSetName name) {
-        this.ohlcLookbackData = ohlcColumnsOfData;
+    private RobotData(List<double[]> ohlcLookbackData, DataSetName name) {
+        this.ohlcLookbackData = ohlcLookbackData;
         this.name = name;
         this.lastPriceChange = calculateLastPriceChange();
     }
