@@ -101,7 +101,7 @@ public class MainAppData {
         return sets.containsKey(name);
     }
 
-    public boolean isValidBar(int bar) {
+    private boolean isValidBar(int bar) {
         return (bar >= 0) && (bar < timePoints.size());
     }
 

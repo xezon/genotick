@@ -91,8 +91,8 @@ public class SimpleEngine implements Engine {
     }
     
     private void executeBar(final int bar) {
-        assert(data.isValidBar(bar));
         final TimePoint timePoint = data.getTimePoint(bar);
+        assert(timePoint != null);
         final List<RobotData> robotDataList = data.createRobotDataList(bar);
         if (!robotDataList.isEmpty()) {
             output.reportStartingTimePoint(timePoint);
