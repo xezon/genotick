@@ -17,12 +17,10 @@ import java.util.stream.Stream;
 public class MainAppData extends Friendship {
     
     private final Map<DataSetName, DataSet> sets;
-    private final Map<TimePoint, Integer> bars;
     private List<TimePoint> timePoints;
 
     public MainAppData() {
         sets = new HashMap<>();
-        bars = new HashMap<>();
         timePoints = new ArrayList<>();
     }
 
@@ -40,14 +38,6 @@ public class MainAppData extends Friendship {
             timePoints = timePoints.stream().distinct().collect(Collectors.toList());
             timePoints.sort(TimePoint::compareTo);
         }
-        updateBars();
-    }
-
-    private void updateBars() {
-        bars.clear();
-        for (int bar = 0, size = timePoints.size(); bar < size; ++bar) {
-            bars.put(timePoints.get(bar), bar);
-        }
     }
 
     public TimePoint getFirstTimePoint() {
@@ -63,12 +53,8 @@ public class MainAppData extends Friendship {
     }
 
     public int getBar(TimePoint timePoint) {
-        Integer bar = bars.get(timePoint);
-        if (bar == null) {
-            Comparator<TimePoint> comparator = (TimePoint a, TimePoint b) -> { return a.compareTo(b); };
-            bar = Collections.binarySearch(timePoints, timePoint, comparator);
-        }  
-        return bar;
+        Comparator<TimePoint> comparator = (TimePoint a, TimePoint b) -> { return a.compareTo(b); };
+        return Collections.binarySearch(timePoints, timePoint, comparator);
     }
 
     public int getNearestBar(TimePoint timePoint) {
