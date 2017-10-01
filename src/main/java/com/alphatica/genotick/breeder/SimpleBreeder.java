@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.alphatica.genotick.utility.Assert.gassert;
+
 public class SimpleBreeder implements RobotBreeder {
     private BreederSettings settings;
     private Mutator mutator;
@@ -168,7 +170,7 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private void copyBlock(InstructionList destination, InstructionList source, int start, int stop) {
-        assert start <= stop : "start > stop " + String.format("%d %d", start, stop);
+        gassert(start <= stop, String.format("start > stop %d %d", start, stop));
         for (int i = start; i <= stop; i++) {
             Instruction instruction = source.getInstruction(i).copy();
             if(instruction instanceof TerminateInstructionList) {

@@ -2,6 +2,8 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.population.Robot;
 
+import static com.alphatica.genotick.utility.Assert.gassert;
+
 public class WeightCalculator {
 
     private static WeightMode MODE = WeightMode.WIN_COUNT;
@@ -27,7 +29,7 @@ public class WeightCalculator {
         }
         double weightPow = Math.pow(weight, EXPONENT);
         weight = (weight >= 0.0) ? weightPow : -weightPow;
-        assert(!weight.isNaN());
+        gassert(!weight.isNaN());
         return weight;
     }
 

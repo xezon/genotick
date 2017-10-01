@@ -2,6 +2,8 @@ package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.data.DataSetName;
 
+import static com.alphatica.genotick.utility.Assert.gassert;
+
 public class DataSetResult {
     private final DataSetName name;
     private double weightUp;
@@ -67,7 +69,7 @@ public class DataSetResult {
     }
 
     Prediction getCumulativePrediction(double threshold) {
-        assert(threshold >= 1.0);
+        gassert(threshold >= 1.0);
         final double factor = 1.0 / threshold;
         if (weightUp * factor > weightDown) {
             return Prediction.UP;

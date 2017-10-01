@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.HashMap;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
+import static com.alphatica.genotick.utility.Assert.gassert;
 
 class GenoJFreeChart implements GenoChart {
     
@@ -33,7 +34,7 @@ class GenoJFreeChart implements GenoChart {
         drawChart = mode.contains(GenoChartMode.DRAW);
         saveChart = mode.contains(GenoChartMode.SAVE);
         numOpenedChartFrames = 0;
-        assert(drawChart || saveChart);
+        gassert(drawChart || saveChart);
     }
 
     @Override
