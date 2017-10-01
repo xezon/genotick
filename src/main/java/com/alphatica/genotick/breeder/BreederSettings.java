@@ -1,5 +1,7 @@
 package com.alphatica.genotick.breeder;
 
+import com.alphatica.genotick.genotick.MainSettings;
+
 public class BreederSettings {
     public final int minimumOutcomesBetweenBreeding;
     public final int minimumOutcomesToAllowBreeding;
@@ -11,24 +13,15 @@ public class BreederSettings {
     public final int maximumRobotInstructions;
     public final int minimumRobotInstructions;
 
-    public BreederSettings(
-            int minimumOutcomesBetweenBreeding,
-            int minimumOutcomesToAllowBreeding,
-            double inheritedWeightPercent,
-            InheritedWeightMode inheritedWeightMode,
-            double randomRobots,
-            int maximumDataOffset,
-            int ignoreColumns,
-            int maximumRobotInstructions,
-            int minimumRobotInstructions) {
-        this.minimumOutcomesBetweenBreeding = minimumOutcomesBetweenBreeding;
-        this.minimumOutcomesToAllowBreeding = minimumOutcomesToAllowBreeding;
-        this.inheritedWeightPercent = inheritedWeightPercent;
-        this.inheritedWeightMode = inheritedWeightMode;
-        this.randomRobots = randomRobots;
-        this.maximumDataOffset = maximumDataOffset;
-        this.ignoreColumns = ignoreColumns;
-        this.maximumRobotInstructions = maximumRobotInstructions;
-        this.minimumRobotInstructions = minimumRobotInstructions;
+    public BreederSettings(final MainSettings settings) {
+        this.minimumOutcomesBetweenBreeding = settings.minimumOutcomesBetweenBreeding;
+        this.minimumOutcomesToAllowBreeding = settings.minimumOutcomesToAllowBreeding;
+        this.inheritedWeightPercent = settings.inheritedChildWeight;
+        this.inheritedWeightMode = settings.inheritedChildWeightMode;
+        this.randomRobots = settings.randomRobotsAtEachUpdate;
+        this.maximumDataOffset = settings.maximumDataOffset;
+        this.ignoreColumns = settings.ignoreColumns;
+        this.maximumRobotInstructions = settings.maximumRobotInstructions;
+        this.minimumRobotInstructions = settings.minimumRobotInstructions;
     }
 }
