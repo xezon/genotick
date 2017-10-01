@@ -7,22 +7,24 @@ import com.alphatica.genotick.processor.NotEnoughDataException;
 import java.util.List;
 
 public class RobotData {
-    private final List<double[]> ohlcLookbackData;
     private final DataSetName name;
-    private final double lastPriceChange;
+    private final List<double[]> ohlcLookbackData;
 
-    public static RobotData create(List<double[]> ohlcLookbackData, DataSetName name) {
-        return new RobotData(ohlcLookbackData, name);
+    public static RobotData create(DataSetName name, List<double[]> ohlcLookbackData) {
+        return new RobotData(name, ohlcLookbackData);
     }
 
-    private RobotData(List<double[]> ohlcLookbackData, DataSetName name) {
-        this.ohlcLookbackData = ohlcLookbackData;
+    private RobotData(DataSetName name, List<double[]> ohlcLookbackData) {
         this.name = name;
-        this.lastPriceChange = calculateLastPriceChange();
+        this.ohlcLookbackData = ohlcLookbackData;
     }
 
     public DataSetName getName() {
         return name;
+    }
+
+    public List<double[]> getOhlcLookbackData(RobotDataManager.Friend friend) {
+        return ohlcLookbackData;
     }
 
     public double getPriceData(int column, int offset) {
@@ -31,7 +33,7 @@ public class RobotData {
         else
             return ohlcLookbackData.get(column)[offset];
     }
-    
+
     public int getColumnCount() {
         return ohlcLookbackData.size();
     }
@@ -40,19 +42,11 @@ public class RobotData {
         return ohlcLookbackData.get(column).length;
     }
 
-    public boolean isEmpty() {
-        return getLookbackDataLength(Column.OHLCV.OPEN) == 0;
-    }
-    
     double getLastPriceOpen() {
         return ohlcLookbackData.get(Column.OHLCV.OPEN)[0];
     }
 
     public double getLastPriceChange() {
-        return lastPriceChange;
-    }
-
-    private double calculateLastPriceChange() {
         if (getLookbackDataLength(Column.OHLCV.OPEN) < 2) {
             return 0.0;
         }
