@@ -3,13 +3,14 @@ package com.alphatica.genotick.data;
 import com.alphatica.genotick.genotick.RobotDataManager;
 import com.alphatica.genotick.timepoint.TimePoint;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class DataSet {
     private final DataSetName name;
-    private final TimePoint[] timePoints;
+    private final List<TimePoint> timePoints;
     private final List<double[]> ohlcColumnsOfData;
 
     public DataSet(List<Number[]> tohlcLines, String fileName) {
@@ -18,7 +19,7 @@ public class DataSet {
 
     public DataSet(List<Number[]> tohlcLines, DataSetName name) {
         this.name = name;
-        this.timePoints = new TimePoint[tohlcLines.size()];
+        this.timePoints = new ArrayList<TimePoint>(tohlcLines.size());
         this.ohlcColumnsOfData = new ArrayList<>();
         final int tohlcColumnCount = tohlcLines.get(0).length;
         createColumnsOfData(tohlcLines.size(), tohlcColumnCount);
@@ -36,7 +37,7 @@ public class DataSet {
     }
 
     List<TimePoint> getTimePoints(MainAppData.Friend friend) {
-        return Arrays.asList(this.timePoints);
+        return timePoints;
     }
 
     public List<double[]> getOhlcColumnsOfData(RobotDataManager.Friend friend) {
@@ -44,7 +45,8 @@ public class DataSet {
     }
 
     public int getBar(TimePoint timePoint) {
-        return Arrays.binarySearch(timePoints, timePoint);
+        Comparator<TimePoint> comparator = (TimePoint a, TimePoint b) -> { return a.compareTo(b); };
+        return Collections.binarySearch(timePoints, timePoint, comparator);
     }
 
     public int getNearestBar(TimePoint timePoint) {
@@ -53,7 +55,7 @@ public class DataSet {
     }
 
     public boolean isValidBar(int bar) {
-        return (bar >= 0) && (bar < timePoints.length);
+        return (bar >= 0) && (bar < timePoints.size());
     }
 
     private void fillColumnsOfData(int lineNumber, Number[] tohlcLine, int tohlcColumnCount) {
@@ -64,14 +66,14 @@ public class DataSet {
     private void fillTimePoints(int lineNumber, Number[] tohlcLine) {
         TimePoint timePoint = new TimePoint(tohlcLine[Column.TOHLCV.TIME].longValue());
         validateTimePoint(lineNumber, timePoint);
-        timePoints[lineNumber - 1] = timePoint;
+        timePoints.add(timePoint);
     }
 
     private void validateTimePoint(int lineNumber, TimePoint timePoint) {
         // Arrays start indexing from 0, but humans count text lines starting from 1.
         // New timePoint will be assigned to index = lineNumber -1, so
         // we have to check what happened two lines ago!
-        if(lineNumber >= 2 &&  timePoint.compareTo(timePoints[lineNumber - 2]) <= 0)
+        if(lineNumber >= 2 &&  timePoint.compareTo(timePoints.get(lineNumber - 2)) <= 0)
             throw new DataException("Time (first number) is equal or less than previous. Line: " + lineNumber);
     }
 
@@ -87,12 +89,12 @@ public class DataSet {
     }
 
     public int getLinesCount() {
-        return timePoints.length;
+        return timePoints.size();
     }
 
     public Number[] getLine(int lineNumber) {
         Number[] tohlcLine = new Number[1 + ohlcColumnsOfData.size()];
-        tohlcLine[Column.TOHLCV.TIME] = timePoints[lineNumber].getValue();
+        tohlcLine[Column.TOHLCV.TIME] = timePoints.get(lineNumber).getValue();
         for(int i = Column.TOHLCV.OPEN; i < tohlcLine.length; i++) {
             tohlcLine[i] = ohlcColumnsOfData.get(i-1)[lineNumber];
         }
