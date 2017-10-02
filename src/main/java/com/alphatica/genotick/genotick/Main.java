@@ -213,7 +213,7 @@ public class Main {
             setError(ErrorCode.NO_INPUT);
             return;
         }
-        output = UserInputOutputFactory.getUserOutput(parameters);
+        output = UserInputOutputFactory.createUserOutput(parameters);
         if(output == null) {
             setError(ErrorCode.NO_OUTPUT);
             return;

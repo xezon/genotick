@@ -14,13 +14,16 @@ public class UserInputOutputFactory {
     private static final String INPUT_OPTION_EXTERNAL = "external";
     private static final String OUTPUT_STRING = "output";
     private static final String OUTDIR_STRING = "outdir";
+    private static final String OUTPUT_OPTION_CONSOLE = "console";
     private static final String OUTPUT_OPTION_CSV = "csv";
+    private static final String OUTPUT_OPTION_NONE = "none";
     private static UserOutput userOutput;
 
     public static UserInput getUserInput(Parameters parameters) {
         final String input = parameters.getAndRemoveValue(INPUT_STRING);
-        if (input == null)
+        if (input == null) {
             return tryConsoleInput();
+        }
         if (input.startsWith(INPUT_OPTION_FILE)) {
             return new FileInput(input);
         }
@@ -30,12 +33,11 @@ public class UserInputOutputFactory {
             case INPUT_OPTION_CONSOLE: return tryConsoleInput();
             case INPUT_OPTION_EXTERNAL: return new ExternalInput();
         }
-        System.out.println(format("'%s=%s' is not a valid option.", INPUT_STRING, input));
-        System.out.println("Options are:");
-        System.out.println(format("%s=%spath\\to\\file", INPUT_STRING, INPUT_OPTION_FILE));
-        System.out.println(format("%s=%s", INPUT_STRING, INPUT_OPTION_DEFAULT));
-        System.out.println(format("%s=%s", INPUT_STRING, INPUT_OPTION_RANDOM));
-        System.out.println(format("%s=%s", INPUT_STRING, INPUT_OPTION_CONSOLE));
+        printOptionInfo(INPUT_STRING, input,
+                INPUT_OPTION_FILE,
+                INPUT_OPTION_DEFAULT,
+                INPUT_OPTION_RANDOM,
+                INPUT_OPTION_CONSOLE);
         return null;
     }
 
@@ -50,17 +52,26 @@ public class UserInputOutputFactory {
         }
     }
 
-    public static UserOutput getUserOutput(Parameters parameters) throws IOException {
+    public static UserOutput createUserOutput(Parameters parameters) throws IOException {
         final String output = parameters.getAndRemoveValue(OUTPUT_STRING);
         final String outdir = parameters.getAndRemoveValue(OUTDIR_STRING);
         if (outdir != null && !outdir.isEmpty()) {
             createDirsThrowable(outdir);
         }
-        if (output != null && output.equals(OUTPUT_OPTION_CSV)) {
-        	userOutput = new CsvOutput(outdir);
-        }
-        else if (userOutput == null) {
+        if (output == null) {
             userOutput = new ConsoleOutput(outdir);
+        }
+        else {
+            switch (output) {
+                case OUTPUT_OPTION_CONSOLE: userOutput = new ConsoleOutput(outdir); break;
+                case OUTPUT_OPTION_CSV: userOutput = new CsvOutput(outdir); break;
+                case OUTPUT_OPTION_NONE: userOutput = new NoOutput(outdir); break;
+            }
+            printOptionInfo(OUTPUT_STRING, output,
+                    OUTPUT_OPTION_CONSOLE,
+                    OUTPUT_OPTION_CSV,
+                    OUTPUT_OPTION_NONE);
+            userOutput = null;
         }
         return userOutput;
     }
@@ -81,5 +92,13 @@ public class UserInputOutputFactory {
     private static boolean createDirs(String path) {
         File dirFile = new File(path);
         return dirFile.exists() || dirFile.mkdirs();
+    }
+    
+    private static void printOptionInfo(String optionName, String optionValue, String... availableOptionValues) {
+        System.out.println(format("'%s=%s' is not a valid option.", optionName, optionValue));
+        System.out.println("Options are:");
+        for (String option : availableOptionValues) {
+            System.out.println(format("%s=%s", optionName, option));
+        }
     }
 }
