@@ -1,6 +1,7 @@
 package com.alphatica.genotick.data;
 
 import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.timepoint.TimePoints;
 import com.alphatica.genotick.utility.Friendship;
 
 import java.util.ArrayList;
@@ -17,11 +18,11 @@ import java.util.stream.Stream;
 public class MainAppData extends Friendship {
     
     private final Map<DataSetName, DataSet> sets;
-    private List<TimePoint> timePoints;
+    private final TimePoints timePoints;
 
     public MainAppData() {
         sets = new HashMap<>();
-        timePoints = new ArrayList<>();
+        timePoints = new TimePoints();
     }
 
     public void addDataSet(DataSet set) {
@@ -29,22 +30,12 @@ public class MainAppData extends Friendship {
         updateTimePoints(set.getTimePoints(befriend));
     }
 
-    private void addTimePoints(List<TimePoint> newTimePoints) {
-        timePoints.addAll(newTimePoints);
-    }
-    
-    private void mergeTimePoints(List<TimePoint> newTimePoints) {
-        timePoints.addAll(newTimePoints);
-        timePoints = timePoints.stream().distinct().collect(Collectors.toList());
-        timePoints.sort(TimePoint::compareTo);
-    }
-
-    private void updateTimePoints(List<TimePoint> newTimePoints) {
+    private void updateTimePoints(TimePoints newTimePoints) {
         if (timePoints.isEmpty()) {
-            addTimePoints(newTimePoints);
+            timePoints.add(newTimePoints);
         }
         else {
-            mergeTimePoints(newTimePoints);
+            timePoints.merge(newTimePoints);
         }
     }
 
@@ -61,21 +52,19 @@ public class MainAppData extends Friendship {
     }
 
     public int getBar(TimePoint timePoint) {
-        Comparator<TimePoint> comparator = (TimePoint a, TimePoint b) -> { return a.compareTo(b); };
-        return Collections.binarySearch(timePoints, timePoint, comparator);
+        return timePoints.getIndex(timePoint);
     }
 
     public int getNearestBar(TimePoint timePoint) {
-        int bar = getBar(timePoint);
-        return (bar >= 0) ? bar : -(bar + 1);
+        return timePoints.getNearestIndex(timePoint);
     }
 
     private boolean isValidBar(int bar) {
-        return (bar >= 0) && (bar < timePoints.size());
+        return timePoints.isValidIndex(bar);
     }
 
     public Stream<TimePoint> getTimePoints(final TimePoint startTime, final TimePoint endTime) {
-        return timePoints.stream().filter(time -> time.isGreaterOrEqual(startTime) && time.isLessOrEqual(endTime));
+        return timePoints.getSelection(startTime, endTime);
     }
 
     public Collection<DataSet> getDataSets() {

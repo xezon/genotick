@@ -2,6 +2,7 @@ package com.alphatica.genotick.data;
 
 import com.alphatica.genotick.genotick.RobotDataManager;
 import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.timepoint.TimePoints;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class DataSet {
     private final DataSetName name;
-    private final List<TimePoint> timePoints;
+    private final TimePoints timePoints;
     private final List<double[]> ohlcColumnsOfData;
 
     public DataSet(List<Number[]> tohlcLines, String fileName) {
@@ -19,7 +20,7 @@ public class DataSet {
 
     public DataSet(List<Number[]> tohlcLines, DataSetName name) {
         this.name = name;
-        this.timePoints = new ArrayList<TimePoint>(tohlcLines.size());
+        this.timePoints = new TimePoints(tohlcLines.size());
         this.ohlcColumnsOfData = new ArrayList<>();
         final int tohlcColumnCount = tohlcLines.get(0).length;
         createColumnsOfData(tohlcLines.size(), tohlcColumnCount);
@@ -36,7 +37,7 @@ public class DataSet {
         return name;
     }
 
-    List<TimePoint> getTimePoints(MainAppData.Friend friend) {
+    TimePoints getTimePoints(MainAppData.Friend friend) {
         return timePoints;
     }
 
@@ -45,17 +46,15 @@ public class DataSet {
     }
 
     public int getBar(TimePoint timePoint) {
-        Comparator<TimePoint> comparator = (TimePoint a, TimePoint b) -> { return a.compareTo(b); };
-        return Collections.binarySearch(timePoints, timePoint, comparator);
+        return timePoints.getIndex(timePoint);
     }
 
     public int getNearestBar(TimePoint timePoint) {
-        int bar = getBar(timePoint);
-        return (bar >= 0) ? bar : -(bar + 1);
+        return timePoints.getNearestIndex(timePoint);
     }
 
     public boolean isValidBar(int bar) {
-        return (bar >= 0) && (bar < timePoints.size());
+        return timePoints.isValidIndex(bar);
     }
 
     private void fillColumnsOfData(int lineNumber, Number[] tohlcLine, int tohlcColumnCount) {
