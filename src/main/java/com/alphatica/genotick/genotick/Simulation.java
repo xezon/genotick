@@ -20,16 +20,12 @@ import com.alphatica.genotick.processor.RobotExecutorFactory;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointExecutorFactory;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
-import com.alphatica.genotick.ui.UserOutput;
 
 public class Simulation {
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
-    private Population population;
 
     @SuppressWarnings("WeakerAccess")
     public Simulation() {
     }
-
 
     public void start(MainSettings mainSettings, MainAppData data) throws IllegalAccessException {
         if(validateSettings(mainSettings)) {
@@ -40,14 +36,10 @@ public class Simulation {
             RobotKiller killer = createRobotKiller(mainSettings);
             Mutator mutator = createMutator(mainSettings);
             RobotBreeder breeder = createRobotBreeder(mainSettings, mutator);
-            population = createPopulation(mainSettings);
+            Population population = createPopulation(mainSettings);
             Engine engine = createEngine(mainSettings, data, killer, breeder, population);
             engine.start();
         }
-    }
-
-    public Population getPopulation() {
-        return population;
     }
 
     private boolean validateSettings(MainSettings settings) {
@@ -56,7 +48,7 @@ public class Simulation {
             return true;
         } catch(IllegalArgumentException ex) {
             ex.printStackTrace();
-            output.errorMessage(ex.getMessage());
+            UserInputOutputFactory.getUserOutput().errorMessage(ex.getMessage());
             return false;
         }
     }
@@ -112,7 +104,7 @@ public class Simulation {
 
     private void logSettings(MainSettings settings) throws IllegalAccessException {
         String settingsString = settings.getString();
-        output.infoMessage(settingsString);
+        UserInputOutputFactory.getUserOutput().infoMessage(settingsString);
     }
 
 }
