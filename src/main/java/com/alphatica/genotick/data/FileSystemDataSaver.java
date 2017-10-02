@@ -13,17 +13,14 @@ public class FileSystemDataSaver implements DataSaver {
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
     
     @Override
-    public boolean saveAll(MainAppData data) {
-        boolean success = true;
+    public void saveAll(MainAppData data) {
         for (DataSet set : data.getDataSets()) {
-            success = save(set) && success;
+            save(set);
         }
-        return success;
     }
 
     @Override
-    public boolean save(DataSet set) {
-        boolean success = false;
+    public void save(DataSet set) {
         final String fileName = set.getName().getPath();
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
             for (int i = 0; i < set.getLinesCount(); ++i) {
@@ -32,13 +29,11 @@ public class FileSystemDataSaver implements DataSaver {
                 bw.write(rowString + "\n");
             }
             output.infoMessage(format("Saved data file '%s' successfully", fileName));
-            success = true;
         }
         catch (IOException e) {
             output.errorMessage(format("Saving data file '%s' failed: %s", fileName, e.getMessage()));
             e.printStackTrace();
         }
-        return success;
     }
     
     private static String makeString(Number[] rowNumbers, String string) {
