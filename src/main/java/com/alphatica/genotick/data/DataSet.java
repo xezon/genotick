@@ -4,30 +4,35 @@ import com.alphatica.genotick.genotick.RobotDataManager;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePoints;
 
+import static com.alphatica.genotick.utility.Assert.gassert;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataSet {
     private final DataSetName name;
     private final TimePoints timePoints;
-    private final List<double[]> ohlcColumnsOfData;
+    private final DataSeries ohlcData;
 
     public DataSet(List<Number[]> tohlcLines, String fileName) {
         this(tohlcLines, new DataSetName(fileName));
     }
 
     public DataSet(List<Number[]> tohlcLines, DataSetName name) {
-        this.name = name;
-        this.timePoints = new TimePoints(tohlcLines.size());
-        this.ohlcColumnsOfData = new ArrayList<>();
+        final int barCount = tohlcLines.size();
+        gassert(barCount > 0);
         final int tohlcColumnCount = tohlcLines.get(0).length;
-        createColumnsOfData(tohlcLines.size(), tohlcColumnCount);
-        int lineNumber = 0;
-        for(Number[] tohlcLine: tohlcLines) {
-            lineNumber++;
+        gassert(tohlcColumnCount > 1);
+        final int ohlcColumnCount = tohlcColumnCount - 1;
+        this.name = name;
+        this.timePoints = new TimePoints(barCount);
+        this.ohlcData = new DataSeries(ohlcColumnCount, barCount);
+        int lineNumber = 1;
+        for (Number[] tohlcLine : tohlcLines) {
             checkNumberOfColumnsInLine(lineNumber, tohlcLine, tohlcColumnCount);
             fillTimePoints(lineNumber, tohlcLine);
-            fillColumnsOfData(lineNumber, tohlcLine, tohlcColumnCount);
+            fillOhlcData(lineNumber, tohlcLine, ohlcColumnCount);
+            lineNumber++;
         }
     }
 
@@ -39,8 +44,8 @@ public class DataSet {
         return timePoints;
     }
 
-    public List<double[]> getOhlcColumnsOfData(RobotDataManager.Friend friend) {
-        return ohlcColumnsOfData;
+    public DataSeries getOhlcData(RobotDataManager.Friend friend) {
+        return ohlcData;
     }
 
     public int getBar(TimePoint timePoint) {
@@ -55,9 +60,11 @@ public class DataSet {
         return timePoints.isValidIndex(bar);
     }
 
-    private void fillColumnsOfData(int lineNumber, Number[] tohlcLine, int tohlcColumnCount) {
-        for(int i = Column.TOHLCV.OPEN; i < tohlcColumnCount; i++)
-            ohlcColumnsOfData.get(i-1)[lineNumber - 1] = tohlcLine[i].doubleValue();
+    private void fillOhlcData(int lineNumber, Number[] tohlcLine, int ohlcColumnCount) {
+        final int bar = lineNumber - 1;
+        for (int column = Column.OHLCV.OPEN; column < ohlcColumnCount; ++column) {
+            ohlcData.set(column, bar, tohlcLine[column+1].doubleValue());
+        }
     }
 
     private void fillTimePoints(int lineNumber, Number[] tohlcLine) {
@@ -67,22 +74,18 @@ public class DataSet {
     }
 
     private void validateTimePoint(int lineNumber, TimePoint timePoint) {
-        // Arrays start indexing from 0, but humans count text lines starting from 1.
-        // New timePoint will be assigned to index = lineNumber -1, so
-        // we have to check what happened two lines ago!
-        if(lineNumber >= 2 &&  timePoint.compareTo(timePoints.get(lineNumber - 2)) <= 0)
-            throw new DataException("Time (first number) is equal or less than previous. Line: " + lineNumber);
+        final int bar = lineNumber - 1;
+        if (bar > 0) {
+            final TimePoint previousTimePoint = timePoints.get(bar - 1);
+            if (timePoint.compareTo(previousTimePoint) <= 0) {
+                throw new DataException("Time (first number) is equal or less than previous. Line: " + lineNumber);
+            }
+        }
     }
 
     private void checkNumberOfColumnsInLine(int lineNumber, Number[] tohlcLine, int tohlcColumnCount) {
-        if(tohlcLine.length != tohlcColumnCount)
+        if (tohlcLine.length != tohlcColumnCount)
             throw new DataException("Invalid amount of columns in line: " + lineNumber);
-    }
-
-    private void createColumnsOfData(int size, int tohlcColumnCount) {
-        for(int i = Column.TOHLCV.OPEN; i < tohlcColumnCount; i++) {
-            ohlcColumnsOfData.add(new double[size]);
-        }
     }
 
     public int getLinesCount() {
@@ -90,10 +93,10 @@ public class DataSet {
     }
 
     public Number[] getLine(int lineNumber) {
-        Number[] tohlcLine = new Number[1 + ohlcColumnsOfData.size()];
+        Number[] tohlcLine = new Number[1 + ohlcData.columnCount()];
         tohlcLine[Column.TOHLCV.TIME] = timePoints.get(lineNumber).getValue();
-        for(int i = Column.TOHLCV.OPEN; i < tohlcLine.length; i++) {
-            tohlcLine[i] = ohlcColumnsOfData.get(i-1)[lineNumber];
+        for (int column = Column.TOHLCV.OPEN; column < tohlcLine.length; ++column) {
+            tohlcLine[column] = ohlcData.get(column, lineNumber);
         }
         return tohlcLine;
     }

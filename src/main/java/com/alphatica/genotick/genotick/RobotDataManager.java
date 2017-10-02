@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.alphatica.genotick.data.Column;
+import com.alphatica.genotick.data.DataSeries;
 import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
@@ -25,7 +25,7 @@ public class RobotDataManager extends Friendship {
         this.updatedRobotDataList = Collections.synchronizedList(new ArrayList<>());
         for (DataSet dataSet : data.getDataSets()) {
             final DataSetName name = dataSet.getName();
-            final List<double[]> emptyLookbackData = new ArrayList<>();
+            final DataSeries emptyLookbackData = new DataSeries(0, 0);
             robotDataList.add(RobotData.create(name, emptyLookbackData));
         }
     }
@@ -41,52 +41,34 @@ public class RobotDataManager extends Friendship {
             final DataSet dataSet = data.getDataSet(name);
             final int bar = dataSet.getBar(timePoint);
             if (bar >= 0) {
-                final List<double[]> ohlcDataSource = dataSet.getOhlcColumnsOfData(befriend);
-                final List<double[]> ohlcLookbackData = robotData.getOhlcLookbackData(befriend);
+                final DataSeries ohlcDataSource = dataSet.getOhlcData(befriend);
+                final DataSeries ohlcLookbackData = robotData.getOhlcLookbackData(befriend);
                 updateLookbackData(ohlcDataSource, ohlcLookbackData, bar);
                 updatedRobotDataList.add(robotData);
             }
         });
     }
-        
+    
     private void updateLookbackData(
-            final List<double[]> ohlcDataSource,
-            final List<double[]> ohlcLookbackData,
+            final DataSeries ohlcDataSource,
+            final DataSeries ohlcLookbackData,
             final int bar) {
-        final int barCount = (bar >= maxBars) ? maxBars : bar + 1;
-        final int allocatedBarCount = getBarCount(ohlcLookbackData);
-        final int columnCount = getColumnCount(ohlcDataSource);
-        final int allocatedColumnCount = getColumnCount(ohlcLookbackData);
-        if ((barCount != allocatedBarCount) || (columnCount != allocatedColumnCount)) {
-            allocateLookbackData(ohlcLookbackData, columnCount, barCount);
+        final int expectedBarCount = (bar >= maxBars) ? maxBars : bar + 1;
+        final int allocatedBarCount = ohlcLookbackData.barCount();
+        final int expectedcolumnCount = ohlcDataSource.columnCount();
+        final int allocatedColumnCount = ohlcLookbackData.columnCount();
+        if ((expectedBarCount != allocatedBarCount) || (expectedcolumnCount != allocatedColumnCount)) {
+            ohlcLookbackData.allocate(expectedcolumnCount, expectedBarCount);
         }
-        fillLookbackData(ohlcDataSource, ohlcLookbackData, bar, barCount);
-    }
-    
-    private static int getColumnCount(final List<double[]> ohlcData) {
-        return ohlcData.size();
-    }
-    
-    private static int getBarCount(final List<double[]> ohlcData) {
-        return !ohlcData.isEmpty() ? ohlcData.get(Column.OHLCV.OPEN).length : 0;
-    }
-    
-    private static void allocateLookbackData(
-            final List<double[]> ohlcLookbackData,
-            final int columnCount,
-            final int barCount) {
-        ohlcLookbackData.clear();
-        for (int i = 0; i < columnCount; ++i) {
-            ohlcLookbackData.add(new double[barCount]);
-        }
+        fillLookbackData(ohlcDataSource, ohlcLookbackData, bar, expectedBarCount);
     }
     
     private static void fillLookbackData(
-            final List<double[]> ohlcDataSource,
-            final List<double[]> ohlcLookbackData,
+            final DataSeries ohlcDataSource,
+            final DataSeries ohlcLookbackData,
             final int bar,
             final int barCount) {
-        final int columnCount = ohlcDataSource.size();
+        final int columnCount = ohlcDataSource.columnCount();
         for (int column = 0; column < columnCount; ++column) {
             final double[] src = ohlcDataSource.get(column);
             final double[] dst = ohlcLookbackData.get(column);
