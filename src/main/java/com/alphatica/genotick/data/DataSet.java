@@ -4,8 +4,6 @@ import com.alphatica.genotick.genotick.RobotDataManager;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePoints;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.List;
 
