@@ -19,11 +19,17 @@ public class UserInputOutputFactory {
     private static final String OUTPUT_OPTION_NONE = "none";
     private static UserOutput userOutput;
 
-    public static UserInput getUserInput(Parameters parameters) {
+    public static UserInput createUserInput(Parameters parameters) {
         final String input = parameters.getAndRemoveValue(INPUT_STRING);
         if (input == null) {
             return tryConsoleInput();
         }
+        else {
+            return createUserInputByOption(input);
+        }
+    }
+    
+    private static UserInput createUserInputByOption(String input) {
         if (input.startsWith(INPUT_OPTION_FILE)) {
             return new FileInput(input);
         }
@@ -62,18 +68,22 @@ public class UserInputOutputFactory {
             userOutput = new ConsoleOutput(outdir);
         }
         else {
-            switch (output) {
-                case OUTPUT_OPTION_CONSOLE: userOutput = new ConsoleOutput(outdir); break;
-                case OUTPUT_OPTION_CSV: userOutput = new CsvOutput(outdir); break;
-                case OUTPUT_OPTION_NONE: userOutput = new NoOutput(outdir); break;
-            }
-            printOptionInfo(OUTPUT_STRING, output,
-                    OUTPUT_OPTION_CONSOLE,
-                    OUTPUT_OPTION_CSV,
-                    OUTPUT_OPTION_NONE);
-            userOutput = null;
+            userOutput = createUserOutputByOption(output, outdir);
         }
         return userOutput;
+    }
+    
+    private static UserOutput createUserOutputByOption(String output, String outdir) throws IOException {
+        switch (output) {
+            case OUTPUT_OPTION_CONSOLE: return new ConsoleOutput(outdir);
+            case OUTPUT_OPTION_CSV: return new CsvOutput(outdir);
+            case OUTPUT_OPTION_NONE: return new NoOutput(outdir);
+        }
+        printOptionInfo(OUTPUT_STRING, output,
+                OUTPUT_OPTION_CONSOLE,
+                OUTPUT_OPTION_CSV,
+                OUTPUT_OPTION_NONE);
+        return null;
     }
     
     public static UserOutput getUserOutput() {

@@ -208,7 +208,7 @@ public class Main {
     }
 
     private static void initUserIO(Parameters parameters) throws IOException {
-        input = UserInputOutputFactory.getUserInput(parameters);
+        input = UserInputOutputFactory.createUserInput(parameters);
         if(input == null) {
             setError(ErrorCode.NO_INPUT);
             return;
