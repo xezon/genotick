@@ -20,7 +20,7 @@ public class DataSet {
         this.name = name;
         this.timePoints = new TimePoint[tohlcLines.size()];
         this.ohlcColumnsOfData = new ArrayList<>();
-        final int tohlcColumnCount = tohlcLines.get(Column.TOHLCV.TIME).length;
+        final int tohlcColumnCount = tohlcLines.get(0).length;
         createColumnsOfData(tohlcLines.size(), tohlcColumnCount);
         int lineNumber = 0;
         for(Number[] tohlcLine: tohlcLines) {
