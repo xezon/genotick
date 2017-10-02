@@ -18,22 +18,57 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static java.lang.String.format;
+
 public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
-    private static final String VERSION = "Genotick version 0.10.7 (copyleft 2017)";
+    private static final String VERSION_STRING = "Genotick version 0.10.7 (copyleft 2017)";
+    private static ErrorCode error = ErrorCode.NO_ERROR;
+    private static boolean canContinue = true;
     private static UserInput input;
     private static UserOutput output;
 
-    public static void main(String... args) throws IOException, IllegalAccessException {
+    public static void main(String[] args) throws IOException, IllegalAccessException {
+        init(args);
+    }
+
+    public static ErrorCode init(String[] args) throws IOException, IllegalAccessException {
         Parameters parameters = new Parameters(args);
-        initHelp(parameters);
-        initVersionRequest(parameters);
-        initShowPopulation(parameters);
-        initShowRobot(parameters);
-        initUserIO(parameters);
-        initReverse(parameters);
-        initYahoo(parameters);
-        initSimulation(parameters);
+        if (canContinue) {
+            initHelp(parameters);
+        }
+        if (canContinue) {
+            initVersionRequest(parameters);
+        }
+        if (canContinue) {
+            initShowPopulation(parameters);
+        }
+        if (canContinue) {
+            initShowRobot(parameters);
+        }
+        if (canContinue) {
+            initUserIO(parameters);
+        }
+        if (canContinue) {
+            initReverse(parameters);
+        }
+        if (canContinue) {
+            initYahoo(parameters);
+        }
+        if (canContinue) {
+            initSimulation(parameters);
+        }
+        onExit();
+        return error;
+    }
+
+    private static void setError(ErrorCode error) {
+        Main.error = error;
+        canContinue = false;
+    }
+
+    private static void onExit() {
+        System.out.println(format("Program finished with error code %s(%d)", error.toString(), error.getValue()));
     }
 
     private static void initShowRobot(Parameters parameters) {
@@ -45,7 +80,7 @@ public class Main {
                 e.printStackTrace();
                 output.errorMessage(e.getMessage());
             }
-            exit(errorCodes.NO_ERROR);
+            setError(ErrorCode.NO_ERROR);
         }
     }
 
@@ -69,7 +104,7 @@ public class Main {
                 e.printStackTrace();
                 output.errorMessage(e.getMessage());
             }
-            exit(errorCodes.NO_ERROR);
+            setError(ErrorCode.NO_ERROR);
         }
     }
 
@@ -133,8 +168,8 @@ public class Main {
 
     private static void initVersionRequest(Parameters parameters) {
         if(parameters.getValue("showVersion") != null) {
-            System.out.println(Main.VERSION);
-            exit(errorCodes.NO_ERROR);
+            System.out.println(Main.VERSION_STRING);
+            setError(ErrorCode.NO_ERROR);
         }
     }
     
@@ -159,55 +194,56 @@ public class Main {
             System.out.println("contact: 		lukasz.wojtow@gmail.com");
             System.out.println("more info: 		genotick.com");
 
-            exit(errorCodes.NO_ERROR);
+            setError(ErrorCode.NO_ERROR);
         }
     }
 
     private static void initYahoo(Parameters parameters) {
         String yahooValue = parameters.getValue("fixYahoo");
-        if(yahooValue == null) {
-            return;
+        if(yahooValue != null) {
+            YahooFixer yahooFixer = new YahooFixer(yahooValue);
+            yahooFixer.fixFiles();
+            setError(ErrorCode.NO_ERROR);
         }
-        YahooFixer yahooFixer = new YahooFixer(yahooValue);
-        yahooFixer.fixFiles();
-        exit(errorCodes.NO_ERROR);
     }
 
     private static void initUserIO(Parameters parameters) throws IOException {
         input = UserInputOutputFactory.getUserInput(parameters);
         if(input == null) {
-            exit(errorCodes.NO_INPUT);
+            setError(ErrorCode.NO_INPUT);
+            return;
         }
         output = UserInputOutputFactory.getUserOutput(parameters);
         if(output == null) {
-            exit(errorCodes.NO_OUTPUT);
+            setError(ErrorCode.NO_OUTPUT);
+            return;
         }
     }
 
     private static void initReverse(Parameters parameters) {
         String dataDirectory = parameters.getValue("reverse");
-        if(dataDirectory == null) {
-            return;
-        }
-        DataLoader loader = new FileSystemDataLoader();
-        DataSaver saver = new FileSystemDataSaver();
-        MainAppData data = loader.loadAll(dataDirectory);
-        for (DataSet loadedSet : data.getDataSets()) {
-            Reversal reversal = new Reversal(loadedSet);
-            if (!reversal.isReversed()) {
-                if (!data.containsDataSet(reversal.getReversedName())) {
-                    DataSet reversedSet = reversal.getReversedDataSet();
-                    saver.save(reversedSet);
+        if(dataDirectory != null) {
+            DataLoader loader = new FileSystemDataLoader();
+            DataSaver saver = new FileSystemDataSaver();
+            MainAppData data = loader.loadAll(dataDirectory);
+            for (DataSet loadedSet : data.getDataSets()) {
+                Reversal reversal = new Reversal(loadedSet);
+                if (!reversal.isReversed()) {
+                    if (!data.containsDataSet(reversal.getReversedName())) {
+                        DataSet reversedSet = reversal.getReversedDataSet();
+                        saver.save(reversedSet);
+                    }
                 }
             }
+            setError(ErrorCode.NO_ERROR);
         }
-        exit(errorCodes.NO_ERROR);
     }
 
     private static void initSimulation(Parameters parameters) throws IllegalAccessException {
         if(!parameters.allConsumed()) {
             output.errorMessage("Not all arguments processed: " + parameters.getUnconsumed());
-            exit(errorCodes.UNKNOWN_ARGUMENT);
+            setError(ErrorCode.UNKNOWN_ARGUMENT);
+            return;
         }
         Simulation simulation = new Simulation();
         MainSettings settings = input.getSettings();
@@ -215,6 +251,7 @@ public class Main {
         generateMissingData(settings, data);
         settings.validateTimePoints(data);
         simulation.start(settings, data);
+        setError(ErrorCode.NO_ERROR);
     }
     
     private static void generateMissingData(MainSettings settings, MainAppData data) {
@@ -230,9 +267,4 @@ public class Main {
             }
         }
     }
-
-    private static void exit(errorCodes code) {
-        System.exit(code.getValue());
-    }
 }
-

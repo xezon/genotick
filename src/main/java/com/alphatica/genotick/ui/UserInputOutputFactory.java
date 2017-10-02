@@ -11,6 +11,7 @@ public class UserInputOutputFactory {
     private static final String INPUT_OPTION_DEFAULT = "default";
     private static final String INPUT_OPTION_RANDOM = "random";
     private static final String INPUT_OPTION_CONSOLE = "console";
+    private static final String INPUT_OPTION_EXTERNAL = "external";
     private static final String OUTPUT_STRING = "output";
     private static final String OUTDIR_STRING = "outdir";
     private static final String OUTPUT_OPTION_CSV = "csv";
@@ -27,6 +28,7 @@ public class UserInputOutputFactory {
             case INPUT_OPTION_DEFAULT: return new DefaultInputs();
             case INPUT_OPTION_RANDOM: return new RandomParametersInput();
             case INPUT_OPTION_CONSOLE: return tryConsoleInput();
+            case INPUT_OPTION_EXTERNAL: return new ExternalInput();
         }
         System.out.println(format("'%s=%s' is not a valid option.", INPUT_STRING, input));
         System.out.println("Options are:");

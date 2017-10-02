@@ -1,7 +1,7 @@
 package com.alphatica.genotick.genotick;
 
 
-enum errorCodes {
+enum ErrorCode {
     NO_ERROR(0),
     NO_INPUT(1),
     NO_OUTPUT(2),
@@ -9,7 +9,7 @@ enum errorCodes {
 
     private final int code;
 
-    errorCodes(int code) {
+    ErrorCode(int code) {
         this.code = code;
     }
 
