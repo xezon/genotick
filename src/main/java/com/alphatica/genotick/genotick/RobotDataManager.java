@@ -25,7 +25,7 @@ public class RobotDataManager extends Friendship {
         this.updatedRobotDataList = Collections.synchronizedList(new ArrayList<>());
         for (DataSet dataSet : data.getDataSets()) {
             final DataSetName name = dataSet.getName();
-            final DataSeries emptyLookbackData = new DataSeries(0, 0);
+            final DataSeries emptyLookbackData = new DataSeries(true);
             robotDataList.add(RobotData.create(name, emptyLookbackData));
         }
     }
@@ -43,38 +43,9 @@ public class RobotDataManager extends Friendship {
             if (bar >= 0) {
                 final DataSeries ohlcDataSource = dataSet.getOhlcData(befriend);
                 final DataSeries ohlcLookbackData = robotData.getOhlcLookbackData(befriend);
-                updateLookbackData(ohlcDataSource, ohlcLookbackData, bar);
+                ohlcLookbackData.copySection(ohlcDataSource, bar, maxBars);
                 updatedRobotDataList.add(robotData);
             }
         });
     }
-    
-    private void updateLookbackData(
-            final DataSeries ohlcDataSource,
-            final DataSeries ohlcLookbackData,
-            final int bar) {
-        final int expectedBarCount = (bar > maxBars) ? maxBars : bar;
-        final int allocatedBarCount = ohlcLookbackData.barCount();
-        final int expectedcolumnCount = ohlcDataSource.columnCount();
-        final int allocatedColumnCount = ohlcLookbackData.columnCount();
-        if ((expectedBarCount != allocatedBarCount) || (expectedcolumnCount != allocatedColumnCount)) {
-            ohlcLookbackData.allocate(expectedcolumnCount, expectedBarCount);
-        }
-        fillLookbackData(ohlcDataSource, ohlcLookbackData, bar, expectedBarCount);
-    }
-    
-    private static void fillLookbackData(
-            final DataSeries ohlcDataSource,
-            final DataSeries ohlcLookbackData,
-            final int bar,
-            final int barCount) {
-        final int columnCount = ohlcDataSource.columnCount();
-        for (int column = 0; column < columnCount; ++column) {
-            final double[] src = ohlcDataSource.get(column);
-            final double[] dst = ohlcLookbackData.get(column);
-            for (int b = 0; b < barCount; ++b) {
-                dst[b] = src[bar - b];
-            }
-        }
-    } 
 }

@@ -26,7 +26,7 @@ public class DataSet {
         final int ohlcColumnCount = tohlcColumnCount - 1;
         this.name = name;
         this.timePoints = new TimePoints(barCount);
-        this.ohlcData = new DataSeries(ohlcColumnCount, barCount);
+        this.ohlcData = new DataSeries(ohlcColumnCount, barCount, false);
         int lineNumber = 1;
         for (Number[] tohlcLine : tohlcLines) {
             checkNumberOfColumnsInLine(lineNumber, tohlcLine, tohlcColumnCount);
