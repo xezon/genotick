@@ -17,21 +17,12 @@ public class MainAppData extends Friendship {
 
     public MainAppData() {
         sets = new HashMap<>();
-        timePoints = new TimePoints();
+        timePoints = new TimePoints(false);
     }
 
     public void addDataSet(DataSet set) {
         sets.put(set.getName(), set);
-        updateTimePoints(set.getTimePoints(befriend));
-    }
-
-    private void updateTimePoints(TimePoints newTimePoints) {
-        if (timePoints.isEmpty()) {
-            timePoints.add(newTimePoints);
-        }
-        else {
-            timePoints.merge(newTimePoints);
-        }
+        timePoints.merge(set.getTimePoints(befriend));
     }
 
     public TimePoint getFirstTimePoint() {

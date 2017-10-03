@@ -25,15 +25,17 @@ public class DataSet {
         gassert(tohlcColumnCount > 1);
         final int ohlcColumnCount = tohlcColumnCount - 1;
         this.name = name;
-        this.timePoints = new TimePoints(barCount);
+        this.timePoints = new TimePoints(barCount, false);
         this.ohlcData = new DataSeries(ohlcColumnCount, barCount, false);
-        int lineNumber = 1;
+        int lineNumber = 0;
         for (Number[] tohlcLine : tohlcLines) {
-            checkNumberOfColumnsInLine(lineNumber, tohlcLine, tohlcColumnCount);
-            fillTimePoints(lineNumber, tohlcLine);
-            fillOhlcData(lineNumber, tohlcLine, ohlcColumnCount);
+            int bar = lineNumber;
             lineNumber++;
+            checkNumberOfColumnsInLine(lineNumber, tohlcLine, tohlcColumnCount);
+            fillTimePoints(bar, tohlcLine);
+            fillOhlcData(bar, tohlcLine, ohlcColumnCount);
         }
+        timePoints.verifyOrder();
     }
 
     public DataSetName getName() {
@@ -60,27 +62,15 @@ public class DataSet {
         return timePoints.isValidIndex(bar);
     }
 
-    private void fillOhlcData(int lineNumber, Number[] tohlcLine, int ohlcColumnCount) {
-        final int bar = lineNumber - 1;
+    private void fillOhlcData(int bar, Number[] tohlcLine, int ohlcColumnCount) {
         for (int column = Column.OHLCV.OPEN; column < ohlcColumnCount; ++column) {
             ohlcData.set(column, bar, tohlcLine[column+1].doubleValue());
         }
     }
 
-    private void fillTimePoints(int lineNumber, Number[] tohlcLine) {
-        TimePoint timePoint = new TimePoint(tohlcLine[Column.TOHLCV.TIME].longValue());
-        validateTimePoint(lineNumber, timePoint);
-        timePoints.add(timePoint);
-    }
-
-    private void validateTimePoint(int lineNumber, TimePoint timePoint) {
-        final int bar = lineNumber - 1;
-        if (bar > 0) {
-            final TimePoint previousTimePoint = timePoints.get(bar - 1);
-            if (timePoint.compareTo(previousTimePoint) <= 0) {
-                throw new DataException("Time (first number) is equal or less than previous. Line: " + lineNumber);
-            }
-        }
+    private void fillTimePoints(int bar, Number[] tohlcLine) {
+        final long timeValue = tohlcLine[Column.TOHLCV.TIME].longValue();
+        timePoints.set(bar, new TimePoint(timeValue));
     }
 
     private void checkNumberOfColumnsInLine(int lineNumber, Number[] tohlcLine, int tohlcColumnCount) {
