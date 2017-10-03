@@ -3,33 +3,30 @@ package com.alphatica.genotick.timepoint;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.alphatica.genotick.data.DataException;
 
 public class TimePoints {
-    private List<TimePoint> timePoints;
-    private Comparator<TimePoint> comparator;
-    private boolean firstTimeIsNewest;
+    private final ArrayList<TimePoint> timePoints;
+    private final Comparator<TimePoint> comparator;
+    private final boolean firstTimeIsNewest;
     
     public TimePoints(boolean firstTimeIsNewest) {
-        init(100, firstTimeIsNewest);
+        this(100, firstTimeIsNewest, false);
     }
     
     public TimePoints(int size, boolean firstTimeIsNewest) {
-        init(size, firstTimeIsNewest);
-        allocate(size);
+        this(size, firstTimeIsNewest, true);
     }
     
     public TimePoints(TimePoints other) {
-        this.firstTimeIsNewest = other.firstTimeIsNewest;
+        this(other.size(), other.firstTimeIsNewest, true);
         copy(other);
     }
     
     public TimePoints(TimePoints other, boolean firstTimeIsNewest) {
-        this.firstTimeIsNewest = firstTimeIsNewest;
+        this(other.size(), firstTimeIsNewest, true);
         copy(other);
     }
     
@@ -61,8 +58,8 @@ public class TimePoints {
     
     public void merge(TimePoints other) {
         add(other);
-        timePoints = timePoints.stream().distinct().collect(Collectors.toList());
         timePoints.sort(comparator);
+        removeDuplicates();
     }
     
     public void set(int index, TimePoint timePoint) {
@@ -116,13 +113,17 @@ public class TimePoints {
         }
     }
     
-    private void init(int capacity, boolean firstTimeIsNewest) {
+    private TimePoints(int capacity, boolean firstTimeIsNewest, boolean resize) {
         this.timePoints = new ArrayList<TimePoint>(capacity);
         this.comparator = firstTimeIsNewest ? Collections.reverseOrder(TimePoint::compareTo) : TimePoint::compareTo;
         this.firstTimeIsNewest = firstTimeIsNewest;
+        if (resize) {
+            resize(capacity);
+        }
     }
     
-    private void allocate(int size) {
+    private void resize(int size) {
+        timePoints.ensureCapacity(size);
         while (timePoints.size() > size) {
             timePoints.remove(timePoints.size() - 1);
         }
@@ -131,9 +132,9 @@ public class TimePoints {
         }
     }
     
-    private void allocateIfNecessary(int expectedSize) {
+    private void resizeIfNecessary(int expectedSize) {
         if (size() != expectedSize) {
-            allocate(expectedSize);
+            resize(expectedSize);
         }
     }
     
@@ -159,12 +160,12 @@ public class TimePoints {
     }
     
     private void copyStraight(TimePoints other) {
-        allocateIfNecessary(other.size());
+        resizeIfNecessary(other.size());
         copyStraight(0, other);
     }
     
     private void copyReversed(TimePoints other) {
-        allocateIfNecessary(other.size());
+        resizeIfNecessary(other.size());
         copyReversed(0, other);
     }
     
@@ -172,7 +173,7 @@ public class TimePoints {
         final int thisSize = size();
         final int otherSize = other.size();
         final int expectedSize = thisSize + otherSize;
-        allocateIfNecessary(expectedSize);
+        resizeIfNecessary(expectedSize);
         if (firstTimeIsNewest) {
             moveRight(thisSize, otherSize);
             copyStraight(0, other);
@@ -186,13 +187,23 @@ public class TimePoints {
         final int thisSize = size();
         final int otherSize = other.size();
         final int expectedSize = thisSize + otherSize;
-        allocateIfNecessary(expectedSize);
+        resizeIfNecessary(expectedSize);
         if (firstTimeIsNewest) {
             moveRight(thisSize, otherSize);
             copyReversed(0, other);
         }
         else {
             copyReversed(thisSize, other);
+        }
+    }
+    
+    private void removeDuplicates() {
+        for (int i = size()-1; i > 0; --i) {
+            TimePoint a = timePoints.get(i);
+            TimePoint b = timePoints.get(i-1);
+            if (a.equals(b)) {
+                timePoints.remove(i);
+            }
         }
     }
 }
