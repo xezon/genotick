@@ -23,7 +23,8 @@ import static java.lang.String.format;
 public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
     private static final String VERSION_STRING = "Genotick version 0.10.7 (copyleft 2017)";
-    private static ErrorCode error = ErrorCode.CONTINUE;
+    private static ErrorCode error = ErrorCode.NO_ERROR;
+    private static boolean canContinue = true;
     private static UserInput input;
     private static UserOutput output;
 
@@ -33,40 +34,37 @@ public class Main {
 
     public static ErrorCode init(String[] args) throws IOException, IllegalAccessException {
         Parameters parameters = new Parameters(args);
-        if (canContinue()) {
+        if (canContinue) {
             initHelp(parameters);
         }
-        if (canContinue()) {
+        if (canContinue) {
             initVersionRequest(parameters);
         }
-        if (canContinue()) {
+        if (canContinue) {
             initShowPopulation(parameters);
         }
-        if (canContinue()) {
+        if (canContinue) {
             initShowRobot(parameters);
         }
-        if (canContinue()) {
+        if (canContinue) {
             initUserIO(parameters);
         }
-        if (canContinue()) {
+        if (canContinue) {
             initReverse(parameters);
         }
-        if (canContinue()) {
+        if (canContinue) {
             initYahoo(parameters);
         }
-        if (canContinue()) {
+        if (canContinue) {
             initSimulation(parameters);
         }
         onExit();
         return error;
     }
 
-    private static void exit(ErrorCode error) {
+    private static void setError(ErrorCode error) {
         Main.error = error;
-    }
-
-    private static boolean canContinue() {
-        return (error == ErrorCode.CONTINUE);
+        canContinue = false;
     }
 
     private static void onExit() {
@@ -82,7 +80,7 @@ public class Main {
                 e.printStackTrace();
                 output.errorMessage(e.getMessage());
             }
-            exit(ErrorCode.NO_ERROR);
+            setError(ErrorCode.NO_ERROR);
         }
     }
 
@@ -106,7 +104,7 @@ public class Main {
                 e.printStackTrace();
                 output.errorMessage(e.getMessage());
             }
-            exit(ErrorCode.NO_ERROR);
+            setError(ErrorCode.NO_ERROR);
         }
     }
 
@@ -171,7 +169,7 @@ public class Main {
     private static void initVersionRequest(Parameters parameters) {
         if(parameters.getValue("showVersion") != null) {
             System.out.println(Main.VERSION_STRING);
-            exit(ErrorCode.NO_ERROR);
+            setError(ErrorCode.NO_ERROR);
         }
     }
     
@@ -196,7 +194,7 @@ public class Main {
             System.out.println("contact: 		lukasz.wojtow@gmail.com");
             System.out.println("more info: 		genotick.com");
 
-            exit(ErrorCode.NO_ERROR);
+            setError(ErrorCode.NO_ERROR);
         }
     }
 
@@ -205,19 +203,19 @@ public class Main {
         if(yahooValue != null) {
             YahooFixer yahooFixer = new YahooFixer(yahooValue);
             yahooFixer.fixFiles();
-            exit(ErrorCode.NO_ERROR);
+            setError(ErrorCode.NO_ERROR);
         }
     }
 
     private static void initUserIO(Parameters parameters) throws IOException {
-        input = UserInputOutputFactory.getUserInput(parameters);
+        input = UserInputOutputFactory.createUserInput(parameters);
         if(input == null) {
-            exit(ErrorCode.NO_INPUT);
+            setError(ErrorCode.NO_INPUT);
             return;
         }
-        output = UserInputOutputFactory.getUserOutput(parameters);
+        output = UserInputOutputFactory.createUserOutput(parameters);
         if(output == null) {
-            exit(ErrorCode.NO_OUTPUT);
+            setError(ErrorCode.NO_OUTPUT);
             return;
         }
     }
@@ -237,14 +235,14 @@ public class Main {
                     }
                 }
             }
-            exit(ErrorCode.NO_ERROR);
+            setError(ErrorCode.NO_ERROR);
         }
     }
 
     private static void initSimulation(Parameters parameters) throws IllegalAccessException {
         if(!parameters.allConsumed()) {
             output.errorMessage("Not all arguments processed: " + parameters.getUnconsumed());
-            exit(ErrorCode.UNKNOWN_ARGUMENT);
+            setError(ErrorCode.UNKNOWN_ARGUMENT);
             return;
         }
         Simulation simulation = new Simulation();
@@ -253,7 +251,7 @@ public class Main {
         generateMissingData(settings, data);
         settings.validateTimePoints(data);
         simulation.start(settings, data);
-        exit(ErrorCode.NO_ERROR);
+        setError(ErrorCode.NO_ERROR);
     }
     
     private static void generateMissingData(MainSettings settings, MainAppData data) {
