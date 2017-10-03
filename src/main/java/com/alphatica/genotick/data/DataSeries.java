@@ -120,7 +120,7 @@ public class DataSeries {
     
     private void copyReversedSection(DataSeries other, int firstBar, int maxBars) {
         final int expectedColumnCount = other.columnCount();
-        final int expectedBarCount = (firstBar > maxBars) ? maxBars : firstBar;
+        final int expectedBarCount = (firstBar >= maxBars) ? maxBars : firstBar + 1;
         allocateIfNecessary(expectedColumnCount, expectedBarCount);
         for (int column = 0; column < expectedColumnCount; ++column) {
             for (int bar = 0; bar < expectedBarCount; ++bar) {
