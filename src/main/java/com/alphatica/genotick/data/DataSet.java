@@ -38,11 +38,13 @@ public class DataSet {
     }
 
     RobotData getRobotData(TimePoint timePoint) {
-        int i = Arrays.binarySearch(timePoints, timePoint);
-        if(i < 0) {
-            return RobotData.createEmptyData(name);
+        int bar = Arrays.binarySearch(timePoints, timePoint);
+        if(bar < 0) {
+            List<double[]> emptyData = new ArrayList<>();
+            emptyData.add(new double[0]);
+            return RobotData.create(emptyData, name);
         } else {
-            return createDataUpToTimePoint(i);
+            return createDataUpToBar(bar);
         }
     }
 
@@ -76,19 +78,19 @@ public class DataSet {
         }
     }
 
-    private RobotData createDataUpToTimePoint(int i) {
+    private RobotData createDataUpToBar(int bar) {
         List<double[]> list = new ArrayList<>();
         for(double[] original: ohlcColumnsOfData) {
-            double[] copy = copyReverseArray(original, i);
+            double[] copy = copyReverseArray(original, bar);
             list.add(copy);
         }
-        return RobotData.createData(list, name);
+        return RobotData.create(list, name);
     }
 
-    private double[] copyReverseArray(double[] original, int i) {
-        double[] array = new double[i+1];
-        for(int k = 0; k <= i; k++)
-            array[k] = original[i-k];
+    private double[] copyReverseArray(double[] original, int bar) {
+        double[] array = new double[bar+1];
+        for(int k = 0; k <= bar; k++)
+            array[k] = original[bar-k];
         return array;
     }
 

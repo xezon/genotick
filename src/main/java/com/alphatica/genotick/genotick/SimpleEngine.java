@@ -22,8 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 
 public class SimpleEngine implements Engine {
     private EngineSettings engineSettings;
@@ -44,10 +42,11 @@ public class SimpleEngine implements Engine {
     public void start() {
         Thread.currentThread().setName("Main engine execution thread");
         initPopulation();
-        final Stream<TimePoint> filteredTimePoints = data.getTimePoints(
-                engineSettings.startTimePoint,
-                engineSettings.endTimePoint);
-        filteredTimePoints.forEach(this::executeTimePoint);
+        final int startBar = data.getBar(engineSettings.startTimePoint);
+        final int endBar = data.getBar(engineSettings.endTimePoint);
+        for (int bar = startBar; bar < endBar; ++bar) {
+            executeBar(bar);
+        }
         if (engineSettings.performTraining) {
             savePopulation();
         }
@@ -88,11 +87,10 @@ public class SimpleEngine implements Engine {
             population.saveToFolder(path);
         }
     }
-
-    // TODO To simplify algorithms consider working with bars instead of time points
     
-    private void executeTimePoint(TimePoint timePoint) {
-        final int bar = data.getBar(timePoint);
+    private void executeBar(final int bar) {
+        final TimePoint timePoint = data.getTimePoint(bar);
+        assert(timePoint != null);
         final List<RobotData> robotDataList = data.createRobotDataList(timePoint);
         if (!robotDataList.isEmpty()) {
             output.reportStartingTimePoint(timePoint);
@@ -113,7 +111,7 @@ public class SimpleEngine implements Engine {
         }
         profitRecorder.onUpdate(bar);
     }
-
+    
     private void updatePredictions(List<RobotInfo> list, Map<RobotName, List<RobotResult>> map) {
         list.parallelStream().forEach(info -> {
             List<RobotResult> results = map.get(info.getName());

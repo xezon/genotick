@@ -4,8 +4,10 @@ import com.alphatica.genotick.genotick.RobotData;
 import com.alphatica.genotick.timepoint.TimePoint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,17 +16,15 @@ import java.util.stream.Stream;
 
 // TODO change nulls to optional
 public class MainAppData {
-
-    private static final int INVALID_BAR = -1;
     
     private final Map<DataSetName, DataSet> sets;
-    private List<TimePoint> timePoints;
     private final Map<TimePoint, Integer> bars;
+    private List<TimePoint> timePoints;
 
     public MainAppData() {
         sets = new HashMap<>();
-        timePoints = new ArrayList<>();
         bars = new HashMap<>();
+        timePoints = new ArrayList<>();
     }
 
     public void addDataSet(DataSet set) {
@@ -79,7 +79,14 @@ public class MainAppData {
 
     public int getBar(TimePoint timePoint) {
         Integer bar = bars.get(timePoint);
-        return (bar != null) ? bar : INVALID_BAR;
+        if (bar == null) {
+            Comparator<TimePoint> comparator = (TimePoint a, TimePoint b) -> { return a.compareTo(b); };
+            bar = Collections.binarySearch(timePoints, timePoint, comparator);
+            if (bar < 0) {
+                bar = -(bar + 1);
+            }
+        }  
+        return bar;
     }
 
     public Stream<TimePoint> getTimePoints(final TimePoint startTime, final TimePoint endTime) {
