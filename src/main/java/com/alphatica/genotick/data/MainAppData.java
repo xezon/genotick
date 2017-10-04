@@ -2,7 +2,6 @@ package com.alphatica.genotick.data;
 
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePoints;
-import com.alphatica.genotick.utility.Friendship;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,7 +9,10 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 // TODO change nulls to optional
-public class MainAppData extends Friendship {
+public class MainAppData {
+    
+    public static final class Friend { private Friend() {} }
+    private static final Friend befriend = new Friend();
     
     private final Map<DataSetName, DataSet> sets;
     private final TimePoints timePoints;

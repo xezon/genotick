@@ -9,10 +9,12 @@ import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.timepoint.TimePoint;
-import com.alphatica.genotick.utility.Friendship;
 
-public class RobotDataManager extends Friendship {
-        
+public class RobotDataManager {
+    
+    public static final class Friend { private Friend() {} }
+    private static final Friend befriend = new Friend();
+    
     private final MainAppData data;
     private final int maxBars;
     private final List<RobotData> robotDataList;
