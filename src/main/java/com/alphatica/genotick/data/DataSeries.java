@@ -1,27 +1,28 @@
 package com.alphatica.genotick.data;
 
+import java.util.ArrayList;
+
 import com.alphatica.genotick.processor.NotEnoughDataException;
 
 public class DataSeries {
-    private double[][] data;
+    private final ArrayList<ArrayList<Double>> data;
     private final boolean firstBarIsNewest;
         
     public DataSeries(boolean firstElementIsNewest) {
-        this(0, 0, firstElementIsNewest);
+        this(5, 100, firstElementIsNewest, false);
     }
     
     public DataSeries(int columnCount, int barCount, boolean firstBarIsNewest) {
-        this.firstBarIsNewest = firstBarIsNewest;
-        resize(columnCount, barCount);
+        this(columnCount, barCount, firstBarIsNewest, true);
     }
     
     public DataSeries(DataSeries other) {
-        this.firstBarIsNewest = other.firstBarIsNewest;
+        this(other.columnCount(), other.barCount(), other.firstBarIsNewest, true);
         copy(other);
     }
     
     public DataSeries(DataSeries other, boolean firstBarIsNewest) {
-        this.firstBarIsNewest = firstBarIsNewest;
+        this(other.columnCount(), other.barCount(), firstBarIsNewest, true);
         copy(other);
     }
     
@@ -61,30 +62,62 @@ public class DataSeries {
     }
     
     public double get(int column, int bar) {
-        if (bar < data[column].length) {
-            return data[column][bar];
+        if (bar < data.get(column).size()) {
+            return data.get(column).get(bar);
         }
         throw new NotEnoughDataException();
     }
     
     public void set(int column, int bar, double value) {
-        data[column][bar] = value;
+        data.get(column).set(bar, value);
     }
     
     public int columnCount() {
-        return data.length;
+        return data.size();
     }
     
     public int barCount() {
-        return (columnCount() > 0) ? data[0].length : 0;
+        return (columnCount() > 0) ? data.get(0).size() : 0;
     }
     
     public boolean firstBarIsNewest() {
         return firstBarIsNewest;
     }
     
+    private DataSeries(int columnCapacity, int barCapacity, boolean firstBarIsNewest, boolean resize) {
+        this.data = new ArrayList<ArrayList<Double>>(columnCapacity);
+        this.firstBarIsNewest = firstBarIsNewest;
+        if (resize) {
+            resize(columnCapacity, barCapacity);
+        }
+    }
+    
+    private void resizeColumns(int columnCount, int barCount) {
+        data.ensureCapacity(columnCount);
+        while (columnCount() > columnCount) {
+            data.remove(columnCount() - 1);
+        }
+        while (columnCount() < columnCount) {
+            data.add(new ArrayList<Double>(barCount));
+        }
+    }
+    
+    private void resizeBars(int columnCount, int barCount) {
+        for (int column = 0; column < columnCount; ++column) {
+            final ArrayList<Double> bars = data.get(column);
+            bars.ensureCapacity(barCount);
+            while (bars.size() > barCount) {
+                bars.remove(bars.size() - 1);
+            }
+            while (bars.size() < barCount) {
+                bars.add(0.0);
+            }
+        }
+    }
+    
     private void resize(int columnCount, int barCount) {
-        data = new double[columnCount][barCount];
+        resizeColumns(columnCount, barCount);
+        resizeBars(columnCount, barCount);
     }
     
     private void resizeIfNecessary(int expectedColumnCount, int expectedBarCount) {
@@ -98,7 +131,8 @@ public class DataSeries {
         final int barCount = other.barCount();
         for (int column = 0; column < columnCount; ++column) {
             for (int fromBar = 0; fromBar < barCount; ++fromBar) {
-                data[column][toBar+fromBar] = other.data[column][fromBar];
+                Double value = other.get(column, fromBar);
+                this.set(column, toBar+fromBar, value);
             }
         }
     }
@@ -108,7 +142,8 @@ public class DataSeries {
         final int barCount = other.barCount();
         for (int column = 0; column < columnCount; ++column) {
             for (int fromBar = 0; fromBar < barCount; ++fromBar) {
-                data[column][toBar+fromBar] = other.data[column][barCount - fromBar - 1];
+                Double value = other.get(column, barCount - fromBar - 1);
+                this.set(column, toBar+fromBar, value);
             }
         }
     }
@@ -117,7 +152,8 @@ public class DataSeries {
         final int columnCount = columnCount();
         for (int column = 0; column < columnCount; ++column) {
             for (int bar = barCount + moveCount - 1; bar >= barCount; --bar) {
-                data[column][bar] = data[column][bar - barCount];
+                Double value = this.get(column, bar - barCount);
+                this.set(column, bar, value);
             }
         }
     }
@@ -143,7 +179,8 @@ public class DataSeries {
         resizeIfNecessary(expectedColumnCount, expectedBarCount);
         for (int column = 0; column < expectedColumnCount; ++column) {
             for (int bar = 0; bar < expectedBarCount; ++bar) {
-                data[column][bar] = other.data[column][firstBar + bar];
+                Double value = other.get(column, firstBar + bar);
+                this.set(column, bar, value);
             }
         }
     }
@@ -154,7 +191,8 @@ public class DataSeries {
         resizeIfNecessary(expectedColumnCount, expectedBarCount);
         for (int column = 0; column < expectedColumnCount; ++column) {
             for (int bar = 0; bar < expectedBarCount; ++bar) {
-                data[column][bar] = other.data[column][firstBar - bar];
+                Double value = other.get(column, firstBar - bar);
+                this.set(column, bar, value);
             }
         }
     }
