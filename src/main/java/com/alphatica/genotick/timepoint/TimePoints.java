@@ -138,17 +138,17 @@ public class TimePoints {
         }
     }
     
-    private void copyStraight(int toIndex, TimePoints other) {
+    private void copyStraight(final int toIndex, final TimePoints other) {
         final int size = other.size();
-        for (int fromIndex = 0; fromIndex < size; ++toIndex, ++fromIndex) {
-            timePoints.set(toIndex, other.get(fromIndex));
+        for (int fromIndex = 0; fromIndex < size; ++fromIndex) {
+            timePoints.set(toIndex+fromIndex, other.get(fromIndex));
         }
     }
     
-    private void copyReversed(int toIndex, TimePoints other) {
+    private void copyReversed(final int toIndex, final TimePoints other) {
         final int size = other.size();
-        for (int fromIndex = 0; fromIndex < size; ++toIndex, ++fromIndex) {
-            timePoints.set(toIndex, other.get(size - fromIndex - 1));
+        for (int fromIndex = 0; fromIndex < size; ++fromIndex) {
+            timePoints.set(toIndex+fromIndex, other.get(size - fromIndex - 1));
         }
     }
     
