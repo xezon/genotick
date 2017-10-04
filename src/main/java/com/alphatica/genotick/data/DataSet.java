@@ -1,7 +1,6 @@
 package com.alphatica.genotick.data;
 
-
-import com.alphatica.genotick.genotick.RobotData;
+import com.alphatica.genotick.genotick.RobotDataManager;
 import com.alphatica.genotick.timepoint.TimePoint;
 
 import java.util.ArrayList;
@@ -9,19 +8,18 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DataSet {
+    private final DataSetName name;
     private final TimePoint[] timePoints;
     private final List<double[]> ohlcColumnsOfData;
-    private final DataSetName name;
 
     public DataSet(List<Number[]> tohlcLines, String fileName) {
         this(tohlcLines, new DataSetName(fileName));
     }
 
     public DataSet(List<Number[]> tohlcLines, DataSetName name) {
+        this.name = name;
         this.timePoints = new TimePoint[tohlcLines.size()];
         this.ohlcColumnsOfData = new ArrayList<>();
-        this.name = name;
-
         final int tohlcColumnCount = tohlcLines.get(Column.TOHLCV.TIME).length;
         createColumnsOfData(tohlcLines.size(), tohlcColumnCount);
         int lineNumber = 0;
@@ -32,22 +30,30 @@ public class DataSet {
             fillColumnsOfData(lineNumber, tohlcLine, tohlcColumnCount);
         }
     }
-    
+
     public DataSetName getName() {
         return name;
     }
 
-    RobotData getRobotData(TimePoint timePoint, int maxBars) {
-        int bar = Arrays.binarySearch(timePoints, timePoint);
-        if(bar < 0) {
-            List<double[]> emptyData = new ArrayList<>();
-            emptyData.add(new double[0]);
-            return RobotData.create(emptyData, name);
-        } else {
-            List<double[]> ohlcLookbackData = createLookbackDataUpToBar(bar, maxBars);
-            return RobotData.create(ohlcLookbackData, name);
+    List<TimePoint> getTimePoints(MainAppData.Friend friend) {
+        return Arrays.asList(this.timePoints);
+    }
 
-        }
+    public List<double[]> getOhlcColumnsOfData(RobotDataManager.Friend friend) {
+        return ohlcColumnsOfData;
+    }
+
+    public int getBar(TimePoint timePoint) {
+        return Arrays.binarySearch(timePoints, timePoint);
+    }
+
+    public int getNearestBar(TimePoint timePoint) {
+        int bar = getBar(timePoint);
+        return (bar >= 0) ? bar : -(bar + 1);
+    }
+
+    public boolean isValidBar(int bar) {
+        return (bar >= 0) && (bar < timePoints.length);
     }
 
     private void fillColumnsOfData(int lineNumber, Number[] tohlcLine, int tohlcColumnCount) {
@@ -80,24 +86,6 @@ public class DataSet {
         }
     }
 
-    private List<double[]> createLookbackDataUpToBar(int bar, int maxBars) {
-        List<double[]> ohlcLookbackData = new ArrayList<>();
-        for(double[] originalData : ohlcColumnsOfData) {
-            double[] lookbackData = copyReverseArray(originalData, bar, maxBars);
-            ohlcLookbackData.add(lookbackData);
-        }
-        return ohlcLookbackData;
-    }
-
-    private double[] copyReverseArray(double[] data, int bar, int maxBars) {
-        int size = (bar > maxBars) ? maxBars : bar;
-        double[] array = new double[size + 1];
-        for(int i = 0; i <= size; ++i) {
-            array[i] = data[bar-i];
-        }
-        return array;
-    }
-
     public int getLinesCount() {
         return timePoints.length;
     }
@@ -127,15 +115,10 @@ public class DataSet {
             return false;
         DataSet dataSet = (DataSet)other;
         return name.equals(dataSet.name);
-
     }
 
     @Override
     public int hashCode() {
         return name.hashCode();
-    }
-
-    List<TimePoint> getTimePoints() {
-        return Arrays.asList(timePoints);
     }
 }

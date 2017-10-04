@@ -1,10 +1,9 @@
 package com.alphatica.genotick.data;
 
-import com.alphatica.genotick.genotick.RobotData;
 import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.utility.Friendship;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // TODO change nulls to optional
-public class MainAppData {
+public class MainAppData extends Friendship {
     
     private final Map<DataSetName, DataSet> sets;
     private final Map<TimePoint, Integer> bars;
@@ -29,7 +28,7 @@ public class MainAppData {
 
     public void addDataSet(DataSet set) {
         sets.put(set.getName(), set);
-        updateTimePoints(set.getTimePoints());
+        updateTimePoints(set.getTimePoints(befriend));
     }
 
     private void updateTimePoints(List<TimePoint> newTimePoints) {
@@ -43,7 +42,7 @@ public class MainAppData {
         }
         updateBars();
     }
-    
+
     private void updateBars() {
         bars.clear();
         for (int bar = 0, size = timePoints.size(); bar < size; ++bar) {
@@ -51,28 +50,14 @@ public class MainAppData {
         }
     }
 
-    public List<RobotData> createRobotDataList(final TimePoint timePoint, int maxBars) {
-        List<RobotData> list = Collections.synchronizedList(new ArrayList<>());
-        sets.entrySet().parallelStream().forEach((Map.Entry<DataSetName, DataSet> entry) -> {
-            RobotData robotData = entry.getValue().getRobotData(timePoint, maxBars);
-            if (!robotData.isEmpty())
-                list.add(robotData);
-        });
-        return list;
-    }
-
     public TimePoint getFirstTimePoint() {
-        if (timePoints.isEmpty())
-            return null;
-        return timePoints.get(0);
+        return !timePoints.isEmpty() ? timePoints.get(0) : null;
     }
 
     public TimePoint getLastTimePoint() {
-        if (timePoints.isEmpty())
-            return null;
-        return timePoints.get(timePoints.size() - 1);
+        return !timePoints.isEmpty() ? timePoints.get(timePoints.size() - 1) : null;
     }
-    
+
     public TimePoint getTimePoint(int bar) {
         return isValidBar(bar) ? timePoints.get(bar) : null;
     }
@@ -82,11 +67,17 @@ public class MainAppData {
         if (bar == null) {
             Comparator<TimePoint> comparator = (TimePoint a, TimePoint b) -> { return a.compareTo(b); };
             bar = Collections.binarySearch(timePoints, timePoint, comparator);
-            if (bar < 0) {
-                bar = -(bar + 1);
-            }
         }  
         return bar;
+    }
+
+    public int getNearestBar(TimePoint timePoint) {
+        int bar = getBar(timePoint);
+        return (bar >= 0) ? bar : -(bar + 1);
+    }
+
+    private boolean isValidBar(int bar) {
+        return (bar >= 0) && (bar < timePoints.size());
     }
 
     public Stream<TimePoint> getTimePoints(final TimePoint startTime, final TimePoint endTime) {
@@ -97,16 +88,15 @@ public class MainAppData {
         return sets.values();
     }
 
-    public boolean containsDataSet(DataSetName name) {
-        return sets.containsKey(name);
+    public DataSet getDataSet(DataSetName name) {
+        return sets.get(name);
     }
 
-    private boolean isValidBar(int bar) {
-        return (bar >= 0) && (bar < timePoints.size());
+    public boolean containsDataSet(DataSetName name) {
+        return sets.containsKey(name);
     }
 
     boolean isEmpty() {
         return sets.isEmpty();
     }
-
 }

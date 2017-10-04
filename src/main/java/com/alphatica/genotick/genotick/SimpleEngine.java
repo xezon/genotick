@@ -16,6 +16,8 @@ import com.alphatica.genotick.timepoint.TimePointResult;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
+import static com.alphatica.genotick.utility.Assert.gassert;
+
 import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -30,6 +32,7 @@ public class SimpleEngine implements Engine {
     private RobotBreeder breeder;
     private Population population;
     private MainAppData data;
+    private RobotDataManager robotDataManager;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
     private final ProfitRecorder profitRecorder = new ProfitRecorder(output);
     private final Account account = new Account(BigDecimal.valueOf(100_000L), output, profitRecorder);
@@ -42,8 +45,8 @@ public class SimpleEngine implements Engine {
     public void start() {
         Thread.currentThread().setName("Main engine execution thread");
         initPopulation();
-        final int startBar = data.getBar(engineSettings.startTimePoint);
-        final int endBar = data.getBar(engineSettings.endTimePoint);
+        final int startBar = data.getNearestBar(engineSettings.startTimePoint);
+        final int endBar = data.getNearestBar(engineSettings.endTimePoint);
         for (int bar = startBar; bar < endBar; ++bar) {
             executeBar(bar);
         }
@@ -67,6 +70,7 @@ public class SimpleEngine implements Engine {
         this.breeder = breeder;
         this.population = population;
         this.data = data;
+        this.robotDataManager = new RobotDataManager(data, engineSettings.maximumDataOffset);
     }
 
     private String getSavedPopulationDirName() {
@@ -90,8 +94,9 @@ public class SimpleEngine implements Engine {
     
     private void executeBar(final int bar) {
         final TimePoint timePoint = data.getTimePoint(bar);
-        assert(timePoint != null);
-        final List<RobotData> robotDataList = data.createRobotDataList(timePoint, engineSettings.maximumDataOffset);
+        gassert(timePoint != null);
+        robotDataManager.update(timePoint);
+        final List<RobotData> robotDataList = robotDataManager.getUpdatedRobotDataList();
         if (!robotDataList.isEmpty()) {
             output.reportStartingTimePoint(timePoint);
             updateAccount(robotDataList);
