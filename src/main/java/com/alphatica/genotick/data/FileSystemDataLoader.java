@@ -31,7 +31,7 @@ public class FileSystemDataLoader implements DataLoader {
         }
         for (String fileName : names) {
             DataSet dataSet = load(fileName);
-            data.addDataSet(dataSet);
+            data.put(dataSet);
         }
         if (data.isEmpty()) {
             throw new DataException("No files to read!");
@@ -47,7 +47,7 @@ public class FileSystemDataLoader implements DataLoader {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             List<Number []> lines = DataUtils.createLineList(br);
             output.infoMessage(format("Read '%s' lines", lines.size()));
-            return new DataSet(lines, fileName);
+            return new DataSet(fileName, lines);
         } catch (IOException  | DataException e) {
             DataException de = new DataException(format("Unable to process file '%s'", fileName));
             de.initCause(e);

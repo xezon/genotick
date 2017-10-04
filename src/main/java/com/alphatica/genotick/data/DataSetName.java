@@ -4,11 +4,14 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.Serializable;
 
-public class DataSetName implements Serializable{
+import static com.alphatica.genotick.utility.Assert.gassert;
+
+public class DataSetName implements Serializable {
     private static final long serialVersionUID = -7504682119928833833L;
     private final String path;
     private final String name;
     public DataSetName(String path) {
+        gassert(!path.isEmpty());
         this.path = path;
         this.name = FilenameUtils.getBaseName(path);
     }
@@ -27,13 +30,12 @@ public class DataSetName implements Serializable{
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(Object other) {
+        if (this == other)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (other == null || getClass() != other.getClass())
             return false;
-        DataSetName that = (DataSetName) o;
-        return path.equals(that.path);
+        return path.equals(((DataSetName)other).path);
     }
 
     @Override

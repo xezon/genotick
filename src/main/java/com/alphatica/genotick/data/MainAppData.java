@@ -19,10 +19,37 @@ public class MainAppData extends Friendship {
         sets = new HashMap<>();
         timePoints = new TimePoints(false);
     }
+    
+    public void put(DataSet set) {
+        this.sets.put(set.getName(), set);
+        this.timePoints.merge(set.getTimePoints(befriend));
+    }
+    
+    public void put(DataSetName name, TimePoints timePoints, DataSeries ohlcData) {
+        this.sets.put(name, new DataSet(name, timePoints, ohlcData));
+        this.timePoints.merge(timePoints);
+    }
 
-    public void addDataSet(DataSet set) {
-        sets.put(set.getName(), set);
-        timePoints.merge(set.getTimePoints(befriend));
+    public void add(DataSet set) {
+        final DataSet existingSet = sets.get(set.getName());
+        if (existingSet == null) {
+            put(set);
+        }
+        else {
+            existingSet.add(set);
+            this.timePoints.merge(set.getTimePoints(befriend));
+        }
+    }
+    
+    public void add(DataSetName name, TimePoints timePoints, DataSeries ohlcData) {
+        final DataSet existingSet = sets.get(name);
+        if (existingSet == null) {
+            put(name, timePoints, ohlcData);
+        }
+        else {
+            existingSet.add(timePoints, ohlcData);
+            this.timePoints.merge(timePoints);
+        }
     }
 
     public TimePoint getFirstTimePoint() {

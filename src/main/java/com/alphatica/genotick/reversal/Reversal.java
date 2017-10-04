@@ -36,7 +36,7 @@ public class Reversal {
     public boolean addReversedDataSetTo(MainAppData data) {
         if (!isReversed) {
             if (!data.containsDataSet(reversedName)) {
-                data.addDataSet(getReversedDataSet());
+                data.put(getReversedDataSet());
                 return true;
             }
         }
@@ -47,7 +47,7 @@ public class Reversal {
         if (null == reversedSet) {
             final List<Number[]> original = originalSet.getAllLines();
             final List<Number[]> reversed = reverseList(original);
-            reversedSet = new DataSet(reversed, reversedName);
+            reversedSet = new DataSet(reversedName, reversed);
         }
         return reversedSet;
     }
