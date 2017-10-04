@@ -36,12 +36,12 @@ public class RobotData {
         return ohlcLookbackData.size();
     }
 
-    private int getAssetDataLength(int column) {
+    private int getLookbackDataLength(int column) {
         return ohlcLookbackData.get(column).length;
     }
 
     public boolean isEmpty() {
-        return getAssetDataLength(Column.OHLCV.OPEN) == 0;
+        return getLookbackDataLength(Column.OHLCV.OPEN) == 0;
     }
     
     double getLastPriceOpen() {
@@ -53,7 +53,7 @@ public class RobotData {
     }
 
     private double calculateLastPriceChange() {
-        if (getAssetDataLength(Column.OHLCV.OPEN) < 2) {
+        if (getLookbackDataLength(Column.OHLCV.OPEN) < 2) {
             return 0.0;
         }
         final double currentOpen = ohlcLookbackData.get(Column.OHLCV.OPEN)[0];

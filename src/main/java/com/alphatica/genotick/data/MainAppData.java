@@ -51,10 +51,10 @@ public class MainAppData {
         }
     }
 
-    public List<RobotData> createRobotDataList(final TimePoint timePoint) {
+    public List<RobotData> createRobotDataList(final TimePoint timePoint, int maxBars) {
         List<RobotData> list = Collections.synchronizedList(new ArrayList<>());
         sets.entrySet().parallelStream().forEach((Map.Entry<DataSetName, DataSet> entry) -> {
-            RobotData robotData = entry.getValue().getRobotData(timePoint);
+            RobotData robotData = entry.getValue().getRobotData(timePoint, maxBars);
             if (!robotData.isEmpty())
                 list.add(robotData);
         });

@@ -37,14 +37,16 @@ public class DataSet {
         return name;
     }
 
-    RobotData getRobotData(TimePoint timePoint) {
+    RobotData getRobotData(TimePoint timePoint, int maxBars) {
         int bar = Arrays.binarySearch(timePoints, timePoint);
         if(bar < 0) {
             List<double[]> emptyData = new ArrayList<>();
             emptyData.add(new double[0]);
             return RobotData.create(emptyData, name);
         } else {
-            return createDataUpToBar(bar);
+            List<double[]> ohlcLookbackData = createLookbackDataUpToBar(bar, maxBars);
+            return RobotData.create(ohlcLookbackData, name);
+
         }
     }
 
@@ -78,19 +80,21 @@ public class DataSet {
         }
     }
 
-    private RobotData createDataUpToBar(int bar) {
-        List<double[]> list = new ArrayList<>();
-        for(double[] original: ohlcColumnsOfData) {
-            double[] copy = copyReverseArray(original, bar);
-            list.add(copy);
+    private List<double[]> createLookbackDataUpToBar(int bar, int maxBars) {
+        List<double[]> ohlcLookbackData = new ArrayList<>();
+        for(double[] originalData : ohlcColumnsOfData) {
+            double[] lookbackData = copyReverseArray(originalData, bar, maxBars);
+            ohlcLookbackData.add(lookbackData);
         }
-        return RobotData.create(list, name);
+        return ohlcLookbackData;
     }
 
-    private double[] copyReverseArray(double[] original, int bar) {
-        double[] array = new double[bar+1];
-        for(int k = 0; k <= bar; k++)
-            array[k] = original[bar-k];
+    private double[] copyReverseArray(double[] data, int bar, int maxBars) {
+        int size = (bar > maxBars) ? maxBars : bar;
+        double[] array = new double[size + 1];
+        for(int i = 0; i <= size; ++i) {
+            array[i] = data[bar-i];
+        }
         return array;
     }
 

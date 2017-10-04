@@ -6,6 +6,7 @@ class EngineSettings {
     public TimePoint startTimePoint;
     public TimePoint endTimePoint;
     public boolean performTraining;
-    public double resultThreshold;
+    public int maximumDataOffset;
     public boolean requireSymmetricalRobots;
+    public double resultThreshold;
 }

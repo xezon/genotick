@@ -136,8 +136,9 @@ public class Simulation {
         engineSettings.startTimePoint = settings.startTimePoint;
         engineSettings.endTimePoint = settings.endTimePoint;
         engineSettings.performTraining = settings.performTraining;
-        engineSettings.resultThreshold = settings.resultThreshold;
+        engineSettings.maximumDataOffset = settings.maximumDataOffset;
         engineSettings.requireSymmetricalRobots = settings.requireSymmetricalRobots;
+        engineSettings.resultThreshold = settings.resultThreshold;
         return engineSettings;
     }
 
