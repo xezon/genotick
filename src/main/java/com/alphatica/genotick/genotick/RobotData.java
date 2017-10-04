@@ -21,10 +21,6 @@ public class RobotData {
         return name;
     }
 
-    public DataSeries getOhlcLookbackData(RobotDataManager.Friend friend) {
-        return ohlcLookbackData;
-    }
-
     public double getPriceData(int column, int offset) {
         return ohlcLookbackData.get(column, offset);
     }

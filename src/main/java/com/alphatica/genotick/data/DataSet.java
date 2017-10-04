@@ -1,6 +1,5 @@
 package com.alphatica.genotick.data;
 
-import com.alphatica.genotick.genotick.RobotDataManager;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePoints;
 
@@ -56,12 +55,12 @@ public class DataSet {
         return name;
     }
 
-    TimePoints getTimePoints(MainAppData.Friend friend) {
-        return timePoints;
+    public void fetchMergedTimePoints(TimePoints timePoints) {
+        timePoints.merge(this.timePoints);
     }
 
-    public DataSeries getOhlcData(RobotDataManager.Friend friend) {
-        return ohlcData;
+    public void fetchOhlcDataSection(DataSeries ohlcData, int bar, int maxBars) {
+        ohlcData.copySection(this.ohlcData, bar, maxBars);
     }
 
     public int getBar(TimePoint timePoint) {

@@ -12,12 +12,19 @@ import com.alphatica.genotick.timepoint.TimePoint;
 
 public class RobotDataManager {
     
-    public static final class Friend { private Friend() {} }
-    private static final Friend befriend = new Friend();
+    private class RobotDataContainer {
+        public final DataSeries robotDataSeries;
+        public final RobotData robotData;
+        
+        RobotDataContainer(DataSetName name) {
+            robotDataSeries = new DataSeries(true);
+            robotData = RobotData.create(name, robotDataSeries);
+        }
+    }
     
     private final MainAppData data;
     private final int maxBars;
-    private final List<RobotData> robotDataList;
+    private final List<RobotDataContainer> robotDataList;
     private final List<RobotData> updatedRobotDataList;
 
     RobotDataManager(MainAppData data, int maxBars) {
@@ -26,9 +33,7 @@ public class RobotDataManager {
         this.robotDataList = new ArrayList<>();
         this.updatedRobotDataList = Collections.synchronizedList(new ArrayList<>());
         for (DataSet dataSet : data.getDataSets()) {
-            final DataSetName name = dataSet.getName();
-            final DataSeries emptyLookbackData = new DataSeries(true);
-            robotDataList.add(RobotData.create(name, emptyLookbackData));
+            robotDataList.add(new RobotDataContainer(dataSet.getName()));
         }
     }
     
@@ -38,15 +43,13 @@ public class RobotDataManager {
     
     void update(TimePoint timePoint) {
         updatedRobotDataList.clear();
-        robotDataList.parallelStream().forEach(robotData -> {
-            final DataSetName name = robotData.getName();
+        robotDataList.parallelStream().forEach(container -> {
+            final DataSetName name = container.robotData.getName();
             final DataSet dataSet = data.getDataSet(name);
             final int bar = dataSet.getBar(timePoint);
             if (bar >= 0) {
-                final DataSeries ohlcDataSource = dataSet.getOhlcData(befriend);
-                final DataSeries ohlcLookbackData = robotData.getOhlcLookbackData(befriend);
-                ohlcLookbackData.copySection(ohlcDataSource, bar, maxBars);
-                updatedRobotDataList.add(robotData);
+                dataSet.fetchOhlcDataSection(container.robotDataSeries, bar, maxBars);
+                updatedRobotDataList.add(container.robotData);
             }
         });
     }

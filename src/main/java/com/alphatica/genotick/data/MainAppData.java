@@ -11,9 +11,6 @@ import java.util.stream.Stream;
 // TODO change nulls to optional
 public class MainAppData {
     
-    public static final class Friend { private Friend() {} }
-    private static final Friend befriend = new Friend();
-    
     private final Map<DataSetName, DataSet> sets;
     private final TimePoints timePoints;
 
@@ -24,7 +21,7 @@ public class MainAppData {
     
     public void put(DataSet set) {
         this.sets.put(set.getName(), set);
-        this.timePoints.merge(set.getTimePoints(befriend));
+        set.fetchMergedTimePoints(this.timePoints);
     }
     
     public void put(DataSetName name, TimePoints timePoints, DataSeries ohlcData) {
@@ -39,7 +36,7 @@ public class MainAppData {
         }
         else {
             existingSet.add(set);
-            this.timePoints.merge(set.getTimePoints(befriend));
+            set.fetchMergedTimePoints(this.timePoints);
         }
     }
     
