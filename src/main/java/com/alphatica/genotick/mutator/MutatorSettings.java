@@ -1,29 +1,15 @@
 package com.alphatica.genotick.mutator;
 
+import com.alphatica.genotick.genotick.MainSettings;
+
 public class MutatorSettings {
-    private final double instructionMutationProbability;
-    private final double newInstructionProbability;
-    private final double skipInstructionProbability;
+    public final double instructionMutationProbability;
+    public final double newInstructionProbability;
+    public final double skipInstructionProbability;
 
-    public MutatorSettings(double instructionMutationProbability,
-                           double newInstructionProbability,
-                           double skipInstructionProbability) {
-        this.instructionMutationProbability = instructionMutationProbability;
-        this.newInstructionProbability = newInstructionProbability;
-        this.skipInstructionProbability = skipInstructionProbability;
+    public MutatorSettings(final MainSettings settings) {
+        this.instructionMutationProbability = settings.instructionMutationProbability;
+        this.newInstructionProbability = settings.newInstructionProbability;
+        this.skipInstructionProbability = settings.skipInstructionProbability;
     }
-
-
-    public double getInstructionMutationProbability() {
-        return instructionMutationProbability;
-    }
-
-    public double getNewInstructionProbability() {
-        return newInstructionProbability;
-    }
-
-    public double getSkipInstructionProbability() {
-        return skipInstructionProbability;
-    }
-
 }

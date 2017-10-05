@@ -59,12 +59,12 @@ class SimpleMutator implements Mutator {
 
     @Override
     public boolean getAllowInstructionMutation() {
-        return random.nextDouble() < settings.getInstructionMutationProbability();
+        return random.nextDouble() < settings.instructionMutationProbability;
     }
 
     @Override
     public boolean getAllowNewInstruction() {
-        return random.nextDouble() < settings.getNewInstructionProbability();
+        return random.nextDouble() < settings.newInstructionProbability;
     }
 
     @Override
@@ -93,6 +93,6 @@ class SimpleMutator implements Mutator {
 
     @Override
     public boolean skipNextInstruction() {
-        return random.nextDouble() < settings.getSkipInstructionProbability();
+        return random.nextDouble() < settings.skipInstructionProbability;
     }
 }

@@ -5,7 +5,7 @@ import com.alphatica.genotick.genotick.MainSettings;
 public class RobotExecutorSettings {
     public final int maximumProcessorInstructionFactor;
 
-    public RobotExecutorSettings(MainSettings settings) {
+    public RobotExecutorSettings(final MainSettings settings) {
         maximumProcessorInstructionFactor = settings.maximumProcessorInstructionFactor;
     }
 }
