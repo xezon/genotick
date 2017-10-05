@@ -12,17 +12,21 @@ abstract public class BasicUserInput implements UserInput {
 
     @Override
     public MainAppData getData(String... sources) {
-        if (assetData == null) {
-            DataLoader loader = DataFactory.getDefaultLoader();
-            assetData = loader.loadAll(sources);
-        }
-        return assetData;
+        return loadData(sources);
     }
     
     @Override
     public void clearCache() {
         mainSettings = null;
         assetData = null;
+    }
+    
+    protected MainAppData loadData(String... sources) {
+        if (assetData == null) {
+            DataLoader loader = DataFactory.getDefaultLoader();
+            assetData = loader.loadAll(sources);
+        }
+        return assetData;
     }
     
     protected void setMainSettings(MainSettings mainSettings) {
