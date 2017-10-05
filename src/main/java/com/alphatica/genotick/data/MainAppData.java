@@ -29,14 +29,22 @@ public class MainAppData extends Friendship {
         updateTimePoints(set.getTimePoints(befriend));
     }
 
+    private void addTimePoints(List<TimePoint> newTimePoints) {
+        timePoints.addAll(newTimePoints);
+    }
+    
+    private void mergeTimePoints(List<TimePoint> newTimePoints) {
+        timePoints.addAll(newTimePoints);
+        timePoints = timePoints.stream().distinct().collect(Collectors.toList());
+        timePoints.sort(TimePoint::compareTo);
+    }
+
     private void updateTimePoints(List<TimePoint> newTimePoints) {
         if (timePoints.isEmpty()) {
-            timePoints.addAll(newTimePoints);
+            addTimePoints(newTimePoints);
         }
         else {
-            timePoints.addAll(newTimePoints);
-            timePoints = timePoints.stream().distinct().collect(Collectors.toList());
-            timePoints.sort(TimePoint::compareTo);
+            mergeTimePoints(newTimePoints);
         }
     }
 

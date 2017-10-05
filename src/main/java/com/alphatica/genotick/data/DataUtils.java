@@ -34,7 +34,7 @@ public class DataUtils {
 
     private static List<String> getFullPaths(String path, final String extension) {
         File directory = new File(path);
-        String [] names = getFilesNames(extension, directory);
+        String[] names = getFilesNames(extension, directory);
         List<String> list = new ArrayList<>();
         for(String name: names) {
             list.add(path + File.separator + name);
@@ -51,8 +51,8 @@ public class DataUtils {
         return list;
     }
 
-    public static List<Number []> createLineList(BufferedReader br) {
-        List<Number []> list = new ArrayList<>();
+    public static List<Number[]> createLineList(BufferedReader br) {
+        List<Number[]> list = new ArrayList<>();
         int linesRead = 1;
         try {
             String line = br.readLine();
@@ -60,7 +60,7 @@ public class DataUtils {
             linesRead++;
             while ((line = br.readLine())!=null){
                 linesRead++;
-                Number [] row = processLine(line);
+                Number[] row = processLine(line);
                 list.add(row);
             }
             return list;
@@ -72,7 +72,7 @@ public class DataUtils {
     private static void processFirstLine(String line, List<Number[]> list) {
         validateFirstLine(line);
         try {
-            Number [] row = processLine(line);
+            Number[] row = processLine(line);
             list.add(row);
         } catch (NumberFormatException ignore) {
             /* If it's the first line then it's probably just a heading. Let's ignore NFE */
@@ -83,7 +83,7 @@ public class DataUtils {
     public static Number[] processLine(String line) {
         String separator = ",";
         String[] fields = line.split(separator);
-        Number [] array = new Number[fields.length];
+        Number[] array = new Number[fields.length];
         String timePointString = getTimePointString(fields[0]);
         array[0] = Long.valueOf(timePointString);
         for(int i = 1; i < fields.length; i++) {
