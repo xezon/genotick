@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SimpleEngine implements Engine {
     private EngineSettings engineSettings;
@@ -45,11 +46,10 @@ public class SimpleEngine implements Engine {
     public void start() {
         Thread.currentThread().setName("Main engine execution thread");
         initPopulation();
-        final int startBar = data.getNearestBar(engineSettings.startTimePoint);
-        final int endBar = data.getNearestBar(engineSettings.endTimePoint);
-        for (int bar = startBar; bar < endBar; ++bar) {
-            executeBar(bar);
-        }
+        final Stream<TimePoint> filteredTimePoints = data.getTimePoints(
+                engineSettings.startTimePoint,
+                engineSettings.endTimePoint);
+        filteredTimePoints.forEach(this::executeTimePoint);
         if (engineSettings.performTraining) {
             savePopulation();
         }
@@ -92,9 +92,9 @@ public class SimpleEngine implements Engine {
         }
     }
     
-    private void executeBar(final int bar) {
-        final TimePoint timePoint = data.getTimePoint(bar);
-        gassert(timePoint != null);
+    private void executeTimePoint(final TimePoint timePoint) {
+        final int bar = data.getBar(timePoint);
+        gassert(bar >= 0);
         robotDataManager.update(timePoint);
         final List<RobotData> robotDataList = robotDataManager.getUpdatedRobotDataList();
         if (!robotDataList.isEmpty()) {
