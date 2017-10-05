@@ -83,8 +83,7 @@ public class Simulation {
     private Population createPopulation(MainSettings settings) {
         PopulationSettings populationSettings = new PopulationSettings(settings);
         PopulationDAO dao = PopulationDAOFactory.getDefaultDAO(populationSettings);
-        Population population = PopulationFactory.getDefaultPopulation(populationSettings, dao);
-        return population;
+        return PopulationFactory.getDefaultPopulation(populationSettings, dao);
     }
 
     private RobotBreeder createRobotBreeder(MainSettings settings, Mutator mutator) {

@@ -249,7 +249,7 @@ public class Main {
         MainSettings settings = input.getSettings();
         MainAppData data = input.getData(settings.dataDirectory);
         generateMissingData(settings, data);
-        settings.validateTimePoints(data);
+        settings.adjustTimePoints(data);
         simulation.start(settings, data);
         setError(ErrorCode.NO_ERROR);
     }

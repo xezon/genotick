@@ -52,7 +52,7 @@ public class MainSettings {
 
     public String getString() throws IllegalAccessException {
         StringBuilder sb = new StringBuilder();
-        Field [] fields = this.getClass().getDeclaredFields();
+        Field[] fields = this.getClass().getDeclaredFields();
         for(Field field: fields) {
             sb.append(field.getName()).append(" ").append(field.get(this)).append("\n");
         }
@@ -60,7 +60,7 @@ public class MainSettings {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void validateTimePoints(MainAppData data) {
+    public void adjustTimePoints(MainAppData data) {
         TimePoint first = data.getFirstTimePoint();
         TimePoint last = data.getLastTimePoint();
         if(startTimePoint.compareTo(first) < 0) {
@@ -73,8 +73,7 @@ public class MainSettings {
 
     @SuppressWarnings("WeakerAccess")
     public void validate() {
-        ensure(startTimePoint.compareTo(endTimePoint) <= 0,
-                "End Time Point must be higher or equal Start Time Point");
+        ensure(startTimePoint.compareTo(endTimePoint) <= 0, "End Time Point must be greater or equal Start Time Point");
         ensure(populationDesiredSize > 0, greaterThanZeroString("Population desired size"));
         ensure(maximumDataOffset > 0, greaterThanZeroString("Maximum Data Offset"));
         ensure(minimumRobotInstructions > 0, greaterThanZeroString("Minimum robot instructions"));
