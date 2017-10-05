@@ -83,6 +83,14 @@ public class TimePoints {
         return (index >= 0) ? index : -(index + 1);
     }
     
+    public TimePoint getNewest() {
+        return firstTimeIsNewest ? getFirst() : getLast();
+    }
+    
+    public TimePoint getOldest() {
+        return firstTimeIsNewest ? getLast() : getFirst();
+    }
+    
     public int size() {
         return timePoints.size();
     }
@@ -100,8 +108,8 @@ public class TimePoints {
     }
     
     public void verifyOrder() {
-        int offset1 = firstTimeIsNewest ? -1 :  0;
-        int offset2 = firstTimeIsNewest ?  0 : -1;
+        final int offset1 = firstTimeIsNewest ? -1 :  0;
+        final int offset2 = firstTimeIsNewest ?  0 : -1;
         for (int i = 1, count = size(); i < count; ++i) {
             final TimePoint timePoint = timePoints.get(i + offset1);
             final TimePoint previousTimePoint = timePoints.get(i + offset2);
@@ -205,5 +213,13 @@ public class TimePoints {
                 timePoints.remove(i);
             }
         }
+    }
+    
+    private TimePoint getFirst() {
+        return !timePoints.isEmpty() ? timePoints.get(0) : null;
+    }
+    
+    private TimePoint getLast() {
+        return !timePoints.isEmpty() ? timePoints.get(timePoints.size()-1) : null;
     }
 }

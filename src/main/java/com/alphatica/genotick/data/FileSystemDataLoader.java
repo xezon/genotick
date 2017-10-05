@@ -48,7 +48,7 @@ public class FileSystemDataLoader implements DataLoader {
             List<Number []> lines = DataUtils.createLineList(br);
             output.infoMessage(format("Read '%s' lines", lines.size()));
             return new DataSet(fileName, lines);
-        } catch (IOException  | DataException e) {
+        } catch (IOException | DataException | AssertionError e) {
             DataException de = new DataException(format("Unable to process file '%s'", fileName));
             de.initCause(e);
             throw de;
