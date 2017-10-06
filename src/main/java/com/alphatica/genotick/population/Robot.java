@@ -132,7 +132,7 @@ public class Robot implements Serializable {
     }
 
     public void recordPrediction(RobotResult result) {
-        DataSetName dataSetName = result.getData().getName();
+        DataSetName dataSetName = result.getDataSetName();
         Prediction newPrediction = result.getPrediction();
         Prediction pendingPrediction = pending.get(dataSetName);
         current.put(dataSetName, pendingPrediction);

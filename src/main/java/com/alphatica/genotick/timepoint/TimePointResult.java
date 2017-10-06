@@ -35,7 +35,7 @@ public class TimePointResult {
     }
 
     private void addRobotResult(RobotResult robotResult) {
-        DataSetName name = robotResult.getData().getName();
+        DataSetName name = robotResult.getDataSetName();
         DataSetResult dataSetResult = getDataSetResult(name);
         dataSetResult.addResult(robotResult);
     }
