@@ -1,15 +1,58 @@
 package com.alphatica.genotick.genotick;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
+import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.timepoint.TimePoints;
+import static com.alphatica.genotick.utility.Assert.gassert;
 
 public class MainInterface {
+    
+    private static class SessionResult {
+        final TimePoints timePoints;
+        final Map<String, Prediction[]> predictionsMap;
+        
+        SessionResult(MainSettings settings, MainAppData data) {
+            final Set<DataSetName> dataSetNames = data.getDataSetNames();
+            this.timePoints = data.createTimePointsCopy(settings.startTimePoint, settings.endTimePoint);
+            this.predictionsMap = new HashMap<String, Prediction[]>(dataSetNames.size());
+            final int timePointCount = this.timePoints.size();
+            for (DataSetName dataSetName : dataSetNames) {
+                final Prediction[] predictions = new Prediction[timePointCount];
+                Arrays.fill(predictions, Prediction.OUT);
+                this.predictionsMap.put(dataSetName.getPath(), predictions);
+            }
+        }
+        
+        void savePrediction(TimePoint timePoint, DataSetName dataSetName, Prediction prediction) {
+            final int index = this.timePoints.getIndex(timePoint);
+            final Prediction[] predictions = this.predictionsMap.get(dataSetName.getPath());
+            gassert(index >= 0, "TimePoint is expected to exist inside TimePoints collection");
+            gassert(predictions != null, "Predictions object is expected to exist for the given DataSetName");
+            predictions[index] = prediction;
+        }
+    }
+    
     private static class Session {
-        final MainSettings settings = MainSettings.getSettings();
-        final MainAppData data = new MainAppData();
+        final MainSettings settings;
+        final MainAppData data;
+        SessionResult result;
+        
+        Session() {
+            this.settings = MainSettings.getSettings();
+            this.data = new MainAppData();
+            this.result = null;
+        }
+        
+        void prepareNewSessionResult() {
+            this.result = new SessionResult(settings, data);
+        }
     }
     
     private static final int INTERFACE_VERSION = 1;
@@ -26,9 +69,14 @@ public class MainInterface {
     
     public static int start(int sessionId, String[] args) throws IOException, IllegalAccessException {
         printStart(sessionId, args);
-        if (!hasSession(sessionId)) {
-            return ErrorCode.INVALID_SESSION.getValue();
+        final Session session = sessions.get(sessionId);
+        if (session == null) {
+            return printAndReturnErrorValue(ErrorCode.INVALID_SESSION);
         }
+        if (session.data.isEmpty()) {
+            return printAndReturnErrorValue(ErrorCode.INSUFFICIENT_DATA);
+        }
+        session.prepareNewSessionResult();
         currentSessionId = sessionId;
         final ErrorCode error = Main.init(args);
         return error.getValue();
@@ -44,6 +92,23 @@ public class MainInterface {
         return (session != null) ? session.data : null;
     }
     
+    public static TimePoints getTimePoints(int sessionId) {
+        SessionResult sessionResult = getSessionResult(sessionId);
+        return (sessionResult != null) ? sessionResult.timePoints : null;
+    }
+    
+    public static Prediction[] getPredictions(int sessionId, String dataSetName) {
+        SessionResult sessionResult = getSessionResult(sessionId);
+        return (sessionResult != null) ? sessionResult.predictionsMap.get(dataSetName) : null;
+    }
+    
+    public static void savePrediction(TimePoint timePoint, DataSetName dataSetName, Prediction prediction) {
+        Session currentSession = getCurrentSession();
+        if (currentSession != null) {
+            currentSession.result.savePrediction(timePoint, dataSetName, prediction);
+        }
+    }
+    
     public static void createSession(int sessionId) {
         sessions.put(sessionId, new Session());
     }
@@ -56,6 +121,15 @@ public class MainInterface {
         sessions.clear();
     }
     
+    private static Session getCurrentSession() {
+        return sessions.get(currentSessionId);
+    }
+    
+    private static SessionResult getSessionResult(int sessionId) {
+        Session session = sessions.get(sessionId);
+        return (session != null) ? session.result : null;
+    }
+    
     private static void printStart(int sessionId, String[] args) {
         System.out.println(String.format("Starting session %d with arguments:", sessionId));
         for (String arg : args) {
@@ -63,7 +137,8 @@ public class MainInterface {
         }
     }
     
-    private static boolean hasSession(int sessionId) {
-        return sessions.get(sessionId) != null;
+    private static int printAndReturnErrorValue(final ErrorCode error) {
+        Main.printError(error);
+        return error.getValue();
     }
 }

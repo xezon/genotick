@@ -106,15 +106,19 @@ public class SimpleEngine implements Engine {
             updatePredictions(robotInfoList, robotResultMap);
             recordRobotsPredictions(robotResultMap);
             TimePointResult timePointResult = new TimePointResult(robotResultMap, engineSettings.requireSymmetricalRobots);
-            timePointResult.listDataSetResults().forEach(dataSetResult -> {
-                Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
-                account.addPendingOrder(dataSetResult.getName(), prediction);
-                output.showPrediction(timePoint, dataSetResult, prediction);
-            });
+            timePointResult.listDataSetResults().forEach(dataSetResult -> processDataSetResult(timePoint, dataSetResult));
             checkTraining(robotInfoList);
             output.reportFinishedTimePoint(timePoint, account.getEquity());
         }
         profitRecorder.onUpdate(bar);
+    }
+    
+    private void processDataSetResult(TimePoint timePoint, DataSetResult dataSetResult) {
+        Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
+        DataSetName dataSetName = dataSetResult.getName();
+        account.addPendingOrder(dataSetName, prediction);
+        output.showPrediction(timePoint, dataSetResult, prediction);
+        MainInterface.savePrediction(timePoint, dataSetName, prediction);
     }
     
     private void updatePredictions(List<RobotInfo> list, Map<RobotName, List<RobotResult>> map) {

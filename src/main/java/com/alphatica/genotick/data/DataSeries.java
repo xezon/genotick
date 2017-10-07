@@ -53,11 +53,11 @@ public class DataSeries {
         }
     }
     
-    public DataSeries getCopy() {
+    public DataSeries createCopy() {
         return new DataSeries(this);
     }
     
-    public DataSeries getReversedCopy() {
+    public DataSeries createReversedCopy() {
         return new DataSeries(this, !firstBarIsNewest);
     }
     

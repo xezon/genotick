@@ -58,7 +58,7 @@ public class Main {
         if (canContinue) {
             initSimulation(parameters);
         }
-        onExit();
+        printError(error);
         return error;
     }
 
@@ -67,7 +67,7 @@ public class Main {
         canContinue = false;
     }
 
-    private static void onExit() {
+    public static void printError(final ErrorCode error) {
         System.out.println(format("Program finished with error code %s(%d)", error.toString(), error.getValue()));
     }
 

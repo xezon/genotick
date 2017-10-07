@@ -3,6 +3,7 @@ package com.alphatica.genotick.timepoint;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.alphatica.genotick.data.DataException;
@@ -29,15 +30,20 @@ public class TimePoints {
         this(other.size(), firstTimeIsNewest, true);
         copy(other);
     }
-    
-    public TimePoints getCopy() {
+        
+    public TimePoints createCopy() {
         return new TimePoints(this);
     }
     
-    public TimePoints getReversedCopy() {
+    public TimePoints createReversedCopy() {
         return new TimePoints(this, !firstTimeIsNewest);
     }
-      
+    
+    public TimePoints createSelectionCopy(TimePoint startTime, TimePoint endTime) {
+        ArrayList<TimePoint> selection = getSelection(startTime, endTime).collect(Collectors.toCollection(ArrayList::new));
+        return new TimePoints(selection, this.firstTimeIsNewest);        
+    }
+    
     public void copy(TimePoints other) {
         if (firstTimeIsNewest == other.firstTimeIsNewest) {
             copyStraight(other);
@@ -99,7 +105,7 @@ public class TimePoints {
         return timePoints.isEmpty();
     }
     
-    public Stream<TimePoint> getSelection(final TimePoint startTime, final TimePoint endTime) {
+    public Stream<TimePoint> getSelection(TimePoint startTime, TimePoint endTime) {
         return timePoints.stream().filter(time -> time.isGreaterOrEqual(startTime) && time.isLessOrEqual(endTime));
     }
     
@@ -121,13 +127,23 @@ public class TimePoints {
         }
     }
     
+    private TimePoints(ArrayList<TimePoint> timePoints, boolean firstTimeIsNewest) {
+        this.timePoints = timePoints;
+        this.comparator = getComparator(firstTimeIsNewest);
+        this.firstTimeIsNewest = firstTimeIsNewest;
+    }
+    
     private TimePoints(int capacity, boolean firstTimeIsNewest, boolean resize) {
         this.timePoints = new ArrayList<TimePoint>(capacity);
-        this.comparator = firstTimeIsNewest ? Collections.reverseOrder(TimePoint::compareTo) : TimePoint::compareTo;
+        this.comparator = getComparator(firstTimeIsNewest);
         this.firstTimeIsNewest = firstTimeIsNewest;
         if (resize) {
             resize(capacity);
         }
+    }
+    
+    private Comparator<TimePoint> getComparator(boolean firstTimeIsNewest) {
+        return firstTimeIsNewest ? Collections.reverseOrder(TimePoint::compareTo) : TimePoint::compareTo;
     }
     
     private void resize(int size) {

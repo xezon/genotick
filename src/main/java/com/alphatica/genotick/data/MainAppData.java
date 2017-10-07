@@ -6,6 +6,7 @@ import com.alphatica.genotick.timepoint.TimePoints;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 // TODO change nulls to optional
@@ -52,11 +53,11 @@ public class MainAppData {
     }
 
     public TimePoint getFirstTimePoint() {
-        return !timePoints.isEmpty() ? timePoints.get(0) : null;
+        return timePoints.getOldest();
     }
 
     public TimePoint getLastTimePoint() {
-        return !timePoints.isEmpty() ? timePoints.get(timePoints.size() - 1) : null;
+        return timePoints.getNewest();
     }
 
     public TimePoint getTimePoint(int bar) {
@@ -75,8 +76,20 @@ public class MainAppData {
         return timePoints.isValidIndex(bar);
     }
 
-    public Stream<TimePoint> getTimePoints(final TimePoint startTime, final TimePoint endTime) {
+    public int getTimePointCount() {
+        return timePoints.size();
+    }
+    
+    public TimePoints createTimePointsCopy(TimePoint startTime, TimePoint endTime) {
+        return timePoints.createSelectionCopy(startTime, endTime);
+    }
+    
+    public Stream<TimePoint> getTimePoints(TimePoint startTime, TimePoint endTime) {
         return timePoints.getSelection(startTime, endTime);
+    }
+    
+    public Set<DataSetName> getDataSetNames() {
+        return sets.keySet();
     }
 
     public Collection<DataSet> getDataSets() {
@@ -91,7 +104,7 @@ public class MainAppData {
         return sets.containsKey(name);
     }
 
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return sets.isEmpty();
     }
 }

@@ -6,7 +6,8 @@ enum ErrorCode {
     NO_INPUT(1),
     NO_OUTPUT(2),
     UNKNOWN_ARGUMENT(3),
-    INVALID_SESSION(4);
+    INVALID_SESSION(4),
+    INSUFFICIENT_DATA(5);
 
     private final int code;
 
