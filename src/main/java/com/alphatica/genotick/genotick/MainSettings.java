@@ -1,6 +1,5 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.population.PopulationSettings;
 import com.alphatica.genotick.breeder.InheritedWeightMode;
@@ -57,18 +56,6 @@ public class MainSettings {
             sb.append(field.getName()).append(" ").append(field.get(this)).append("\n");
         }
         return sb.toString();
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    public void adjustTimePoints(MainAppData data) {
-        TimePoint first = data.getFirstTimePoint();
-        TimePoint last = data.getLastTimePoint();
-        if(startTimePoint.compareTo(first) < 0) {
-            startTimePoint = first;
-        }
-        if(endTimePoint.compareTo(last) > 0) {
-            endTimePoint = last;
-        }
     }
 
     @SuppressWarnings("WeakerAccess")
