@@ -59,8 +59,8 @@ public class DataSet {
         timePoints.merge(this.timePoints);
     }
 
-    public void fetchOhlcDataSection(DataSeries ohlcData, int bar, int maxBars) {
-        ohlcData.copySection(this.ohlcData, bar, maxBars);
+    public DataSeries createOhlcDataSection(int firstBar, int maxBars, boolean firstBarIsNewest) {
+        return new DataSeries(ohlcData, firstBar, maxBars, firstBarIsNewest);
     }
 
     public int getBar(TimePoint timePoint) {

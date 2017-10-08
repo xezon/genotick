@@ -16,6 +16,11 @@ public class DataSeries {
         this(columnCount, barCount, firstBarIsNewest, true);
     }
     
+    public DataSeries(DataSeries other, int firstBar, int maxBars, boolean firstBarIsNewest) {
+        this(other.columnCount(), maxBars, firstBarIsNewest, true);
+        copySection(other, firstBar, maxBars);
+    }
+    
     public DataSeries(DataSeries other) {
         this(other.columnCount(), other.barCount(), other.firstBarIsNewest, true);
         copy(other);
