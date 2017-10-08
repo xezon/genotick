@@ -30,12 +30,17 @@ public class MainInterface {
             }
         }
         
+        private Prediction[] findPredictions(DataSetName dataSetName) {
+            return this.predictionsMap.get(dataSetName.getPath());
+        }
+        
         void savePrediction(TimePoint timePoint, DataSetName dataSetName, Prediction prediction) {
-            final int index = this.timePoints.getIndex(timePoint);
-            final Prediction[] predictions = this.predictionsMap.get(dataSetName.getPath());
-            gassert(index >= 0, "TimePoint is expected to exist inside TimePoints collection");
-            gassert(predictions != null, "Predictions object is expected to exist for the given DataSetName");
-            predictions[index] = prediction;
+            final Prediction[] predictions = findPredictions(dataSetName);
+            if (predictions != null) {
+                final int index = this.timePoints.getIndex(timePoint);
+                gassert(index >= 0);
+                predictions[index] = prediction;
+            }
         }
     }
     
