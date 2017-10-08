@@ -1,7 +1,6 @@
 package com.alphatica.genotick.genotick;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -16,30 +15,31 @@ public class MainInterface {
     
     private static class SessionResult {
         final TimePoints timePoints;
-        final Map<String, Prediction[]> predictionsMap;
+        final Map<String, Predictions> predictionsMap;
         
         SessionResult(MainSettings settings, MainAppData data) {
             final Set<DataSetName> dataSetNames = data.getDataSetNames();
             this.timePoints = data.createTimePointsCopy(settings.startTimePoint, settings.endTimePoint);
-            this.predictionsMap = new HashMap<String, Prediction[]>(dataSetNames.size());
+            this.predictionsMap = new HashMap<String, Predictions>(dataSetNames.size());
             final int timePointCount = this.timePoints.size();
+            final boolean firstTimeIsNewest = this.timePoints.firstTimeIsNewest();
             for (DataSetName dataSetName : dataSetNames) {
-                final Prediction[] predictions = new Prediction[timePointCount];
-                Arrays.fill(predictions, Prediction.OUT);
+                final Predictions predictions = new Predictions(timePointCount, firstTimeIsNewest);
+                predictions.fill(Prediction.OUT);
                 this.predictionsMap.put(dataSetName.getPath(), predictions);
             }
         }
         
-        private Prediction[] findPredictions(DataSetName dataSetName) {
+        private Predictions findPredictions(DataSetName dataSetName) {
             return this.predictionsMap.get(dataSetName.getPath());
         }
         
         void savePrediction(TimePoint timePoint, DataSetName dataSetName, Prediction prediction) {
-            final Prediction[] predictions = findPredictions(dataSetName);
+            final Predictions predictions = findPredictions(dataSetName);
             if (predictions != null) {
                 final int index = this.timePoints.getIndex(timePoint);
                 gassert(index >= 0);
-                predictions[index] = prediction;
+                predictions.set(index, prediction);
             }
         }
     }
@@ -102,9 +102,26 @@ public class MainInterface {
         return (sessionResult != null) ? sessionResult.timePoints : null;
     }
     
-    public static Prediction[] getPredictions(int sessionId, String dataSetName) {
+    public static Predictions getPredictions(int sessionId, String dataSetName) {
         SessionResult sessionResult = getSessionResult(sessionId);
         return (sessionResult != null) ? sessionResult.predictionsMap.get(dataSetName) : null;
+    }
+    
+    public static TimePoint getNewestTimePoint(int sessionId) {
+        SessionResult sessionResult = getSessionResult(sessionId);
+        return (sessionResult != null) ? sessionResult.timePoints.getNewest() : null;
+    }
+    
+    public static Prediction getNewestPrediction(int sessionId, String dataSetName) {
+        Prediction prediction = null;
+        SessionResult sessionResult = getSessionResult(sessionId);
+        if (sessionResult != null) {
+            Predictions predictions = sessionResult.predictionsMap.get(dataSetName);
+            if (predictions != null) {
+                prediction = predictions.getNewest();
+            }
+        }
+        return prediction;
     }
     
     public static void savePrediction(TimePoint timePoint, DataSetName dataSetName, Prediction prediction) {
