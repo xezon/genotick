@@ -18,10 +18,6 @@ public class DataSet {
         this(new DataSetName(name), tohlcLines);
     }
 
-    public DataSet(String name, TimePoints timePoints, DataSeries ohlcData) {
-        this(new DataSetName(name), timePoints, ohlcData);
-    }
-
     public DataSet(DataSetName name, List<Number[]> tohlcLines) {
         verifyData(tohlcLines);
         final int tohlcBarCount = tohlcLines.size();
@@ -31,24 +27,6 @@ public class DataSet {
         this.timePoints = new TimePoints(tohlcBarCount, false);
         this.ohlcData = new DataSeries(ohlcColumnCount, tohlcBarCount, false);
         copy(tohlcLines);
-    }
-
-    public DataSet(DataSetName name, TimePoints timePoints, DataSeries ohlcData) {
-        verifyData(timePoints, ohlcData);
-        this.name = name;
-        this.timePoints = new TimePoints(timePoints, false);
-        this.ohlcData = new DataSeries(ohlcData, false);
-    }
-
-    public void add(TimePoints timePoints, DataSeries ohlcData) {
-        verifyData(timePoints, ohlcData);
-        verifyTimePointContinuity(timePoints, this.timePoints);
-        this.timePoints.add(timePoints);
-        this.ohlcData.add(ohlcData);
-    }
-    
-    public void add(DataSet dataSet) {
-        add(dataSet.timePoints, dataSet.ohlcData);
     }
 
     public DataSetName getName() {
@@ -155,16 +133,5 @@ public class DataSet {
                         currentTimeValue, lineNumber + 1, previousTimeValue));
             }
         }
-    }
-    
-    private static void verifyData(TimePoints timePoints, DataSeries ohlcData) {
-        gassert(timePoints.size() > 0, "The given asset data is empty");
-        gassert(timePoints.size() == ohlcData.barCount(), "The given asset data has mismatching size");
-        gassert(timePoints.firstTimeIsNewest() == ohlcData.firstBarIsNewest(), "The given asset data has mismatching order");
-        timePoints.verifyOrder();
-    }
-    
-    private static void verifyTimePointContinuity(TimePoints newTimePoints, TimePoints oldTimePoints) {
-        gassert(newTimePoints.getOldest().compareTo(oldTimePoints.getNewest()) > 0, "The asset data to be added is not newer than the current asset data");
     }
 }

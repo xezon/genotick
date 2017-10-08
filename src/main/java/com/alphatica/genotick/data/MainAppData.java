@@ -5,6 +5,7 @@ import com.alphatica.genotick.timepoint.TimePoints;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -19,37 +20,16 @@ public class MainAppData {
         sets = new HashMap<>();
         timePoints = new TimePoints(false);
     }
-    
+
     public void put(DataSet set) {
         this.sets.put(set.getName(), set);
         set.fetchMergedTimePoints(this.timePoints);
     }
-    
-    public void put(DataSetName name, TimePoints timePoints, DataSeries ohlcData) {
-        this.sets.put(name, new DataSet(name, timePoints, ohlcData));
-        this.timePoints.merge(timePoints);
-    }
 
-    public void add(DataSet set) {
-        final DataSet existingSet = sets.get(set.getName());
-        if (existingSet == null) {
-            put(set);
-        }
-        else {
-            existingSet.add(set);
-            set.fetchMergedTimePoints(this.timePoints);
-        }
-    }
-    
-    public void add(DataSetName name, TimePoints timePoints, DataSeries ohlcData) {
-        final DataSet existingSet = sets.get(name);
-        if (existingSet == null) {
-            put(name, timePoints, ohlcData);
-        }
-        else {
-            existingSet.add(timePoints, ohlcData);
-            this.timePoints.merge(timePoints);
-        }
+    public void put(DataSetName name, List<Number[]> tohlcLines) {
+        DataSet set = new DataSet(name, tohlcLines);
+        set.fetchMergedTimePoints(this.timePoints);
+        this.sets.put(name, set);
     }
 
     public TimePoint getFirstTimePoint() {

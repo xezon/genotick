@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.alphatica.genotick.data.DataException;
-
 public class TimePoints {
     private final ArrayList<TimePoint> timePoints;
     private final Comparator<TimePoint> comparator;
@@ -44,7 +42,7 @@ public class TimePoints {
         return new TimePoints(selection, this.firstTimeIsNewest);        
     }
     
-    public void copy(TimePoints other) {
+    private void copy(TimePoints other) {
         if (firstTimeIsNewest == other.firstTimeIsNewest) {
             copyStraight(other);
         }
@@ -53,7 +51,7 @@ public class TimePoints {
         }
     }
     
-    public void add(TimePoints other) {
+    private void add(TimePoints other) {
         if (firstTimeIsNewest == other.firstTimeIsNewest) {
             addStraight(other);
         }
@@ -111,20 +109,6 @@ public class TimePoints {
     
     public boolean firstTimeIsNewest() {
         return firstTimeIsNewest;
-    }
-    
-    public void verifyOrder() {
-        final int offset1 = firstTimeIsNewest ? -1 :  0;
-        final int offset2 = firstTimeIsNewest ?  0 : -1;
-        for (int i = 1, count = size(); i < count; ++i) {
-            final TimePoint timePoint = timePoints.get(i + offset1);
-            final TimePoint previousTimePoint = timePoints.get(i + offset2);
-            if (timePoint.compareTo(previousTimePoint) <= 0) {
-                throw new DataException(String.format("TimePoint '%d' at index '%d' is unexpectingly not greater than TimePoint '%d' at index '%d'."
-                        , timePoint.getValue(), i + offset1
-                        , previousTimePoint.getValue(), i + offset2));
-            }
-        }
     }
     
     private TimePoints(ArrayList<TimePoint> timePoints, boolean firstTimeIsNewest) {
