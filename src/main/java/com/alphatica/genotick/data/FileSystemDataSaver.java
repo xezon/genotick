@@ -23,10 +23,10 @@ public class FileSystemDataSaver implements DataSaver {
     public void save(DataSet set) {
         final String fileName = set.getName().getPath();
         final String lineSeparator = System.lineSeparator();
-        final DataLines dataLines = set.getDataLines();
+        final DataLines dataLines = set.getDataLinesCopy();
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
             for (int i = 0, lineCount = dataLines.lineCount(); i < lineCount; ++i) {
-                Number[] columns = dataLines.getColumns(i);
+                Number[] columns = dataLines.getColumnsCopy(i);
                 String columnsString = makeString(columns, ",");
                 bw.write(columnsString + lineSeparator);
             }

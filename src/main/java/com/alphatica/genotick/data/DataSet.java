@@ -45,7 +45,7 @@ public class DataSet {
         return timePoints.isValidIndex(bar);
     }
 
-    public DataLines getDataLines() {
+    public DataLines getDataLinesCopy() {
         return tohlcLines.createCopy();
     }
 

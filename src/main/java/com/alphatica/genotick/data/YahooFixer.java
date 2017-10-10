@@ -35,7 +35,7 @@ public class YahooFixer {
         final int columnCount = dataLines.tohlcColumnCount();
         final DataLines fixedDataLines = new DataLines(lineCount, columnCount, dataLines.firstLineIsNewest());
         for (int line = 0; line < lineCount; ++line) {
-            final Number[] columns = dataLines.getColumns(line);
+            final Number[] columns = dataLines.getColumnsCopy(line);
             fixColumns(columns);
             dataLines.setColumns(line, columns);
         }

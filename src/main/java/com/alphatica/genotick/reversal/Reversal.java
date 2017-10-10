@@ -44,9 +44,9 @@ public class Reversal {
 
     public DataSet getReversedDataSet() {
         if (null == reversedSet) {
-            final DataLines original = originalSet.getDataLines();
-            final DataLines reversed = reverseOhlcData(original);
-            reversedSet = new DataSet(reversedName, reversed);
+            final DataLines dataLines = originalSet.getDataLinesCopy();
+            reverseDataLines(dataLines);
+            reversedSet = new DataSet(reversedName, dataLines);
         }
         return reversedSet;
     }
@@ -64,20 +64,17 @@ public class Reversal {
         return reversedPath.toString();
     }
 
-    private static DataLines reverseOhlcData(DataLines originalLines) {
-        final int lineCount = originalLines.lineCount();
-        final int columnCount = originalLines.tohlcColumnCount();
-        DataLines reversedLines = new DataLines(lineCount, columnCount, originalLines.firstLineIsNewest());
+    private static void reverseDataLines(DataLines dataLines) {
+        final int lineCount = dataLines.lineCount();
         Number[] lastOriginal = null;
         Number[] lastReversed = null;
         for (int line = 0; line < lineCount; ++line) {
-            Number[] currentOriginal = originalLines.getColumns(line);
-            Number[] currentReversed = getReversedColumns(currentOriginal, lastOriginal, lastReversed);
-            reversedLines.setColumns(line, currentReversed);
+            Number[] currentOriginal = dataLines.getColumnsCopy(line);
+            Number[] currentReversed = createReversedColumns(currentOriginal, lastOriginal, lastReversed);
+            dataLines.setColumns(line, currentReversed);
             lastOriginal = currentOriginal;
             lastReversed = currentReversed;
         }
-        return reversedLines;
     }
 
     /*
@@ -94,7 +91,7 @@ public class Reversal {
      * 5 and more - Volume, open interest or whatever. These don't change.
      */
 
-    private static Number[] getReversedColumns(Number[] table, Number[] lastOriginal, Number[] lastReversed) {
+    private static Number[] createReversedColumns(Number[] table, Number[] lastOriginal, Number[] lastReversed) {
         Number[] reversed = new Number[table.length];
         // Column 0 is unchanged
         reversed[Column.TOHLCV.TIME] = table[Column.TOHLCV.TIME];

@@ -55,11 +55,11 @@ public class DataLines {
         return new DataLines(this);
     }
     
-    public Number[] getColumns(int line) {
+    public Number[] getColumnsCopy(int line) {
         final int columnCount = tohlcColumnCount();
-        Number[] lineCopy = new Number[columnCount];
-        System.arraycopy(data[line], 0, lineCopy, 0, columnCount);
-        return lineCopy;
+        Number[] columnsCopy = new Number[columnCount];
+        System.arraycopy(data[line], 0, columnsCopy, 0, columnCount);
+        return columnsCopy;
     }
     
     public void setColumns(int line, Number[] columns) throws DataException {
@@ -68,9 +68,7 @@ public class DataLines {
             logAndThrow(format("Given column count '%d' for line '%d' does not match the expected column count '%d'.",
                     columns.length, line, columnCount));
         }
-        for (int column = 0; column < columnCount; ++column) {
-            data[line][column] = columns[column];
-        }
+        System.arraycopy(columns, 0, data[line], 0, columnCount);
     }
     
     long getTime(int line) {
