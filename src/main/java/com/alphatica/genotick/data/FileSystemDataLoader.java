@@ -3,10 +3,7 @@ package com.alphatica.genotick.data;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -44,20 +41,19 @@ public class FileSystemDataLoader implements DataLoader {
         output.infoMessage(format("Loading file '%s'", fileName));
         File file = new File(fileName);
         dataFileSanityCheck(file);
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            List<Number []> lines = DataUtils.createLineList(br);
-            output.infoMessage(format("Read '%s' lines", lines.size()));
-            return new DataSet(fileName, lines);
-        } catch (IOException | DataException | AssertionError e) {
-            DataException de = new DataException(format("Unable to process file '%s'", fileName));
-            de.initCause(e);
-            throw de;
+        try {
+            DataLines dataLines = new DataLines(file, false);
+            output.infoMessage(format("Read '%s' lines", dataLines.lineCount()));
+            return new DataSet(fileName, dataLines);
+        }
+        catch (DataException e) {
+            throw new DataException(format("Unable to process file '%s'", fileName), e);
         }
     }
 
     private void dataFileSanityCheck(File file) {
         if (!file.isFile()) {
-            String message = String.format("Unable to process file '%s' - not a file.", file.getName());
+            String message = format("Unable to process file '%s' - not a file.", file.getName());
             output.errorMessage(message);
             throw new DataException(message);
         }

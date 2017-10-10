@@ -22,11 +22,13 @@ public class FileSystemDataSaver implements DataSaver {
     @Override
     public void save(DataSet set) {
         final String fileName = set.getName().getPath();
+        final String lineSeparator = System.lineSeparator();
+        final DataLines dataLines = set.getDataLines();
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
-            for (int i = 0; i < set.getLinesCount(); ++i) {
-                Number[] row = set.getLine(i);
-                String rowString = makeString(row, ",");
-                bw.write(rowString + "\n");
+            for (int i = 0, lineCount = dataLines.lineCount(); i < lineCount; ++i) {
+                Number[] columns = dataLines.getColumns(i);
+                String columnsString = makeString(columns, ",");
+                bw.write(columnsString + lineSeparator);
             }
             output.infoMessage(format("Saved data file '%s' successfully", fileName));
         }

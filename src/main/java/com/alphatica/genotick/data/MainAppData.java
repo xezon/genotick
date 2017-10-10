@@ -5,7 +5,6 @@ import com.alphatica.genotick.timepoint.TimePoints;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -26,10 +25,10 @@ public class MainAppData {
         set.fetchMergedTimePoints(this.timePoints);
     }
 
-    public void put(DataSetName name, List<Number[]> tohlcLines) {
+    public void put(DataSetName name, DataLines tohlcLines) {
         DataSet set = new DataSet(name, tohlcLines);
-        set.fetchMergedTimePoints(this.timePoints);
-        this.sets.put(name, set);
+        set.fetchMergedTimePoints(timePoints);
+        sets.put(name, set);
     }
 
     public TimePoint getFirstTimePoint() {

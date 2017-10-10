@@ -1,14 +1,13 @@
 package com.alphatica.genotick.reversal;
 
 import com.alphatica.genotick.data.Column;
+import com.alphatica.genotick.data.DataLines;
 import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Reversal {
     private static final String REVERSE_DATA_IDENTIFIER = "reverse_";
@@ -45,13 +44,13 @@ public class Reversal {
 
     public DataSet getReversedDataSet() {
         if (null == reversedSet) {
-            final List<Number[]> original = originalSet.getAllLines();
-            final List<Number[]> reversed = reverseList(original);
+            final DataLines original = originalSet.getDataLines();
+            final DataLines reversed = reverseOhlcData(original);
             reversedSet = new DataSet(reversedName, reversed);
         }
         return reversedSet;
     }
-    
+
     private static boolean isReversedDataName(String name) {
         return name.startsWith(REVERSE_DATA_IDENTIFIER);
     }
@@ -65,17 +64,20 @@ public class Reversal {
         return reversedPath.toString();
     }
 
-    private static List<Number[]> reverseList(List<Number[]> original) {
-        List<Number[]> reverse = new ArrayList<>();
+    private static DataLines reverseOhlcData(DataLines originalLines) {
+        final int lineCount = originalLines.lineCount();
+        final int columnCount = originalLines.tohlcColumnCount();
+        DataLines reversedLines = new DataLines(lineCount, columnCount, originalLines.firstLineIsNewest());
         Number[] lastOriginal = null;
         Number[] lastReversed = null;
-        for(Number[] table: original) {
-            Number[] last = reverseLineOHLCV(table, lastOriginal, lastReversed);
-            reverse.add(last);
-            lastOriginal = table;
-            lastReversed = last;
+        for (int line = 0; line < lineCount; ++line) {
+            Number[] currentOriginal = originalLines.getColumns(line);
+            Number[] currentReversed = getReversedColumns(currentOriginal, lastOriginal, lastReversed);
+            reversedLines.setColumns(line, currentReversed);
+            lastOriginal = currentOriginal;
+            lastReversed = currentReversed;
         }
-        return reverse;
+        return reversedLines;
     }
 
     /*
@@ -92,7 +94,7 @@ public class Reversal {
      * 5 and more - Volume, open interest or whatever. These don't change.
      */
 
-    private static Number[] reverseLineOHLCV(Number[] table, Number[] lastOriginal, Number[] lastReversed) {
+    private static Number[] getReversedColumns(Number[] table, Number[] lastOriginal, Number[] lastReversed) {
         Number[] reversed = new Number[table.length];
         // Column 0 is unchanged
         reversed[Column.TOHLCV.TIME] = table[Column.TOHLCV.TIME];

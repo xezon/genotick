@@ -2,9 +2,7 @@ package com.alphatica.genotick.data;
 
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,61 +48,4 @@ public class DataUtils {
         }
         return list;
     }
-
-    public static List<Number[]> createLineList(BufferedReader br) {
-        List<Number[]> list = new ArrayList<>();
-        int linesRead = 1;
-        try {
-            String line = br.readLine();
-            processFirstLine(line, list);
-            linesRead++;
-            while ((line = br.readLine())!=null){
-                linesRead++;
-                Number[] row = processLine(line);
-                list.add(row);
-            }
-            return list;
-        } catch(IOException | NumberFormatException | ArrayIndexOutOfBoundsException ex) {
-            throw new DataException("Error reading line " + linesRead, ex);
-        }
-    }
-
-    private static void processFirstLine(String line, List<Number[]> list) {
-        validateFirstLine(line);
-        try {
-            Number[] row = processLine(line);
-            list.add(row);
-        } catch (NumberFormatException ignore) {
-            /* If it's the first line then it's probably just a heading. Let's ignore NFE */
-        }
-    }
-
-
-    public static Number[] processLine(String line) {
-        String separator = ",";
-        String[] fields = line.split(separator);
-        Number[] array = new Number[fields.length];
-        String timePointString = getTimePointString(fields[0]);
-        array[0] = Long.valueOf(timePointString);
-        for(int i = 1; i < fields.length; i++) {
-            array[i] = Double.valueOf(fields[i]);
-        }
-        return array;
-    }
-
-    public static String getTimePointString(String field) {
-        if(field.contains("-"))
-            return field.replaceAll("-","");
-        else
-            return field;
-
-    }
-
-    private static void validateFirstLine(String line) {
-        if(isNull(line)) {
-            UserInputOutputFactory.getUserOutput().errorMessage("Unable to read line or file empty");
-            throw new DataException("Unable to read line or file empty");
-        }
-    }
-
 }
