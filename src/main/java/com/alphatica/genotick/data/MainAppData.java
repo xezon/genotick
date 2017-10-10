@@ -25,10 +25,10 @@ public class MainAppData {
         set.fetchMergedTimePoints(this.timePoints);
     }
 
-    public void put(DataSetName name, DataLines tohlcLines) {
+    public void put(String name, DataLines tohlcLines) {
         DataSet set = new DataSet(name, tohlcLines);
         set.fetchMergedTimePoints(timePoints);
-        sets.put(name, set);
+        sets.put(set.getName(), set);
     }
 
     public TimePoint getFirstTimePoint() {
