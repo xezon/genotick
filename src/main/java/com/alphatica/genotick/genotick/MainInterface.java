@@ -64,7 +64,7 @@ public class MainInterface {
     private static final Map<Integer, Session> sessions = new HashMap<Integer, Session>();
     private static int currentSessionId = 0;
     
-    public static int getInterfaceVersion() {
+    static int getInterfaceVersion() {
         return INTERFACE_VERSION;
     }
     
@@ -72,7 +72,7 @@ public class MainInterface {
         return currentSessionId;
     }
     
-    public static int start(int sessionId, String[] args) throws IOException, IllegalAccessException {
+    static int start(int sessionId, String[] args) throws IOException, IllegalAccessException {
         printStart(sessionId, args);
         final Session session = sessions.get(sessionId);
         if (session == null) {
@@ -97,22 +97,22 @@ public class MainInterface {
         return (session != null) ? session.data : null;
     }
     
-    public static TimePoints getTimePoints(int sessionId) {
+    static TimePoints getTimePoints(int sessionId) {
         SessionResult sessionResult = getSessionResult(sessionId);
         return (sessionResult != null) ? sessionResult.timePoints : null;
     }
     
-    public static Predictions getPredictions(int sessionId, String dataSetName) {
+    static Predictions getPredictions(int sessionId, String dataSetName) {
         SessionResult sessionResult = getSessionResult(sessionId);
         return (sessionResult != null) ? sessionResult.predictionsMap.get(dataSetName) : null;
     }
     
-    public static TimePoint getNewestTimePoint(int sessionId) {
+    static TimePoint getNewestTimePoint(int sessionId) {
         SessionResult sessionResult = getSessionResult(sessionId);
         return (sessionResult != null) ? sessionResult.timePoints.getNewest() : null;
     }
     
-    public static Prediction getNewestPrediction(int sessionId, String dataSetName) {
+    static Prediction getNewestPrediction(int sessionId, String dataSetName) {
         Prediction prediction = null;
         SessionResult sessionResult = getSessionResult(sessionId);
         if (sessionResult != null) {
@@ -124,22 +124,22 @@ public class MainInterface {
         return prediction;
     }
     
-    public static void savePrediction(TimePoint timePoint, DataSetName dataSetName, Prediction prediction) {
+    static void savePrediction(TimePoint timePoint, DataSetName dataSetName, Prediction prediction) {
         Session currentSession = getCurrentSession();
         if (currentSession != null) {
             currentSession.result.savePrediction(timePoint, dataSetName, prediction);
         }
     }
     
-    public static void createSession(int sessionId) {
+    static void createSession(int sessionId) {
         sessions.put(sessionId, new Session());
     }
     
-    public static void clearSession(int sessionId) {
+    static void clearSession(int sessionId) {
         sessions.remove(sessionId);
     }
     
-    public static void clearSessions() {
+    static void clearSessions() {
         sessions.clear();
     }
     
