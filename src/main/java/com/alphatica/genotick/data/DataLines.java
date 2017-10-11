@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePoints;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
+import com.alphatica.genotick.utility.JniExport;
 
 public class DataLines {
     
@@ -33,6 +34,7 @@ public class DataLines {
         }
     }
     
+    @JniExport
     public DataLines(int lineCount, int columnCount, boolean firstLineIsNewest) throws DataException {
         verifyLineAndColumnCount(lineCount, columnCount);
         this.data = new Number[lineCount][columnCount];
@@ -78,31 +80,38 @@ public class DataLines {
     private double getOhlcValue(int line, int ohlcColumn) {
         return data[line][ohlcColumn + Column.TOHLCV.OPEN].doubleValue();
     }
-        
+    
+    @JniExport
     void setTime(int line, long value) {
         data[line][Column.TOHLCV.TIME] = value;
     }
     
+    @JniExport
     void setOpen(int line, double value) {
         data[line][Column.TOHLCV.OPEN] = value;
     }
     
+    @JniExport
     void setHigh(int line, double value) {
         data[line][Column.TOHLCV.HIGH] = value;
     }
     
+    @JniExport
     void setLow(int line, double value) {
         data[line][Column.TOHLCV.LOW] = value;
     }
     
+    @JniExport
     void setClose(int line, double value) {
         data[line][Column.TOHLCV.CLOSE] = value;
     }
     
+    @JniExport
     void setVolume(int line, double value) {
         data[line][Column.TOHLCV.VOLUME] = value;
     }
     
+    @JniExport
     void setOther(int line, int otherColumn, double value) {
         data[line][otherColumn + Column.TOHLCV.OTHER] = value;
     }

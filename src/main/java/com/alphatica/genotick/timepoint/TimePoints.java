@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.alphatica.genotick.utility.JniExport;
+
 public class TimePoints {
     private final ArrayList<TimePoint> timePoints;
     private final Comparator<TimePoint> comparator;
@@ -70,6 +72,7 @@ public class TimePoints {
         timePoints.set(index, timePoint);
     }
     
+    @JniExport
     public TimePoint get(int index) {
         return timePoints.get(index);
     }
@@ -77,7 +80,8 @@ public class TimePoints {
     public boolean isValidIndex(int index) {
         return (index >= 0) && (index < size());
     }
-        
+    
+    @JniExport
     public int getIndex(TimePoint timePoint) {
         return Collections.binarySearch(timePoints, timePoint, comparator);
     }

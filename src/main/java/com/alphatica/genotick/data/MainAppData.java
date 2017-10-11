@@ -2,6 +2,7 @@ package com.alphatica.genotick.data;
 
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePoints;
+import com.alphatica.genotick.utility.JniExport;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public class MainAppData {
         set.fetchMergedTimePoints(this.timePoints);
     }
 
+    @JniExport
     public void put(String name, DataLines tohlcLines) {
         DataSet set = new DataSet(name, tohlcLines);
         set.fetchMergedTimePoints(timePoints);

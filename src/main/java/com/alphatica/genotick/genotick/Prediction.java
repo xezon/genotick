@@ -1,5 +1,7 @@
 package com.alphatica.genotick.genotick;
 
+import com.alphatica.genotick.utility.JniExport;
+
 public enum Prediction {
     UP(1),
     DOWN(-1),
@@ -17,6 +19,7 @@ public enum Prediction {
         return Prediction.OUT;
     }
 
+    @JniExport
     public int getValue() {
         return value;
     }

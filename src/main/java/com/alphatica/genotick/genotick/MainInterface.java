@@ -9,6 +9,8 @@ import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePoints;
+import com.alphatica.genotick.utility.JniExport;
+
 import static com.alphatica.genotick.utility.Assert.gassert;
 
 public class MainInterface {
@@ -64,6 +66,7 @@ public class MainInterface {
     private static final Map<Integer, Session> sessions = new HashMap<Integer, Session>();
     private static int currentSessionId = 0;
     
+    @JniExport
     static int getInterfaceVersion() {
         return INTERFACE_VERSION;
     }
@@ -72,6 +75,7 @@ public class MainInterface {
         return currentSessionId;
     }
     
+    @JniExport
     static int start(int sessionId, String[] args) throws IOException, IllegalAccessException {
         printStart(sessionId, args);
         final Session session = sessions.get(sessionId);
@@ -86,32 +90,38 @@ public class MainInterface {
         final ErrorCode error = Main.init(args);
         return error.getValue();
     }
-            
+    
+    @JniExport
     public static MainSettings getSettings(int sessionId) {
         Session session = sessions.get(sessionId);
         return (session != null) ? session.settings : null;
     }
     
+    @JniExport
     public static MainAppData getData(int sessionId) {
         Session session = sessions.get(sessionId);
         return (session != null) ? session.data : null;
     }
     
+    @JniExport
     static TimePoints getTimePoints(int sessionId) {
         SessionResult sessionResult = getSessionResult(sessionId);
         return (sessionResult != null) ? sessionResult.timePoints : null;
     }
     
+    @JniExport
     static Predictions getPredictions(int sessionId, String dataSetName) {
         SessionResult sessionResult = getSessionResult(sessionId);
         return (sessionResult != null) ? sessionResult.predictionsMap.get(dataSetName) : null;
     }
     
+    @JniExport
     static TimePoint getNewestTimePoint(int sessionId) {
         SessionResult sessionResult = getSessionResult(sessionId);
         return (sessionResult != null) ? sessionResult.timePoints.getNewest() : null;
     }
     
+    @JniExport
     static Prediction getNewestPrediction(int sessionId, String dataSetName) {
         Prediction prediction = null;
         SessionResult sessionResult = getSessionResult(sessionId);
@@ -131,14 +141,17 @@ public class MainInterface {
         }
     }
     
+    @JniExport
     static void createSession(int sessionId) {
         sessions.put(sessionId, new Session());
     }
     
+    @JniExport
     static void clearSession(int sessionId) {
         sessions.remove(sessionId);
     }
     
+    @JniExport
     static void clearSessions() {
         sessions.clear();
     }

@@ -1,6 +1,7 @@
 package com.alphatica.genotick.genotick;
 
 import java.util.Arrays;
+import com.alphatica.genotick.utility.JniExport;
 
 class Predictions {
     private Prediction[] predictions;
@@ -19,6 +20,7 @@ class Predictions {
         predictions[index] = prediction;
     }
     
+    @JniExport
     Prediction get(int index) {
         return predictions[index];
     }
