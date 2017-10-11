@@ -8,7 +8,8 @@ public class Column {
         HIGH   = 2,
         LOW    = 3,
         CLOSE  = 4,
-        VOLUME = 5;
+        VOLUME = 5,
+        OTHER  = 6;
     }
 
     public static class OHLCV {

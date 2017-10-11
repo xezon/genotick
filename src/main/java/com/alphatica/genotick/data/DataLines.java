@@ -71,8 +71,12 @@ public class DataLines {
         System.arraycopy(columns, 0, data[line], 0, columnCount);
     }
     
-    long getTime(int line) {
+    private long getTime(int line) {
         return data[line][Column.TOHLCV.TIME].longValue();
+    }
+    
+    private double getOhlcValue(int line, int ohlcColumn) {
+        return data[line][ohlcColumn + Column.TOHLCV.OPEN].doubleValue();
     }
         
     void setTime(int line, long value) {
@@ -99,12 +103,8 @@ public class DataLines {
         data[line][Column.TOHLCV.VOLUME] = value;
     }
     
-    double getOhlcValue(int line, int ohlcColumn) {
-        return data[line][ohlcColumn + 1].doubleValue();
-    }
-    
-    void setOhlcValue(int line, int ohlcColumn, double ohlcValue) {
-        data[line][ohlcColumn + 1] = ohlcValue;
+    void setOther(int line, int otherColumn, double value) {
+        data[line][otherColumn + Column.TOHLCV.OTHER] = value;
     }
     
     public int lineCount() {
