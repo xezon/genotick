@@ -142,13 +142,17 @@ public class MainInterface {
     }
     
     @JniExport
-    static void createSession(int sessionId) {
-        sessions.put(sessionId, new Session());
+    static boolean createSession(int sessionId) {
+        if (sessions.get(sessionId) == null) {
+            sessions.put(sessionId, new Session());
+            return true;
+        }
+        return false;
     }
     
     @JniExport
-    static void clearSession(int sessionId) {
-        sessions.remove(sessionId);
+    static boolean clearSession(int sessionId) {
+        return sessions.remove(sessionId) != null;
     }
     
     @JniExport
