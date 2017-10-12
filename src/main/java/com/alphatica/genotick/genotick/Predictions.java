@@ -37,6 +37,7 @@ class Predictions {
         return firstPredictionIsNewest;
     }
     
+    @JniExport
     int size() {
         return predictions.length;
     }

@@ -81,7 +81,6 @@ public class TimePoints {
         return (index >= 0) && (index < size());
     }
     
-    @JniExport
     public int getIndex(TimePoint timePoint) {
         return Collections.binarySearch(timePoints, timePoint, comparator);
     }
@@ -99,6 +98,7 @@ public class TimePoints {
         return firstTimeIsNewest ? getLast() : getFirst();
     }
     
+    @JniExport
     public int size() {
         return timePoints.size();
     }
