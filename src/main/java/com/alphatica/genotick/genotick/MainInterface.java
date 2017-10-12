@@ -76,19 +76,19 @@ public class MainInterface {
     }
     
     @JniExport
-    static int start(int sessionId, String[] args) throws IOException, IllegalAccessException {
+    static ErrorCode start(int sessionId, String[] args) throws IOException, IllegalAccessException {
         printStart(sessionId, args);
         final Session session = sessions.get(sessionId);
         if (session == null) {
-            return printAndReturnErrorValue(ErrorCode.INVALID_SESSION);
+            return printAndReturnError(ErrorCode.INVALID_SESSION);
         }
         if (session.data.isEmpty()) {
-            return printAndReturnErrorValue(ErrorCode.INSUFFICIENT_DATA);
+            return printAndReturnError(ErrorCode.INSUFFICIENT_DATA);
         }
         session.prepareNewSessionResult();
         currentSessionId = sessionId;
         final ErrorCode error = Main.init(args);
-        return error.getValue();
+        return error;
     }
     
     @JniExport
@@ -142,17 +142,20 @@ public class MainInterface {
     }
     
     @JniExport
-    static boolean createSession(int sessionId) {
+    static ErrorCode createSession(int sessionId) {
         if (sessions.get(sessionId) == null) {
             sessions.put(sessionId, new Session());
-            return true;
+            return printAndReturnError(ErrorCode.NO_ERROR);
         }
-        return false;
+        return printAndReturnError(ErrorCode.DUPLICATE_SESSION);
     }
     
     @JniExport
-    static boolean clearSession(int sessionId) {
-        return sessions.remove(sessionId) != null;
+    static ErrorCode clearSession(int sessionId) {
+        if (sessions.remove(sessionId) != null) {
+            return printAndReturnError(ErrorCode.NO_ERROR);
+        }
+        return printAndReturnError(ErrorCode.INVALID_SESSION);
     }
     
     @JniExport
@@ -176,8 +179,8 @@ public class MainInterface {
         }
     }
     
-    private static int printAndReturnErrorValue(final ErrorCode error) {
+    private static ErrorCode printAndReturnError(final ErrorCode error) {
         Main.printError(error);
-        return error.getValue();
+        return error;
     }
 }
