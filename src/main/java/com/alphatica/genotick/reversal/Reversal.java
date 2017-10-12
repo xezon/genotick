@@ -57,10 +57,11 @@ public class Reversal {
 
     private static String getReversedDataPath(String path) {
         Path originalPath = Paths.get(path);
-        Path fileNameOnly = originalPath.getFileName();
-        Path directoryOnly = originalPath.getParent();
-        String newName = REVERSE_DATA_IDENTIFIER + fileNameOnly.toString();
-        Path reversedPath = Paths.get(directoryOnly.toString(), newName);
+        Path fileNamePath = originalPath.getFileName();
+        Path directoryPath = originalPath.getParent();
+        String directoryString = (directoryPath != null) ? directoryPath.toString() : "";
+        String newName = REVERSE_DATA_IDENTIFIER + fileNamePath.toString();
+        Path reversedPath = Paths.get(directoryString, newName);
         return reversedPath.toString();
     }
 
