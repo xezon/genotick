@@ -1,5 +1,7 @@
 package com.alphatica.genotick.genotick;
 
+import static java.lang.String.format;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +12,7 @@ import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePoints;
 import com.alphatica.genotick.utility.JniExport;
+import com.alphatica.genotick.utility.MethodName;
 
 import static com.alphatica.genotick.utility.Assert.gassert;
 
@@ -173,14 +176,14 @@ public class MainInterface {
     }
     
     private static void printStart(int sessionId, String[] args) {
-        System.out.println(String.format("Starting session %d with arguments:", sessionId));
+        System.out.println(format("Starting session '%d' with arguments:", sessionId));
         for (String arg : args) {
             System.out.println(arg);
         }
     }
     
     private static ErrorCode printAndReturnError(final ErrorCode error) {
-        Main.printError(error);
+        System.out.println(format("Method '%s' returned error code %s(%d)", MethodName.get(1), error.toString(), error.getValue()));
         return error;
     }
 }

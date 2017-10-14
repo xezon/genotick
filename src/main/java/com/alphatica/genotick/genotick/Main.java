@@ -23,8 +23,8 @@ import static java.lang.String.format;
 public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
     private static final String VERSION_STRING = "Genotick version 0.10.7 (copyleft 2017)";
-    private static ErrorCode error = ErrorCode.NO_ERROR;
-    private static boolean canContinue = true;
+    private static ErrorCode error;
+    private static boolean canContinue;
     private static UserInput input;
     private static UserOutput output;
 
@@ -33,6 +33,7 @@ public class Main {
     }
 
     public static ErrorCode init(String[] args) throws IOException, IllegalAccessException {
+        setError(ErrorCode.NO_ERROR);
         Parameters parameters = new Parameters(args);
         if (canContinue) {
             initHelp(parameters);
@@ -64,10 +65,10 @@ public class Main {
 
     private static void setError(ErrorCode error) {
         Main.error = error;
-        canContinue = false;
+        canContinue = (error == ErrorCode.NO_ERROR) ? true : false;
     }
 
-    public static void printError(final ErrorCode error) {
+    private static void printError(final ErrorCode error) {
         System.out.println(format("Program finished with error code %s(%d)", error.toString(), error.getValue()));
     }
 
