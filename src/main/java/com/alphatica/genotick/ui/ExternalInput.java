@@ -16,7 +16,7 @@ class ExternalInput implements UserInput {
     
     @Override
     public MainAppData getData(String... sources) {
-        if (hasSources()) {
+        if (hasSources(sources)) {
             return loadData(sources);
         }
         return MainInterface.getData(MainInterface.getCurrentSessionId());

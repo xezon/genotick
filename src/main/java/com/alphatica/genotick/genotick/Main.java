@@ -261,8 +261,10 @@ public class Main {
             for (DataSet loadedSet : loadedSetsCopy) {
                 Reversal reversal = new Reversal(loadedSet);
                 if (reversal.addReversedDataSetTo(data)) {
-                    DataSaver saver = DataFactory.getDefaultSaver();
-                    saver.save(reversal.getReversedDataSet());
+                    if (!settings.dataDirectory.isEmpty()) {
+                        DataSaver saver = DataFactory.getDefaultSaver();
+                        saver.save(reversal.getReversedDataSet());
+                    }
                 }
             }
         }
