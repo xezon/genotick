@@ -4,8 +4,9 @@ import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.exceptions.ExecutionException;
 import com.alphatica.genotick.genotick.DataSetResult;
 import com.alphatica.genotick.genotick.Prediction;
-import com.alphatica.genotick.genotick.Tools;
 import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.utility.Tools;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

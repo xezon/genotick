@@ -3,8 +3,8 @@ package com.alphatica.genotick.ui;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.DataSetResult;
 import com.alphatica.genotick.genotick.Prediction;
-import com.alphatica.genotick.genotick.Tools;
 import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.utility.Tools;
 
 import java.io.File;
 import java.io.FileOutputStream;

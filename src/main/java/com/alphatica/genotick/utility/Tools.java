@@ -1,4 +1,4 @@
-package com.alphatica.genotick.genotick;
+package com.alphatica.genotick.utility;
 
 import java.lang.management.ManagementFactory;
 
