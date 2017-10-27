@@ -22,7 +22,7 @@ class ConsoleOutput implements UserOutput {
     private final Boolean debugEnabled = false;
 
     ConsoleOutput(String outdir) {
-        final String filename = format("genotick-log-%s.txt", Tools.getPidString());
+        final String filename = format("log_%s.txt", Tools.getProcessThreadIdString());
         logFile = new File(outdir, filename);
     }
     

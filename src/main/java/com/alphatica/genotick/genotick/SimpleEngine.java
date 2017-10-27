@@ -74,9 +74,9 @@ public class SimpleEngine implements Engine {
         this.robotDataManager = new RobotDataManager(data, engineSettings.maximumDataOffset);
     }
 
-    private String getSavedPopulationDirName() {
+    private String getPopulationDirName() {
         final String path1 = output.getOutDir();
-        final String path2 = "savedPopulation_" + Tools.getPidString();
+        final String path2 = "population_" + Tools.getProcessThreadIdString();
         return (path1 == null) ? path2 : Paths.get(path1, path2).toString();
     }
 
@@ -88,7 +88,7 @@ public class SimpleEngine implements Engine {
 
     private void savePopulation() {
         if (!population.saveOnDisk()) {
-            String path = getSavedPopulationDirName();
+            String path = getPopulationDirName();
             population.saveToFolder(path);
         }
     }

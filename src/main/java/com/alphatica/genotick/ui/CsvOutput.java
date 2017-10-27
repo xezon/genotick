@@ -18,14 +18,13 @@ public class CsvOutput implements UserOutput {
     private final ConsoleOutput console;
     private final SimpleTextWriter profitWriter;
     private final SimpleTextWriter predictionWriter;
-    private final String pidString;
     private Boolean debug = false;
 
     public CsvOutput(String outdir) throws IOException {
         console = new ConsoleOutput(outdir);
-        pidString = Tools.getPidString();
-        profitWriter = new SimpleTextWriter(outdir, "profit_" + pidString + ".csv");
-        predictionWriter = new SimpleTextWriter(outdir, "predictions_" + pidString + ".csv");
+        String identifier = Tools.getProcessThreadIdString();
+        profitWriter = new SimpleTextWriter(outdir, "profit_" + identifier + ".csv");
+        predictionWriter = new SimpleTextWriter(outdir, "predictions_" + identifier + ".csv");
     }
 
     @Override
