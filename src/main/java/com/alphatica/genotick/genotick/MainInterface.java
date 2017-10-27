@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
@@ -65,23 +66,23 @@ public class MainInterface {
         }
     }
     
+    private static class ThreadData {
+        final Map<Integer, Session> sessions = new HashMap<Integer, Session>();
+        int currentSessionId = 0;
+    }
+    
     private static final int INTERFACE_VERSION = 1;
-    private static final Map<Integer, Session> sessions = new HashMap<Integer, Session>();
-    private static int currentSessionId = 0;
+    private static final Map<Long, ThreadData> threads = new ConcurrentHashMap<Long, ThreadData>();
     
     @JniExport
     static int getInterfaceVersion() {
         return INTERFACE_VERSION;
     }
     
-    public static int getCurrentSessionId() {
-        return currentSessionId;
-    }
-    
     @JniExport
     static ErrorCode start(int sessionId, String[] args) throws IOException, IllegalAccessException {
         printStart(sessionId, args);
-        final Session session = sessions.get(sessionId);
+        Session session = getSession(sessionId);
         if (session == null) {
             return printAndReturnError(ErrorCode.INVALID_SESSION);
         }
@@ -89,20 +90,30 @@ public class MainInterface {
             return printAndReturnError(ErrorCode.INSUFFICIENT_DATA);
         }
         session.prepareNewSessionResult();
-        currentSessionId = sessionId;
-        final ErrorCode error = Main.init(args);
+        getCurrentThreadData().currentSessionId = sessionId;
+        ErrorCode error = Main.init(args);
         return error;
     }
     
+    public static MainSettings getCurrentSettings() {
+        Session session = getCurrentSession();
+        return (session != null) ? session.settings : null;
+    }
+    
+    public static MainAppData getCurrentData() {
+        Session session = getCurrentSession();
+        return (session != null) ? session.data : null;
+    }
+    
     @JniExport
-    public static MainSettings getSettings(int sessionId) {
-        Session session = sessions.get(sessionId);
+    static MainSettings getSettings(int sessionId) {
+        Session session = getSession(sessionId);
         return (session != null) ? session.settings : null;
     }
     
     @JniExport
-    public static MainAppData getData(int sessionId) {
-        Session session = sessions.get(sessionId);
+    static MainAppData getData(int sessionId) {
+        Session session = getSession(sessionId);
         return (session != null) ? session.data : null;
     }
     
@@ -146,8 +157,13 @@ public class MainInterface {
     
     @JniExport
     static ErrorCode createSession(int sessionId) {
-        if (sessions.get(sessionId) == null) {
-            sessions.put(sessionId, new Session());
+        ThreadData thread = getCurrentThreadData();
+        if (thread == null) {
+            thread = new ThreadData();
+            threads.put(getCurrentThreadId(), thread);
+        }
+        if (thread.sessions.get(sessionId) == null) {
+            thread.sessions.put(sessionId, new Session());
             return printAndReturnError(ErrorCode.NO_ERROR);
         }
         return printAndReturnError(ErrorCode.DUPLICATE_SESSION);
@@ -155,28 +171,55 @@ public class MainInterface {
     
     @JniExport
     static ErrorCode clearSession(int sessionId) {
-        if (sessions.remove(sessionId) != null) {
-            return printAndReturnError(ErrorCode.NO_ERROR);
+        long threadId = getCurrentThreadId();
+        ThreadData thread = threads.get(threadId);
+        if (thread != null) {
+            if (thread.sessions.remove(sessionId) != null) {
+                if (thread.sessions.isEmpty()) {
+                    threads.remove(threadId);
+                }
+                return printAndReturnError(ErrorCode.NO_ERROR);
+            }
         }
         return printAndReturnError(ErrorCode.INVALID_SESSION);
     }
     
     @JniExport
     static void clearSessions() {
-        sessions.clear();
+        threads.remove(getCurrentThreadId());
+    }
+      
+    private static Session getSession(int sessionId) {
+        ThreadData thread = getCurrentThreadData();
+        if (thread != null) {
+            return thread.sessions.get(sessionId);
+        }
+        return null;
     }
     
     private static Session getCurrentSession() {
-        return sessions.get(currentSessionId);
+        ThreadData thread = getCurrentThreadData();
+        if (thread != null) {
+            return thread.sessions.get(thread.currentSessionId);
+        }
+        return null;
     }
     
     private static SessionResult getSessionResult(int sessionId) {
-        Session session = sessions.get(sessionId);
+        Session session = getSession(sessionId);
         return (session != null) ? session.result : null;
     }
     
+    private static ThreadData getCurrentThreadData() {
+        return threads.get(getCurrentThreadId());
+    }
+    
+    private static long getCurrentThreadId() {
+        return Thread.currentThread().getId();
+    }
+    
     private static void printStart(int sessionId, String[] args) {
-        System.out.println(format("Starting session '%d' with arguments:", sessionId));
+        System.out.println(format("Starting session '%d' on thread '%d' with arguments:", sessionId, getCurrentThreadId()));
         for (String arg : args) {
             System.out.println(arg);
         }
