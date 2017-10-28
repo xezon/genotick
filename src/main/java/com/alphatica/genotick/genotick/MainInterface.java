@@ -91,8 +91,8 @@ public class MainInterface {
         }
         session.prepareNewSessionResult();
         getCurrentThreadData().currentSessionId = sessionId;
-        ErrorCode error = Main.init(args);
-        return error;
+        Main main = new Main();
+        return main.init(args);
     }
     
     public static MainSettings getCurrentSettings() {
@@ -219,10 +219,11 @@ public class MainInterface {
     }
     
     private static void printStart(int sessionId, String[] args) {
-        System.out.println(format("Starting session '%d' on thread '%d' with arguments:", sessionId, getCurrentThreadId()));
+        String argsString = "";
         for (String arg : args) {
-            System.out.println(arg);
+            argsString += " " + arg;
         }
+        System.out.println(format("Starting session '%d' on thread '%d' with arguments:%s", sessionId, getCurrentThreadId(), argsString));
     }
     
     private static ErrorCode printAndReturnError(final ErrorCode error) {

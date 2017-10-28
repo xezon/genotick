@@ -22,16 +22,17 @@ import static java.lang.String.format;
 public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
     private static final String VERSION_STRING = "Genotick version 0.10.7 (copyleft 2017)";
-    private static ErrorCode error;
-    private static boolean canContinue;
-    private static UserInput input;
-    private static UserOutput output;
+    private ErrorCode error;
+    private boolean canContinue;
+    private UserInput input;
+    private UserOutput output;
 
     public static void main(String[] args) throws IOException, IllegalAccessException {
-        init(args);
+        Main main = new Main();
+        main.init(args);
     }
 
-    public static ErrorCode init(String[] args) throws IOException, IllegalAccessException {
+    public ErrorCode init(String[] args) throws IOException, IllegalAccessException {
         setError(ErrorCode.NO_ERROR);
         Parameters parameters = new Parameters(args);
         if (canContinue) {
@@ -62,16 +63,16 @@ public class Main {
         return error;
     }
 
-    private static void setError(ErrorCode error) {
-        Main.error = error;
-        canContinue = (error == ErrorCode.NO_ERROR) ? true : false;
+    private void setError(ErrorCode error) {
+        this.error = error;
+        this.canContinue = (error == ErrorCode.NO_ERROR) ? true : false;
     }
 
-    private static void printError(final ErrorCode error) {
+    private void printError(final ErrorCode error) {
         System.out.println(format("Program finished with error code %s(%d)", error.toString(), error.getValue()));
     }
 
-    private static void initHelp(Parameters parameters) {
+    private void initHelp(Parameters parameters) {
         if(parameters.getValue("help") != null
                 || parameters.getValue("--help") != null
                 || parameters.getValue("-h") != null) {
@@ -96,14 +97,14 @@ public class Main {
         }
     }
     
-    private static void initVersionRequest(Parameters parameters) {
+    private void initVersionRequest(Parameters parameters) {
         if(parameters.getValue("showVersion") != null) {
             System.out.println(Main.VERSION_STRING);
             setError(ErrorCode.NO_ERROR);
         }
     }
 
-    private static void initUserIO(Parameters parameters) throws IOException {
+    private void initUserIO(Parameters parameters) throws IOException {
         input = UserInputOutputFactory.createUserInput(parameters);
         if(input == null) {
             setError(ErrorCode.NO_INPUT);
@@ -116,7 +117,7 @@ public class Main {
         }
     }
 
-    private static void initShowRobot(Parameters parameters) {
+    private void initShowRobot(Parameters parameters) {
         String path = parameters.getValue("showRobot");
         if(path != null) {
             try {
@@ -129,7 +130,7 @@ public class Main {
         }
     }
 
-    private static void initShowPopulation(Parameters parameters) {
+    private void initShowPopulation(Parameters parameters) {
         String path = parameters.getValue("showPopulation");
         if(path != null) {
             try {
@@ -142,7 +143,7 @@ public class Main {
         }
     }
 
-    private static void initYahoo(Parameters parameters) {
+    private void initYahoo(Parameters parameters) {
         String yahooValue = parameters.getValue("fixYahoo");
         if(yahooValue != null) {
             YahooFixer yahooFixer = new YahooFixer(yahooValue);
@@ -151,7 +152,7 @@ public class Main {
         }
     }
 
-    private static void initReverse(Parameters parameters) {
+    private void initReverse(Parameters parameters) {
         String dataDirectory = parameters.getValue("reverse");
         if(dataDirectory != null) {
             DataLoader loader = new FileSystemDataLoader();
@@ -170,7 +171,7 @@ public class Main {
         }
     }
 
-    private static void initSimulation(Parameters parameters) throws IllegalAccessException {
+    private void initSimulation(Parameters parameters) throws IllegalAccessException {
         if(!parameters.allConsumed()) {
             output.errorMessage("Not all arguments processed: " + parameters.getUnconsumed());
             setError(ErrorCode.UNKNOWN_ARGUMENT);
