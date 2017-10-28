@@ -46,7 +46,7 @@ public class Robot implements Serializable {
     }
 
     public int getLength() {
-        return mainFunction.getSize();
+        return mainFunction.getInstructionCount();
     }
 
     public RobotName getName() {
@@ -144,7 +144,7 @@ public class Robot implements Serializable {
 
     @Override
     public String toString() {
-        int length = mainFunction.getSize();
+        int length = mainFunction.getInstructionCount();
         return "Name: " + this.name.toString()
                 + " Outcomes: " + String.valueOf(totalOutcomes)
                 + " Weight: " + weightFormat.format(getWeight())
@@ -190,8 +190,8 @@ public class Robot implements Serializable {
 
     private void addMainFunction(StringBuilder sb) throws IllegalAccessException {
         sb.append("MainFunction:").append("\n");
-        sb.append("VariableCount: ").append(mainFunction.getVariablesCount()).append("\n");
-        for(int i = 0; i < mainFunction.getSize(); i++) {
+        sb.append("VariableCount: ").append(mainFunction.getVariableCount()).append("\n");
+        for(int i = 0; i < mainFunction.getInstructionCount(); i++) {
             Instruction instruction = mainFunction.getInstruction(i);
             sb.append(instruction.instructionString()).append("\n");
         }

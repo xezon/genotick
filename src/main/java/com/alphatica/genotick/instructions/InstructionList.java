@@ -11,13 +11,12 @@ public class InstructionList implements Serializable {
 
     private final Random random;
     private final List<Instruction> list;
-    private final int variablesCount;
     private final double[] variables;
 
     private InstructionList(Random random) {
         this.random = random;
         this.list = new ArrayList<>();
-        this.variablesCount = 1 + Math.abs(random.nextInt() % 1024);
+        int variablesCount = 1 + Math.abs(random.nextInt() % 1024);
         this.variables = new double[variablesCount];
     }
 
@@ -48,8 +47,13 @@ public class InstructionList implements Serializable {
     public void addInstruction(Instruction instruction) {
         list.add(instruction);
     }
-    public int getSize() {
+    
+    public int getInstructionCount() {
         return list.size();
+    }
+
+    public int getVariableCount() {
+        return variables.length;
     }
 
     @SuppressWarnings("unused")
@@ -59,7 +63,7 @@ public class InstructionList implements Serializable {
     }
 
     private int validateVariableNumber(int index) {
-        return Math.abs(index % variablesCount);
+        return Math.abs(index % variables.length);
     }
 
     private int fixPosition(int position) {
@@ -67,9 +71,5 @@ public class InstructionList implements Serializable {
             return position;
         else
             return random.nextInt(list.size());
-    }
-
-    public int getVariablesCount() {
-        return variablesCount;
     }
 }

@@ -169,12 +169,12 @@ public class SimpleBreeder implements RobotBreeder {
         int break1 = getBreakPoint(list1);
         int break2 = getBreakPoint(list2);
         copyBlock(instructionList, list1, 0, break1);
-        copyBlock(instructionList, list2, break2, list2.getSize());
+        copyBlock(instructionList, list2, break2, list2.getInstructionCount());
         return instructionList;
     }
 
     private int getBreakPoint(InstructionList list) {
-        int size = list.getSize();
+        int size = list.getInstructionCount();
         if (size == 0)
             return 0;
         else
