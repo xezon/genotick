@@ -1,5 +1,6 @@
 package com.alphatica.genotick.breeder;
 
+import com.alphatica.genotick.genotick.WeightCalculator;
 import com.alphatica.genotick.instructions.Instruction;
 import com.alphatica.genotick.instructions.InstructionList;
 import com.alphatica.genotick.instructions.TerminateInstructionList;
@@ -19,6 +20,7 @@ import static com.alphatica.genotick.utility.Assert.gassert;
 public class SimpleBreeder implements RobotBreeder {
     private BreederSettings settings;
     private Mutator mutator;
+    private WeightCalculator weightCalculator = new WeightCalculator();
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
 
     public static RobotBreeder getInstance() {
@@ -65,7 +67,7 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private void createNewRobot(Population population) {
-        final Robot robot = Robot.createEmptyRobot(settings.maximumDataOffset, settings.ignoreColumns);
+        final Robot robot = Robot.createEmptyRobot(weightCalculator, settings.maximumDataOffset, settings.ignoreColumns);
         final int maximumRobotInstructionCount = settings.maximumRobotInstructions - settings.minimumRobotInstructions;
         int instructionCount = settings.minimumRobotInstructions + Math.abs(mutator.getNextInt() % maximumRobotInstructionCount);
         final InstructionList main = robot.getMainFunction();
@@ -97,7 +99,7 @@ public class SimpleBreeder implements RobotBreeder {
             Robot parent2 = getPossibleParent(population, list);
             if (parent1 == null || parent2 == null)
                 break;
-            Robot child = Robot.createEmptyRobot(settings.maximumDataOffset, settings.ignoreColumns);
+            Robot child = Robot.createEmptyRobot(weightCalculator, settings.maximumDataOffset, settings.ignoreColumns);
             makeChild(parent1, parent2, child);
             population.saveRobot(child);
             parent1.increaseChildren();
@@ -231,5 +233,7 @@ public class SimpleBreeder implements RobotBreeder {
     public void setSettings(BreederSettings breederSettings, Mutator mutator) {
         this.settings = breederSettings;
         this.mutator = mutator;
+        this.weightCalculator.setWeightMode(breederSettings.weightMode);
+        this.weightCalculator.setWeightExponent(breederSettings.weightExponent);
     }
 }

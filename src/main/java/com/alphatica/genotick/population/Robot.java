@@ -25,6 +25,7 @@ public class Robot implements Serializable {
     private static final DecimalFormat weightFormat = new DecimalFormat("0.00");
 
     private RobotName name;
+    private final WeightCalculator weightCalculator;
     private final int maximumDataOffset;
     private final int ignoreColumns;
     private InstructionList mainFunction;
@@ -42,8 +43,8 @@ public class Robot implements Serializable {
     private final Map<DataSetName, Prediction> current = new HashMap<>();
     private final Map<DataSetName, Prediction> pending = new HashMap<>();
 
-    public static Robot createEmptyRobot(int maximumDataOffset, int ignoreColumns) {
-        return new Robot(maximumDataOffset, ignoreColumns);
+    public static Robot createEmptyRobot(WeightCalculator weightCalculator, int maximumDataOffset, int ignoreColumns) {
+        return new Robot(weightCalculator, maximumDataOffset, ignoreColumns);
     }
 
     public int getLength() {
@@ -91,7 +92,7 @@ public class Robot implements Serializable {
     }
 
     public double getEarnedWeight() {
-        return WeightCalculator.calculateWeight(this);
+        return weightCalculator.calculateWeight(this);
     }
     
     public double getInheritedWeight() {
@@ -184,10 +185,11 @@ public class Robot implements Serializable {
         return bias;
     }
 
-    private Robot(int maximumDataOffset, int ignoreColumns) {
-        mainFunction = InstructionList.createInstructionList();
+    private Robot(WeightCalculator weightCalculator, int maximumDataOffset, int ignoreColumns) {
+        this.weightCalculator = weightCalculator;
         this.maximumDataOffset = maximumDataOffset;
         this.ignoreColumns = ignoreColumns;
+        this.mainFunction = InstructionList.createInstructionList();
     }
 
     private void addMainFunction(StringBuilder sb) throws IllegalAccessException {

@@ -31,7 +31,6 @@ public class Simulation {
         if(validateSettings(mainSettings)) {
             initRandomGenerator(mainSettings);
             initChart(mainSettings);
-            initWeightCalculator(mainSettings);
             logSettings(mainSettings);
             RobotKiller killer = createRobotKiller(mainSettings);
             Mutator mutator = createMutator(mainSettings);
@@ -56,14 +55,9 @@ public class Simulation {
     private void initRandomGenerator(MainSettings mainSettings) {
         RandomGenerator.suggestSeed(mainSettings.randomSeed);
     }
-    
+
     private void initChart(MainSettings mainSettings) {
         GenoChartFactory.initialize(mainSettings.chartMode);
-    }
-    
-    private void initWeightCalculator(MainSettings mainSettings) {
-        WeightCalculator.setWeightMode(mainSettings.weightMode);
-        WeightCalculator.setWeightExponent(mainSettings.weightExponent);
     }
 
     private Engine createEngine(MainSettings mainSettings, MainAppData data, RobotKiller killer,
