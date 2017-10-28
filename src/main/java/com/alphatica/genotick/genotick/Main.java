@@ -1,22 +1,21 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.data.*;
-import com.alphatica.genotick.population.Population;
-import com.alphatica.genotick.population.PopulationDAOFileSystem;
-import com.alphatica.genotick.population.Robot;
-import com.alphatica.genotick.population.RobotInfo;
+import com.alphatica.genotick.data.DataFactory;
+import com.alphatica.genotick.data.DataLoader;
+import com.alphatica.genotick.data.DataSaver;
+import com.alphatica.genotick.data.DataSet;
+import com.alphatica.genotick.data.FileSystemDataLoader;
+import com.alphatica.genotick.data.FileSystemDataSaver;
+import com.alphatica.genotick.data.MainAppData;
+import com.alphatica.genotick.data.YahooFixer;
 import com.alphatica.genotick.reversal.Reversal;
 import com.alphatica.genotick.ui.Parameters;
 import com.alphatica.genotick.ui.UserInput;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
-import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.io.IOException;
 
 import static java.lang.String.format;
 
@@ -72,138 +71,34 @@ public class Main {
         System.out.println(format("Program finished with error code %s(%d)", error.toString(), error.getValue()));
     }
 
-    private static void initShowRobot(Parameters parameters) {
-        String value = parameters.getValue("showRobot");
-        if(value != null) {
-            try {
-                showRobot(value);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                output.errorMessage(e.getMessage());
-            }
-            setError(ErrorCode.NO_ERROR);
-        }
-    }
-
-    private static void showRobot(String value) throws IllegalAccessException {
-        String robotString = getRobotString(value);
-        System.out.println(robotString);
-    }
-
-    private static String getRobotString(String path) throws IllegalAccessException {
-        File file = new File(path);
-        Robot robot = PopulationDAOFileSystem.getRobotFromFile(file);
-        return robot.showRobot();
-    }
-
-    private static void initShowPopulation(Parameters parameters) {
-        String value = parameters.getValue("showPopulation");
-        if(value != null) {
-            try {
-                showPopulation(value);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                output.errorMessage(e.getMessage());
-            }
-            setError(ErrorCode.NO_ERROR);
-        }
-    }
-
-    private static void showPopulation(String path) throws IllegalAccessException {
-        PopulationDAOFileSystem dao = new PopulationDAOFileSystem(path);
-        Population population = PopulationFactory.getDefaultPopulation(dao);
-        showHeader();
-        showRobots(population);
-    }
-
-    private static void showRobots(Population population) throws IllegalAccessException {
-        for(RobotInfo robotInfo: population.getRobotInfoList()) {
-            String info = getRobotInfoString(robotInfo);
-            System.out.println(info);
-        }
-    }
-
-    private static String getRobotInfoString(RobotInfo robotInfo) throws IllegalAccessException {
-        StringBuilder sb = new StringBuilder();
-        Field [] fields = robotInfo.getClass().getDeclaredFields();
-        for(Field field: fields) {
-            field.setAccessible(true);
-            if(!Modifier.isStatic(field.getModifiers())) {
-                Object object = field.get(robotInfo);
-                if(sb.length() > 0) {
-                    sb.append(",");
-                }
-                sb.append(object.toString());
-            }
-        }
-        return sb.toString();
-    }
-
-    private static void showHeader() {
-        Class<RobotInfo> infoClass = RobotInfo.class;
-        List<Field> fields = buildFields(infoClass);
-        String line = buildLine(fields);
-        System.out.println(line);
-    }
-
-    private static List<Field> buildFields(Class<?> infoClass) {
-        List<Field> fields = new ArrayList<>();
-        for(Field field: infoClass.getDeclaredFields()) {
-            if(!Modifier.isStatic(field.getModifiers())) {
-                fields.add(field);
-            }
-        }
-        return fields;
-    }
-
-    private static String buildLine(List<Field> fields) {
-        StringBuilder sb = new StringBuilder();
-        for (Field field : fields) {
-            if (sb.length() > 0) {
-                sb.append(",");
-            }
-            sb.append(field.getName());
-        }
-        return sb.toString();
-    }
-
-    private static void initVersionRequest(Parameters parameters) {
-        if(parameters.getValue("showVersion") != null) {
-            System.out.println(Main.VERSION_STRING);
-            setError(ErrorCode.NO_ERROR);
-        }
-    }
-    
     private static void initHelp(Parameters parameters) {
         if(parameters.getValue("help") != null
                 || parameters.getValue("--help") != null
                 || parameters.getValue("-h") != null) {
             System.out.print("Displaying version: ");
-            System.out.println("	java -jar genotick.jar showVersion");
+            System.out.println("    java -jar genotick.jar showVersion");
             System.out.print("Reversing data: ");
-            System.out.println("	java -jar genotick.jar reverse=mydata");
+            System.out.println("    java -jar genotick.jar reverse=mydata");
             System.out.print("Inputs from a file: ");
-            System.out.println("	java -jar genotick.jar input=file:path\\to\\file");
+            System.out.println("    java -jar genotick.jar input=file:path\\to\\file");
             System.out.print("Output to a file: ");
-            System.out.println("	java -jar genotick.jar output=csv");
+            System.out.println("    java -jar genotick.jar output=csv");
             System.out.print("Custom output directory for generated files (log, charts, population): ");
             System.out.println("    java -jar genotick.jar outdir=path\\of\\folders");
             System.out.print("show population: ");
-            System.out.println("	java -jar genotick.jar showPopulation=directory_with_population");
+            System.out.println("    java -jar genotick.jar showPopulation=directory_with_population");
             System.out.print("show robot info: ");
-            System.out.println("	java -jar genotick.jar showRobot=directory_with_population\\system name.prg");
-            System.out.println("contact: 		lukasz.wojtow@gmail.com");
-            System.out.println("more info: 		genotick.com");
+            System.out.println("    java -jar genotick.jar showRobot=directory_with_population\\system name.prg");
+            System.out.println("contact:        lukasz.wojtow@gmail.com");
+            System.out.println("more info:      genotick.com");
 
             setError(ErrorCode.NO_ERROR);
         }
     }
-
-    private static void initYahoo(Parameters parameters) {
-        String yahooValue = parameters.getValue("fixYahoo");
-        if(yahooValue != null) {
-            YahooFixer yahooFixer = new YahooFixer(yahooValue);
-            yahooFixer.fixFiles();
+    
+    private static void initVersionRequest(Parameters parameters) {
+        if(parameters.getValue("showVersion") != null) {
+            System.out.println(Main.VERSION_STRING);
             setError(ErrorCode.NO_ERROR);
         }
     }
@@ -218,6 +113,41 @@ public class Main {
         if(output == null) {
             setError(ErrorCode.NO_OUTPUT);
             return;
+        }
+    }
+
+    private static void initShowRobot(Parameters parameters) {
+        String path = parameters.getValue("showRobot");
+        if(path != null) {
+            try {
+                RobotPrinter.printRobot(path);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                System.err.println(e.getMessage());
+            }
+            setError(ErrorCode.NO_ERROR);
+        }
+    }
+
+    private static void initShowPopulation(Parameters parameters) {
+        String path = parameters.getValue("showPopulation");
+        if(path != null) {
+            try {
+                PopulationPrinter.printPopulation(path);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                System.err.println(e.getMessage());
+            }
+            setError(ErrorCode.NO_ERROR);
+        }
+    }
+
+    private static void initYahoo(Parameters parameters) {
+        String yahooValue = parameters.getValue("fixYahoo");
+        if(yahooValue != null) {
+            YahooFixer yahooFixer = new YahooFixer(yahooValue);
+            yahooFixer.fixFiles();
+            setError(ErrorCode.NO_ERROR);
         }
     }
 
