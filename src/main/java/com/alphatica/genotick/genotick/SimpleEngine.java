@@ -36,8 +36,8 @@ public class SimpleEngine implements Engine {
     private MainAppData data;
     private RobotDataManager robotDataManager;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
-    private final ProfitRecorder profitRecorder = new ProfitRecorder(output);
-    private final Account account = new Account(BigDecimal.valueOf(100_000L), output, profitRecorder);
+    private ProfitRecorder profitRecorder;
+    private Account account;
 
     static Engine getEngine() {
         return new SimpleEngine();
@@ -72,6 +72,8 @@ public class SimpleEngine implements Engine {
         this.population = population;
         this.data = data;
         this.robotDataManager = new RobotDataManager(data, engineSettings.maximumDataOffset);
+        this.profitRecorder = new ProfitRecorder(output, engineSettings.chartMode);
+        this.account = new Account(BigDecimal.valueOf(100_000L), output, profitRecorder);
     }
 
     private String getPopulationDirName() {

@@ -1,5 +1,6 @@
 package com.alphatica.genotick.account;
 
+import com.alphatica.genotick.chart.GenoChartMode;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.ui.CsvOutput;
@@ -254,7 +255,7 @@ public class AccountTest {
         double profit = 0.0;
 
         MockProfitRecorder(UserOutput output) {
-            super(output);
+            super(output, GenoChartMode.NONE);
         }
 
         @Override
