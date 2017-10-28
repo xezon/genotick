@@ -10,11 +10,11 @@ import com.alphatica.genotick.chart.GenoChartMode;
 
 import java.io.Console;
 
-@SuppressWarnings("unused")
 class ConsoleInput extends BasicUserInput {
     private final Console console;
 
-    ConsoleInput() {
+    ConsoleInput(UserOutput output) {
+        super(output);
         console = System.console();
         if(console == null) {
             throw new RuntimeException("Unable to create system console");

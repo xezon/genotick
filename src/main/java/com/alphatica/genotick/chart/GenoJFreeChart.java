@@ -14,7 +14,6 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
 
-import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 import com.alphatica.genotick.utility.Tools;
 
@@ -26,16 +25,19 @@ import static com.alphatica.genotick.utility.Assert.gassert;
 
 class GenoJFreeChart implements GenoChart {
     
-    private final Map<String, XYChartDefinition> xyChartMap = new HashMap<>();
-
+    private final UserOutput output;
+    private final Map<String, XYChartDefinition> xyChartMap;
     private final boolean drawChart;
     private final boolean saveChart;
     private int numOpenedChartFrames;
-    GenoJFreeChart(final GenoChartMode mode) {
-        drawChart = mode.contains(GenoChartMode.DRAW);
-        saveChart = mode.contains(GenoChartMode.SAVE);
-        numOpenedChartFrames = 0;
-        gassert(drawChart || saveChart);
+    
+    GenoJFreeChart(GenoChartMode mode, UserOutput output) {
+        this.output = output;
+        this.xyChartMap = new HashMap<>();
+        this.drawChart = mode.contains(GenoChartMode.DRAW);
+        this.saveChart = mode.contains(GenoChartMode.SAVE);
+        this.numOpenedChartFrames = 0;
+        gassert(this.drawChart || this.saveChart);
     }
 
     @Override
@@ -111,7 +113,6 @@ class GenoJFreeChart implements GenoChart {
     }
 
     private void saveChart(final String title, final JFreeChart chartObject) {
-        final UserOutput output = UserInputOutputFactory.getUserOutput();
         final String filename = makeFileName(title);
         final File file = new File(output.getOutDir(), filename);
         try {
@@ -141,7 +142,4 @@ class GenoJFreeChart implements GenoChart {
         String xLabel;
         String yLabel;
     }
-
 }
-
-

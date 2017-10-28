@@ -1,6 +1,7 @@
 package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.timepoint.TimePointExecutor;
+import com.alphatica.genotick.ui.UserOutput;
 import com.alphatica.genotick.breeder.RobotBreeder;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.killer.RobotKiller;
@@ -11,8 +12,9 @@ class EngineFactory {
                                           MainAppData data, TimePointExecutor timePointExecutor,
                                           RobotKiller killer,
                                           RobotBreeder breeder,
-                                          Population population) {
-        Engine engine = SimpleEngine.getEngine();
+                                          Population population,
+                                          UserOutput output) {
+        Engine engine = SimpleEngine.create(output);
         engine.setSettings(engineSettings, timePointExecutor, data, killer, breeder, population);
         return engine;
     }

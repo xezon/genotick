@@ -8,7 +8,13 @@ import com.alphatica.genotick.exceptions.ExecutionException;
 import com.alphatica.genotick.genotick.MainInterface;
 
 class ExternalInput implements UserInput {
+    
     private MainAppData assetData = null;
+    private final UserOutput output;
+    
+    ExternalInput(UserOutput output) {
+        this.output = output;
+    }
     
     @Override
     public MainSettings getSettings() throws ExecutionException {
@@ -46,7 +52,7 @@ class ExternalInput implements UserInput {
     
     private MainAppData loadData(String... sources) {
         if (assetData == null) {
-            DataLoader loader = DataFactory.getDefaultLoader();
+            DataLoader loader = DataFactory.getDefaultLoader(output);
             assetData = loader.loadAll(sources);
         }
         return assetData;

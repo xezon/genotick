@@ -23,13 +23,13 @@ public class ProfitRecorder {
     private final Map<DataSetName, Integer> wins = new HashMap<>();
     private final Map<DataSetName, Integer> losses = new HashMap<>();
     private final Set<DataSetName> names = new HashSet<>();
-    private final UserOutput output;
     private final GenoChart chart;
+    private final UserOutput output;
     private double accumulatedProfit = 0.0;
     
-    public ProfitRecorder(UserOutput output, GenoChartMode chartMode) {
+    public ProfitRecorder(GenoChartMode chartMode, UserOutput output) {
+        this.chart = GenoChartFactory.create(chartMode, output);
         this.output = output;
-        this.chart = GenoChartFactory.create(chartMode);
     }
     
     public void onUpdate(final int bar) {

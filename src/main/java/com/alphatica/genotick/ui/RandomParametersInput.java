@@ -10,10 +10,13 @@ import com.alphatica.genotick.chart.GenoChartMode;
 
 import java.util.Random;
 
-@SuppressWarnings("unused")
 class RandomParametersInput extends BasicUserInput {
+
     private Random random;
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
+    
+    RandomParametersInput(UserOutput output) {
+        super(output);
+    }
 
     @Override
     public MainSettings getSettings() {

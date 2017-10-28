@@ -10,7 +10,6 @@ import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.Robot;
 import com.alphatica.genotick.population.RobotInfo;
 import com.alphatica.genotick.population.RobotSettings;
-import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.util.ArrayList;
@@ -25,14 +24,15 @@ public class SimpleBreeder implements RobotBreeder {
     private Mutator mutator;
     private Random random;
     private final WeightCalculator weightCalculator;
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
+    private final UserOutput output;
 
-    private SimpleBreeder() {
-        weightCalculator = new WeightCalculator();
+    private SimpleBreeder(UserOutput output) {
+        this.weightCalculator = new WeightCalculator();
+        this.output = output;
     }
     
-    public static RobotBreeder getInstance() {
-        return new SimpleBreeder();
+    public static RobotBreeder create(UserOutput output) {
+        return new SimpleBreeder(output);
     }
 
     @Override

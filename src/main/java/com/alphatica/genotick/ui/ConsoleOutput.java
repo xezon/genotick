@@ -15,7 +15,6 @@ import static java.lang.String.format;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 
-
 class ConsoleOutput implements UserOutput {
 
     private final File logFile;

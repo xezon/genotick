@@ -1,6 +1,5 @@
 package com.alphatica.genotick.data;
 
-import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.File;
@@ -8,10 +7,11 @@ import java.util.List;
 
 public class YahooFixer {
     private final String path;
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
+    private final UserOutput output;
 
-    public YahooFixer(String yahooValue) {
-        this.path = yahooValue;
+    public YahooFixer(String path, UserOutput output) {
+        this.path = path;
+        this.output = output;
     }
 
     public void fixFiles() {
@@ -26,7 +26,7 @@ public class YahooFixer {
         output.infoMessage("Fixing file: " + name);
         DataLines dataLines = new DataLines(new File(name), false);
         DataLines fixedDataLines = getFixedLines(dataLines);
-        DataSaver dataSaver = DataFactory.getDefaultSaver();
+        DataSaver dataSaver = DataFactory.getDefaultSaver(output);
         dataSaver.save(new DataSet(name, fixedDataLines));
     }
 

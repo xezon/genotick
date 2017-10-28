@@ -8,19 +8,19 @@ import java.util.Random;
 import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.RobotInfo;
-import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 class SimpleRobotKiller implements RobotKiller {
     private RobotKillerSettings settings;
     private Random random;
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
+    private final UserOutput output;
 
-    private SimpleRobotKiller() {
+    private SimpleRobotKiller(UserOutput output) {
+        this.output = output;
     }
 
-    static RobotKiller create() {
-        return new SimpleRobotKiller();
+    static RobotKiller create(UserOutput output) {
+        return new SimpleRobotKiller(output);
     }
 
     @Override

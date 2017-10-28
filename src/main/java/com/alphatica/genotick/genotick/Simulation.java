@@ -18,12 +18,15 @@ import com.alphatica.genotick.population.RobotExecutorSettings;
 import com.alphatica.genotick.processor.RobotExecutorFactory;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointExecutorFactory;
-import com.alphatica.genotick.ui.UserInputOutputFactory;
+import com.alphatica.genotick.ui.UserOutput;
 
 public class Simulation {
 
+    private final UserOutput output;
+    
     @SuppressWarnings("WeakerAccess")
-    public Simulation() {
+    public Simulation(UserOutput output) {
+        this.output = output;
     }
 
     public void start(MainSettings mainSettings, MainAppData data) throws IllegalAccessException {
@@ -44,16 +47,16 @@ public class Simulation {
             return true;
         } catch(IllegalArgumentException ex) {
             ex.printStackTrace();
-            UserInputOutputFactory.getUserOutput().errorMessage(ex.getMessage());
+            output.errorMessage(ex.getMessage());
             return false;
         }
     }
 
     private Engine createEngine(MainSettings mainSettings, MainAppData data, RobotKiller killer,
-                              RobotBreeder breeder, Population population) {
+                                RobotBreeder breeder, Population population) {
         EngineSettings engineSettings = new EngineSettings(mainSettings);
         TimePointExecutor timePointExecutor = createTimePointExecutor(mainSettings);
-        return EngineFactory.getDefaultEngine(engineSettings, data, timePointExecutor, killer, breeder, population);
+        return EngineFactory.getDefaultEngine(engineSettings, data, timePointExecutor, killer, breeder, population, output);
     }
 
     private TimePointExecutor createTimePointExecutor(MainSettings settings) {
@@ -71,12 +74,12 @@ public class Simulation {
 
     private RobotBreeder createRobotBreeder(MainSettings settings, Mutator mutator) {
         BreederSettings breederSettings = new BreederSettings(settings);
-        return RobotBreederFactory.getDefaultBreeder(breederSettings, mutator);
+        return RobotBreederFactory.getDefaultBreeder(breederSettings, mutator, output);
     }
 
     private RobotKiller createRobotKiller(MainSettings settings) {
         RobotKillerSettings killerSettings = new RobotKillerSettings(settings);
-        return RobotKillerFactory.getDefaultRobotKiller(killerSettings);
+        return RobotKillerFactory.getDefaultRobotKiller(killerSettings, output);
     }
 
     private Mutator createMutator(MainSettings settings) {
@@ -86,7 +89,7 @@ public class Simulation {
 
     private void logSettings(MainSettings settings) throws IllegalAccessException {
         String settingsString = settings.getString();
-        UserInputOutputFactory.getUserOutput().infoMessage(settingsString);
+        output.infoMessage(settingsString);
     }
 
 }

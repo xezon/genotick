@@ -6,11 +6,14 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 public class FileSystemDataSaver implements DataSaver {
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
+    private final UserOutput output;
+    
+    public FileSystemDataSaver(UserOutput output) {
+        this.output = output;
+    }
     
     @Override
     public void saveAll(MainAppData data) {

@@ -1,7 +1,5 @@
 package com.alphatica.genotick.utility;
 
-import com.alphatica.genotick.ui.UserInputOutputFactory;
-import com.alphatica.genotick.ui.UserOutput;
 import static java.lang.String.format;
 
 public class TimeCounter {
@@ -49,11 +47,10 @@ public class TimeCounter {
     }
     
     private void print(long elapsedNanoSeconds, int methodDepth) {        
-        UserOutput output = UserInputOutputFactory.getUserOutput();
         final double elapsedSeconds = (double)elapsedNanoSeconds / 1000000000.0;
         final double elapsedMilliseconds = (double)elapsedNanoSeconds / 1000.0;
         final String name = this.name.isEmpty() ? MethodName.get(methodDepth) : this.name;
-        output.infoMessage(format("Timer '%s' elapsed time in seconds: [%.3f] in milliseconds: [%.3f]",
+        System.out.println(format("Timer '%s' elapsed time in seconds: [%.3f] in milliseconds: [%.3f]",
                 name, elapsedSeconds, elapsedMilliseconds));
     }
 }

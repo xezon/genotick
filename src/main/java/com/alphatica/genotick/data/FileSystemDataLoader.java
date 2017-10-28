@@ -1,6 +1,5 @@
 package com.alphatica.genotick.data;
 
-import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.File;
@@ -9,9 +8,11 @@ import java.util.List;
 import static java.lang.String.format;
 
 public class FileSystemDataLoader implements DataLoader {
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
     
-    public FileSystemDataLoader() {
+    private final UserOutput output;
+    
+    public FileSystemDataLoader(UserOutput output) {
+        this.output = output;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.alphatica.genotick.data;
 
-import com.alphatica.genotick.ui.UserInputOutputFactory;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +41,6 @@ public class DataUtils {
     private static String[] getFilesNames(String extension, File directory) {
         String[] list = directory.list((dir, name) -> name.endsWith(extension));
         if (isNull(list)) {
-            UserInputOutputFactory.getUserOutput().errorMessage("Unable to list files ");
             throw new DataException("Unable to list files in " + directory.getAbsolutePath());
         }
         return list;

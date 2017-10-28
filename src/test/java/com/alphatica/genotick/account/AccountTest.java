@@ -255,7 +255,7 @@ public class AccountTest {
         double profit = 0.0;
 
         MockProfitRecorder(UserOutput output) {
-            super(output, GenoChartMode.NONE);
+            super(GenoChartMode.NONE, output);
         }
 
         @Override

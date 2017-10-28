@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePoints;
-import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.utility.JniExport;
 
 public class DataLines {
@@ -67,7 +66,7 @@ public class DataLines {
     public void setColumns(int line, Number[] columns) throws DataException {
         final int columnCount = tohlcColumnCount();
         if (columns.length != columnCount) {
-            logAndThrow(format("Given column count '%d' for line '%d' does not match the expected column count '%d'.",
+            throw new DataException(format("Given column count '%d' for line '%d' does not match the expected column count '%d'.",
                     columns.length, line, columnCount));
         }
         System.arraycopy(columns, 0, data[line], 0, columnCount);
@@ -173,20 +172,20 @@ public class DataLines {
                 linesRead++;
                 Number[] columns = processLine(line);
                 if (columns.length != columnCount) {
-                    logAndThrow(format("Column count '%d' in line '%d' does not match the expected column count '%d'.",
+                    throw new DataException(format("Column count '%d' in line '%d' does not match the expected column count '%d'.",
                             columns.length, linesRead, columnCount));
                 }
                 final long currentTimeValue = columns[Column.TOHLCV.TIME].longValue();
                 final long previousTimeValue = dataLines.get(dataLines.size()-1)[Column.TOHLCV.TIME].longValue();
                 if (currentTimeValue <= previousTimeValue) {
-                    logAndThrow(format("Time value '%d' in line '%d' is not greater than previous time value '%d'",
+                    throw new DataException(format("Time value '%d' in line '%d' is not greater than previous time value '%d'",
                             currentTimeValue, linesRead, previousTimeValue));
                 }
                 dataLines.add(columns);
             }
         }
         catch (IOException | NumberFormatException ex) {
-            logAndThrow(format("Unable to process line '%d'", linesRead), ex);
+            throw new DataException(format("Unable to process line '%d'", linesRead), ex);
         }
         return dataLines;
     }
@@ -212,17 +211,7 @@ public class DataLines {
     
     private static void verifyLineAndColumnCount(int lineCount, int columnCount) {
         if (lineCount < MIN_LINE_COUNT || columnCount < MIN_COLUMN_COUNT) {
-            logAndThrow(format("Line count %d and column count %d are insufficient"));
+            throw new DataException(format("Line count %d and column count %d are insufficient"));
         }
-    }
-    
-    private static void logAndThrow(String message, Throwable ex) {
-        UserInputOutputFactory.getUserOutput().errorMessage(message);
-        throw new DataException(message, ex);
-    }
-    
-    private static void logAndThrow(String message) {
-        UserInputOutputFactory.getUserOutput().errorMessage(message);
-        throw new DataException(message);
     }
 }

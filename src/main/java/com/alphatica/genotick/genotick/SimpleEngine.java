@@ -13,7 +13,6 @@ import com.alphatica.genotick.population.RobotName;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointResult;
-import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 import com.alphatica.genotick.utility.Tools;
 
@@ -35,12 +34,16 @@ public class SimpleEngine implements Engine {
     private Population population;
     private MainAppData data;
     private RobotDataManager robotDataManager;
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
+    private final UserOutput output;
     private ProfitRecorder profitRecorder;
     private Account account;
 
-    static Engine getEngine() {
-        return new SimpleEngine();
+    private SimpleEngine(UserOutput output) {
+        this.output = output;
+    }
+    
+    static Engine create(UserOutput output) {
+        return new SimpleEngine(output);
     }
 
     @Override
@@ -72,7 +75,7 @@ public class SimpleEngine implements Engine {
         this.population = population;
         this.data = data;
         this.robotDataManager = new RobotDataManager(data, engineSettings.maximumDataOffset);
-        this.profitRecorder = new ProfitRecorder(output, engineSettings.chartMode);
+        this.profitRecorder = new ProfitRecorder(engineSettings.chartMode, output);
         this.account = new Account(BigDecimal.valueOf(100_000L), output, profitRecorder);
     }
 

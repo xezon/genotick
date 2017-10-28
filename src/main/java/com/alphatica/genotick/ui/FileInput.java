@@ -20,7 +20,8 @@ class FileInput extends BasicUserInput {
     private static final String DATA_DIRECTORY_KEY = "dataDirectory";
     private String fileName;
 
-    FileInput(String input) {
+    FileInput(String input, UserOutput output) {
+        super(output);
         if(!input.contains(delimiter))
             throw new RuntimeException(String.format("Config file input format is: '%s'","input=file:/path/to/file"));
         int pos = input.indexOf(delimiter);

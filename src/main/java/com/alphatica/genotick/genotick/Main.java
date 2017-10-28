@@ -105,14 +105,14 @@ public class Main {
     }
 
     private void initUserIO(Parameters parameters) throws IOException {
-        input = UserInputOutputFactory.createUserInput(parameters);
-        if(input == null) {
-            setError(ErrorCode.NO_INPUT);
-            return;
-        }
         output = UserInputOutputFactory.createUserOutput(parameters);
         if(output == null) {
             setError(ErrorCode.NO_OUTPUT);
+            return;
+        }
+        input = UserInputOutputFactory.createUserInput(parameters, output);
+        if(input == null) {
+            setError(ErrorCode.NO_INPUT);
             return;
         }
     }
@@ -144,9 +144,9 @@ public class Main {
     }
 
     private void initYahoo(Parameters parameters) {
-        String yahooValue = parameters.getValue("fixYahoo");
-        if(yahooValue != null) {
-            YahooFixer yahooFixer = new YahooFixer(yahooValue);
+        String path = parameters.getValue("fixYahoo");
+        if(path != null) {
+            YahooFixer yahooFixer = new YahooFixer(path, output);
             yahooFixer.fixFiles();
             setError(ErrorCode.NO_ERROR);
         }
@@ -155,8 +155,8 @@ public class Main {
     private void initReverse(Parameters parameters) {
         String dataDirectory = parameters.getValue("reverse");
         if(dataDirectory != null) {
-            DataLoader loader = new FileSystemDataLoader();
-            DataSaver saver = new FileSystemDataSaver();
+            DataLoader loader = new FileSystemDataLoader(output);
+            DataSaver saver = new FileSystemDataSaver(output);
             MainAppData data = loader.loadAll(dataDirectory);
             for (DataSet loadedSet : data.getDataSets()) {
                 Reversal reversal = new Reversal(loadedSet);
@@ -177,7 +177,7 @@ public class Main {
             setError(ErrorCode.UNKNOWN_ARGUMENT);
             return;
         }
-        Simulation simulation = new Simulation();
+        Simulation simulation = new Simulation(output);
         MainSettings settings = input.getSettings();
         MainAppData data = input.getData(settings.dataDirectory);
         generateMissingData(settings, data);
@@ -185,7 +185,7 @@ public class Main {
         setError(ErrorCode.NO_ERROR);
     }
     
-    private static void generateMissingData(MainSettings settings, MainAppData data) {
+    private void generateMissingData(MainSettings settings, MainAppData data) {
         if (settings.requireSymmetricalRobots) {
             Collection<DataSet> loadedSets = data.getDataSets();
             DataSet[] loadedSetsCopy = loadedSets.toArray(new DataSet[data.getDataSets().size()]);
@@ -193,7 +193,7 @@ public class Main {
                 Reversal reversal = new Reversal(loadedSet);
                 if (reversal.addReversedDataSetTo(data)) {
                     if (!settings.dataDirectory.isEmpty()) {
-                        DataSaver saver = DataFactory.getDefaultSaver();
+                        DataSaver saver = DataFactory.getDefaultSaver(output);
                         saver.save(reversal.getReversedDataSet());
                     }
                 }
