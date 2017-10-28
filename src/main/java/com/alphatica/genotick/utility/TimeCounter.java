@@ -6,15 +6,10 @@ import static java.lang.String.format;
 
 public class TimeCounter {
     
-    private static final TimeCounter INSTANCE = new TimeCounter();
     private final String name;
     private final boolean printOnStop;
     private long startNanoSeconds;
     private long stopNanoSeconds;
-    
-    public static TimeCounter get() {
-        return INSTANCE;
-    }
     
     public TimeCounter() {
         this("", true);
