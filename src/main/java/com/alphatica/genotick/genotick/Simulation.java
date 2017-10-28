@@ -28,7 +28,6 @@ public class Simulation {
 
     public void start(MainSettings mainSettings, MainAppData data) throws IllegalAccessException {
         if(validateSettings(mainSettings)) {
-            initRandomGenerator(mainSettings);
             logSettings(mainSettings);
             RobotKiller killer = createRobotKiller(mainSettings);
             Mutator mutator = createMutator(mainSettings);
@@ -48,10 +47,6 @@ public class Simulation {
             UserInputOutputFactory.getUserOutput().errorMessage(ex.getMessage());
             return false;
         }
-    }
-
-    private void initRandomGenerator(MainSettings mainSettings) {
-        RandomGenerator.suggestSeed(mainSettings.randomSeed);
     }
 
     private Engine createEngine(MainSettings mainSettings, MainAppData data, RobotKiller killer,

@@ -12,7 +12,7 @@ import java.util.Random;
 
 @SuppressWarnings("unused")
 class RandomParametersInput extends BasicUserInput {
-    private Random random = RandomGenerator.get();
+    private Random random;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
 
     @Override
@@ -20,6 +20,9 @@ class RandomParametersInput extends BasicUserInput {
         MainSettings settings = getMainSettings();
         if (settings == null) {
             MainSettings defaults = MainSettings.getSettings();
+            if (random == null) {
+                random = RandomGenerator.create(defaults.randomSeed);
+            }
             defaults.populationDAO = "";
             defaults.requireSymmetricalRobots = true;
             defaults.killNonPredictingRobots = true;
@@ -71,7 +74,5 @@ class RandomParametersInput extends BasicUserInput {
         settings.randomRobotsAtEachUpdate = random.nextDouble();
         settings.resultThreshold = 1 + (random.nextDouble() * 9);
         return settings;
-
     }
-
 }

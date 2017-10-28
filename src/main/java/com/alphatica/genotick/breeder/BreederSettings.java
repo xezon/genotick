@@ -15,6 +15,7 @@ public class BreederSettings {
     public final int ignoreColumns;
     public final int maximumRobotInstructions;
     public final int minimumRobotInstructions;
+    public final long randomSeed;
 
     public BreederSettings(final MainSettings settings) {
         this.minimumOutcomesBetweenBreeding = settings.minimumOutcomesBetweenBreeding;
@@ -28,5 +29,6 @@ public class BreederSettings {
         this.ignoreColumns = settings.ignoreColumns;
         this.maximumRobotInstructions = settings.maximumRobotInstructions;
         this.minimumRobotInstructions = settings.minimumRobotInstructions;
+        this.randomSeed = settings.randomSeed;
     }
 }

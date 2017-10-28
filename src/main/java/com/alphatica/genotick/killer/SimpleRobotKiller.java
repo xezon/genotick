@@ -1,29 +1,32 @@
 package com.alphatica.genotick.killer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
 import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.RobotInfo;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
-import java.util.*;
-
-
 class SimpleRobotKiller implements RobotKiller {
     private RobotKillerSettings settings;
-    private final Random random;
+    private Random random;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
 
-    static RobotKiller getInstance() {
-        return new SimpleRobotKiller();
-    }
     private SimpleRobotKiller() {
-        random = RandomGenerator.get();
+    }
+
+    static RobotKiller create() {
+        return new SimpleRobotKiller();
     }
 
     @Override
     public void setSettings(RobotKillerSettings killerSettings) {
-        settings = killerSettings;
+        this.settings = killerSettings;
+        this.random = RandomGenerator.create(killerSettings.randomSeed);
     }
 
     @Override

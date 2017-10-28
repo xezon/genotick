@@ -1,18 +1,20 @@
 package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.timepoint.TimePoint;
-import com.alphatica.genotick.population.PopulationSettings;
 import com.alphatica.genotick.breeder.InheritedWeightMode;
 import com.alphatica.genotick.chart.GenoChartMode;
 
 import java.lang.reflect.Field;
 
 public class MainSettings {
+    public static final int DEFAULT_DESIRED_SIZE = 1_000;
+    public static final String DEFAULT_DATA_ACCESS = "";
+    public static final long DEFAULT_RANDOM_SEED = 0;
 
     public TimePoint startTimePoint = new TimePoint(0);
     public TimePoint endTimePoint = new TimePoint(Long.MAX_VALUE);
-    public int populationDesiredSize = PopulationSettings.DEFAULT_DESIRED_SIZE;
-    public String populationDAO = PopulationSettings.DEFAULT_DATA_ACCESS;
+    public int populationDesiredSize = DEFAULT_DESIRED_SIZE;
+    public String populationDAO = DEFAULT_DATA_ACCESS;
     public boolean performTraining = true;
     public String dataDirectory = Main.DEFAULT_DATA_DIR;
     public int minimumRobotInstructions = 16;
@@ -39,7 +41,7 @@ public class MainSettings {
     public boolean requireSymmetricalRobots = true;
     public double resultThreshold = 1;
     public int ignoreColumns = 0;
-    public long randomSeed = 0;
+    public long randomSeed = DEFAULT_RANDOM_SEED;
     public GenoChartMode chartMode = GenoChartMode.NONE;
 
     private MainSettings() {

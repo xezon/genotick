@@ -1,14 +1,12 @@
 package com.alphatica.genotick.instructions;
 
-import com.alphatica.genotick.genotick.RandomGenerator;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class InstructionList implements Serializable {
-    @SuppressWarnings("unused")
+
     private static final long serialVersionUID = 267402795981161615L;
 
     private final Random random;
@@ -16,19 +14,15 @@ public class InstructionList implements Serializable {
     private final int variablesCount;
     private final double[] variables;
 
-    private int validateVariableNumber(int index) {
-        return Math.abs(index % variablesCount);
+    private InstructionList(Random random) {
+        this.random = random;
+        this.list = new ArrayList<>();
+        this.variablesCount = 1 + Math.abs(random.nextInt() % 1024);
+        this.variables = new double[variablesCount];
     }
 
-    private InstructionList() {
-        random = RandomGenerator.get();
-        list = new ArrayList<>();
-        variablesCount = 1 + Math.abs(random.nextInt() % 1024);
-        variables = new double[variablesCount];
-    }
-
-    public static InstructionList createInstructionList() {
-        return new InstructionList();
+    public static InstructionList create(Random random) {
+        return new InstructionList(random);
     }
 
     public Instruction getInstruction(int index) {
@@ -62,6 +56,10 @@ public class InstructionList implements Serializable {
     public void addInstructionAtPosition(Instruction instruction, int position) {
         position = fixPosition(position);
         list.add(position,instruction);
+    }
+
+    private int validateVariableNumber(int index) {
+        return Math.abs(index % variablesCount);
     }
 
     private int fixPosition(int position) {

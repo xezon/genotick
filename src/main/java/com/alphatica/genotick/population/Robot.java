@@ -6,7 +6,6 @@ import com.alphatica.genotick.genotick.Outcome;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.genotick.RobotData;
 import com.alphatica.genotick.genotick.RobotResult;
-import com.alphatica.genotick.genotick.WeightCalculator;
 import com.alphatica.genotick.instructions.Instruction;
 import com.alphatica.genotick.instructions.InstructionList;
 
@@ -16,18 +15,17 @@ import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static java.util.Optional.ofNullable;
 
 public class Robot implements Serializable {
-    @SuppressWarnings("unused")
+
     private static final long serialVersionUID = -32164662984L;
     private static final DecimalFormat weightFormat = new DecimalFormat("0.00");
 
     private RobotName name;
-    private final WeightCalculator weightCalculator;
-    private final int maximumDataOffset;
-    private final int ignoreColumns;
+    private final RobotSettings settings;
     private InstructionList mainFunction;
     private int totalChildren = 0;
     private int correctPredictions = 0;
@@ -43,8 +41,8 @@ public class Robot implements Serializable {
     private final Map<DataSetName, Prediction> current = new HashMap<>();
     private final Map<DataSetName, Prediction> pending = new HashMap<>();
 
-    public static Robot createEmptyRobot(WeightCalculator weightCalculator, int maximumDataOffset, int ignoreColumns) {
-        return new Robot(weightCalculator, maximumDataOffset, ignoreColumns);
+    public static Robot createEmptyRobot(RobotSettings settings, Random random) {
+        return new Robot(settings, random);
     }
 
     public int getLength() {
@@ -56,7 +54,7 @@ public class Robot implements Serializable {
     }
 
     public int getIgnoreColumns() {
-        return ignoreColumns;
+        return settings.ignoreColumns;
     }
 
     public void setInheritedWeight(double inheritedWeight) {
@@ -92,7 +90,7 @@ public class Robot implements Serializable {
     }
 
     public double getEarnedWeight() {
-        return weightCalculator.calculateWeight(this);
+        return settings.weightCalculator.calculateWeight(this);
     }
     
     public double getInheritedWeight() {
@@ -113,7 +111,7 @@ public class Robot implements Serializable {
     }
 
     public int getMaximumDataOffset() {
-        return maximumDataOffset;
+        return settings.maximumDataOffset;
     }
 
     public void recordMarketChange(RobotData robotData) {
@@ -185,11 +183,9 @@ public class Robot implements Serializable {
         return bias;
     }
 
-    private Robot(WeightCalculator weightCalculator, int maximumDataOffset, int ignoreColumns) {
-        this.weightCalculator = weightCalculator;
-        this.maximumDataOffset = maximumDataOffset;
-        this.ignoreColumns = ignoreColumns;
-        this.mainFunction = InstructionList.createInstructionList();
+    private Robot(RobotSettings settings, Random random) {
+        this.settings = settings;
+        this.mainFunction = InstructionList.create(random);
     }
 
     private void addMainFunction(StringBuilder sb) throws IllegalAccessException {

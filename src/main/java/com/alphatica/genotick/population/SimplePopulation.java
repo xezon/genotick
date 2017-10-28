@@ -17,7 +17,7 @@ public class SimplePopulation implements Population {
 
     @Override
     public int getDesiredSize() {
-        return settings.desiredSize();
+        return settings.desiredSize;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class SimplePopulation implements Population {
 
     @Override
     public boolean hasSpaceToBreed() {
-        return getSize() < settings.desiredSize();
+        return getSize() < settings.desiredSize;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class SimplePopulation implements Population {
         if (canSave()) {
             dao.removeAllRobots();
             PopulationDAO fs = new PopulationDAOFileSystem(path);
-            int size = settings.desiredSize();
+            int size = settings.desiredSize;
             fs.getRobots().limit(size).forEach(dao::saveRobot);
         }
     }
@@ -68,7 +68,7 @@ public class SimplePopulation implements Population {
     @Override
     public boolean saveOnDisk() {
         if (canSave()) {
-            String path = settings.daoPath();
+            String path = settings.daoPath;
             if (!path.isEmpty()) {
                 saveToExistingFolder(path);
                 return true;

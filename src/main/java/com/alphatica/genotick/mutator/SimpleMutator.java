@@ -11,12 +11,11 @@ import java.util.Random;
 
 class SimpleMutator implements Mutator {
     private MutatorSettings settings;
-    private final Random random;
+    private Random random;
     private final List<Class< ? super Instruction>> instructionList;
     private int totalInstructions;
 
     private SimpleMutator() throws ClassNotFoundException {
-        random = RandomGenerator.get();
         instructionList = new ArrayList<>();
         buildInstructionList(instructionList);
     }
@@ -89,6 +88,7 @@ class SimpleMutator implements Mutator {
     @Override
     public void setSettings(MutatorSettings mutatorSettings) {
         this.settings = mutatorSettings;
+        this.random = RandomGenerator.create(mutatorSettings.randomSeed);
     }
 
     @Override

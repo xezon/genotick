@@ -1,5 +1,6 @@
 package com.alphatica.genotick.breeder;
 
+import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.genotick.WeightCalculator;
 import com.alphatica.genotick.instructions.Instruction;
 import com.alphatica.genotick.instructions.InstructionList;
@@ -8,21 +9,28 @@ import com.alphatica.genotick.mutator.Mutator;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.Robot;
 import com.alphatica.genotick.population.RobotInfo;
+import com.alphatica.genotick.population.RobotSettings;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import static com.alphatica.genotick.utility.Assert.gassert;
 
 public class SimpleBreeder implements RobotBreeder {
     private BreederSettings settings;
     private Mutator mutator;
-    private WeightCalculator weightCalculator = new WeightCalculator();
+    private Random random;
+    private final WeightCalculator weightCalculator;
     private final UserOutput output = UserInputOutputFactory.getUserOutput();
 
+    private SimpleBreeder() {
+        weightCalculator = new WeightCalculator();
+    }
+    
     public static RobotBreeder getInstance() {
         return new SimpleBreeder();
     }
@@ -67,7 +75,8 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private void createNewRobot(Population population) {
-        final Robot robot = Robot.createEmptyRobot(weightCalculator, settings.maximumDataOffset, settings.ignoreColumns);
+        final RobotSettings robotSettings = new RobotSettings(settings, weightCalculator);
+        final Robot robot = Robot.createEmptyRobot(robotSettings, random);
         final int maximumRobotInstructionCount = settings.maximumRobotInstructions - settings.minimumRobotInstructions;
         int instructionCount = settings.minimumRobotInstructions + Math.abs(mutator.getNextInt() % maximumRobotInstructionCount);
         final InstructionList main = robot.getMainFunction();
@@ -99,7 +108,8 @@ public class SimpleBreeder implements RobotBreeder {
             Robot parent2 = getPossibleParent(population, list);
             if (parent1 == null || parent2 == null)
                 break;
-            Robot child = Robot.createEmptyRobot(weightCalculator, settings.maximumDataOffset, settings.ignoreColumns);
+            RobotSettings robotSettings = new RobotSettings(settings, weightCalculator);
+            Robot child = Robot.createEmptyRobot(robotSettings, random);
             makeChild(parent1, parent2, child);
             population.saveRobot(child);
             parent1.increaseChildren();
@@ -155,7 +165,7 @@ public class SimpleBreeder implements RobotBreeder {
     For higher numbers this change isn't so dramatic but may add up after many populations.
      */
     private InstructionList blendInstructionLists(InstructionList list1, InstructionList list2) {
-        InstructionList instructionList = InstructionList.createInstructionList();
+        InstructionList instructionList = InstructionList.create(random);
         int break1 = getBreakPoint(list1);
         int break2 = getBreakPoint(list2);
         copyBlock(instructionList, list1, 0, break1);
@@ -233,6 +243,7 @@ public class SimpleBreeder implements RobotBreeder {
     public void setSettings(BreederSettings breederSettings, Mutator mutator) {
         this.settings = breederSettings;
         this.mutator = mutator;
+        this.random = RandomGenerator.create(breederSettings.randomSeed);
         this.weightCalculator.setWeightMode(breederSettings.weightMode);
         this.weightCalculator.setWeightExponent(breederSettings.weightExponent);
     }

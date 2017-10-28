@@ -1,7 +1,5 @@
 package com.alphatica.genotick.population;
 
-import com.alphatica.genotick.genotick.RandomGenerator;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,10 +24,14 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     private final List<RobotName> names;
 
     public PopulationDAOFileSystem(String path) {
+        this(new Random(), path);
+    }
+    
+    public PopulationDAOFileSystem(Random random, String path) {
         checkPath(path);
-        robotsPath = path;
-        names = loadRobotNames();
-        random = RandomGenerator.get();
+        this.robotsPath = path;
+        this.names = loadRobotNames();
+        this.random = random;
     }
 
     @Override
