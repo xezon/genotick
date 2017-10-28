@@ -42,13 +42,13 @@ public class Main {
             initVersionRequest(parameters);
         }
         if (canContinue) {
+            initUserIO(parameters);
+        }
+        if (canContinue) {
             initShowPopulation(parameters);
         }
         if (canContinue) {
             initShowRobot(parameters);
-        }
-        if (canContinue) {
-            initUserIO(parameters);
         }
         if (canContinue) {
             initReverse(parameters);
