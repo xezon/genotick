@@ -1,6 +1,11 @@
 package com.alphatica.genotick.genotick;
 
+import com.alphatica.genotick.chart.GenoChart;
+import com.alphatica.genotick.chart.GenoChartFactory;
+import com.alphatica.genotick.chart.GenoChartMode;
+import com.alphatica.genotick.data.Column;
 import com.alphatica.genotick.data.DataFactory;
+import com.alphatica.genotick.data.DataLines;
 import com.alphatica.genotick.data.DataLoader;
 import com.alphatica.genotick.data.DataSaver;
 import com.alphatica.genotick.data.DataSet;
@@ -22,8 +27,8 @@ import static java.lang.String.format;
 public class Main {
     public static final String DEFAULT_DATA_DIR = "data";
     private static final String VERSION_STRING = "Genotick version 0.10.7 (copyleft 2017)";
-    private ErrorCode error;
-    private boolean canContinue;
+    private ErrorCode error = ErrorCode.NO_ERROR;
+    private boolean canContinue = true;
     private UserInput input;
     private UserOutput output;
     private MainInterface.Session session;
@@ -34,7 +39,6 @@ public class Main {
     }
 
     public ErrorCode init(String[] args, MainInterface.Session session) throws IOException, IllegalAccessException {
-        setError(ErrorCode.NO_ERROR);
         this.session = session;
         Parameters parameters = new Parameters(args);
         if (canContinue) {
@@ -45,6 +49,9 @@ public class Main {
         }
         if (canContinue) {
             initUserIO(parameters);
+        }
+        if (canContinue) {
+            initDrawData(parameters);
         }
         if (canContinue) {
             initShowPopulation(parameters);
@@ -67,7 +74,7 @@ public class Main {
 
     private void setError(ErrorCode error) {
         this.error = error;
-        this.canContinue = (error == ErrorCode.NO_ERROR) ? true : false;
+        this.canContinue = false;
     }
 
     private void printError(final ErrorCode error) {
@@ -88,10 +95,12 @@ public class Main {
             System.out.println("    java -jar genotick.jar output=csv");
             System.out.print("Custom output directory for generated files (log, charts, population): ");
             System.out.println("    java -jar genotick.jar outdir=path\\of\\folders");
-            System.out.print("show population: ");
+            System.out.print("Show population: ");
             System.out.println("    java -jar genotick.jar showPopulation=directory_with_population");
-            System.out.print("show robot info: ");
+            System.out.print("Show robot info: ");
             System.out.println("    java -jar genotick.jar showRobot=directory_with_population\\system name.prg");
+            System.out.print("Draw price curves for asset data ");
+            System.out.println("    java -jar genotick.jar drawData=mydata");
             System.out.println("contact:        lukasz.wojtow@gmail.com");
             System.out.println("more info:      genotick.com");
 
@@ -119,6 +128,28 @@ public class Main {
         }
     }
 
+    private void initDrawData(Parameters parameters) {
+        String dataDirectory = parameters.getValue("drawData");
+        if (dataDirectory != null) {
+            DataLoader loader = new FileSystemDataLoader(output);
+            MainAppData data = loader.loadAll(dataDirectory);
+            GenoChart chart = GenoChartFactory.create(GenoChartMode.JFREECHART_DRAW, output);
+            for (DataSet set : data.getDataSets()) {
+                DataLines dataLines = set.getDataLinesCopy();
+                int lineCount = dataLines.lineCount();
+                String chartName = set.getName().getName();
+                for (int line = 0; line < lineCount; ++line) {
+                    for (int column : Column.Array.OHLC) {
+                        double value = dataLines.getOhlcValue(line, column);
+                        chart.addXYLineChart(chartName, "bar", "price", Column.Names.OHLCV[column], line, value);
+                    }
+                }
+            }
+            chart.plotAll();
+            setError(ErrorCode.NO_ERROR);
+        }
+    }
+    
     private void initShowRobot(Parameters parameters) {
         String path = parameters.getValue("showRobot");
         if(path != null) {

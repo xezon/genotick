@@ -76,7 +76,7 @@ public class DataLines {
         return data[line][Column.TOHLCV.TIME].longValue();
     }
     
-    private double getOhlcValue(int line, int ohlcColumn) {
+    public double getOhlcValue(int line, int ohlcColumn) {
         return data[line][ohlcColumn + Column.TOHLCV.OPEN].doubleValue();
     }
     

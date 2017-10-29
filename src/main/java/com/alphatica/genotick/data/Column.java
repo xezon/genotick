@@ -20,4 +20,33 @@ public class Column {
         CLOSE  = 3,
         VOLUME = 4;
     }
+
+    public static class Names {
+        public static String TOHLCV[] = {
+                "time",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "other",
+        };
+        
+        public static String OHLCV[] = {
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+        };
+    }
+    
+    public static class Array {
+        public static final int OHLC[] = {
+                Column.OHLCV.OPEN,
+                Column.OHLCV.HIGH,
+                Column.OHLCV.LOW,
+                Column.OHLCV.CLOSE
+                };
+    }
 }
