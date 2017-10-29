@@ -26,14 +26,16 @@ public class Main {
     private boolean canContinue;
     private UserInput input;
     private UserOutput output;
+    private MainInterface.Session session;
 
     public static void main(String[] args) throws IOException, IllegalAccessException {
         Main main = new Main();
-        main.init(args);
+        main.init(args, null);
     }
 
-    public ErrorCode init(String[] args) throws IOException, IllegalAccessException {
+    public ErrorCode init(String[] args, MainInterface.Session session) throws IOException, IllegalAccessException {
         setError(ErrorCode.NO_ERROR);
+        this.session = session;
         Parameters parameters = new Parameters(args);
         if (canContinue) {
             initHelp(parameters);
@@ -106,12 +108,12 @@ public class Main {
 
     private void initUserIO(Parameters parameters) throws IOException {
         output = UserInputOutputFactory.createUserOutput(parameters);
-        if(output == null) {
+        if (output == null) {
             setError(ErrorCode.NO_OUTPUT);
             return;
         }
-        input = UserInputOutputFactory.createUserInput(parameters, output);
-        if(input == null) {
+        input = UserInputOutputFactory.createUserInput(parameters, output, session);
+        if (input == null) {
             setError(ErrorCode.NO_INPUT);
             return;
         }
@@ -181,7 +183,8 @@ public class Main {
         MainSettings settings = input.getSettings();
         MainAppData data = input.getData(settings.dataDirectory);
         generateMissingData(settings, data);
-        simulation.start(settings, data);
+        MainInterface.SessionResult sessionResult = (session != null) ? session.result : null;
+        simulation.start(settings, data, sessionResult);
         setError(ErrorCode.NO_ERROR);
     }
     

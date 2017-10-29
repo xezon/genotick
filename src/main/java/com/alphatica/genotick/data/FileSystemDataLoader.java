@@ -17,13 +17,9 @@ public class FileSystemDataLoader implements DataLoader {
 
     @Override
     public MainAppData loadAll(String... sources) throws DataException {
-        return loadData(sources);
-    }
-
-    private MainAppData loadData(String... paths) {
         MainAppData data = new MainAppData();
         String extension = ".csv";
-        List<String> names = DataUtils.listFiles(extension,paths);
+        List<String> names = DataUtils.listFiles(extension,sources);
         if (names == null) {
             throw new DataException("Unable to list files");
         }

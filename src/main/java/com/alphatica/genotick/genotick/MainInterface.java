@@ -19,7 +19,7 @@ import static com.alphatica.genotick.utility.Assert.gassert;
 
 public class MainInterface {
     
-    private static class SessionResult {
+    static class SessionResult {
         final TimePoints timePoints;
         final Map<String, Predictions> predictionsMap;
         
@@ -50,9 +50,9 @@ public class MainInterface {
         }
     }
     
-    private static class Session {
-        final MainSettings settings;
-        final MainAppData data;
+    public static class Session {
+        public final MainSettings settings;
+        public final MainAppData data;
         SessionResult result;
         
         Session() {
@@ -68,7 +68,6 @@ public class MainInterface {
     
     private static class ThreadData {
         final Map<Integer, Session> sessions = new HashMap<Integer, Session>();
-        int currentSessionId = 0;
     }
     
     private static final int INTERFACE_VERSION = 1;
@@ -90,19 +89,8 @@ public class MainInterface {
             return printAndReturnError(ErrorCode.INSUFFICIENT_DATA);
         }
         session.prepareNewSessionResult();
-        getCurrentThreadData().currentSessionId = sessionId;
         Main main = new Main();
-        return main.init(args);
-    }
-    
-    public static MainSettings getCurrentSettings() {
-        Session session = getCurrentSession();
-        return (session != null) ? session.settings : null;
-    }
-    
-    public static MainAppData getCurrentData() {
-        Session session = getCurrentSession();
-        return (session != null) ? session.data : null;
+        return main.init(args, session);
     }
     
     @JniExport
@@ -148,13 +136,6 @@ public class MainInterface {
         return prediction;
     }
     
-    static void savePrediction(TimePoint timePoint, DataSetName dataSetName, Prediction prediction) {
-        Session currentSession = getCurrentSession();
-        if (currentSession != null) {
-            currentSession.result.savePrediction(timePoint, dataSetName, prediction);
-        }
-    }
-    
     @JniExport
     static ErrorCode createSession(int sessionId) {
         ThreadData thread = getCurrentThreadData();
@@ -193,14 +174,6 @@ public class MainInterface {
         ThreadData thread = getCurrentThreadData();
         if (thread != null) {
             return thread.sessions.get(sessionId);
-        }
-        return null;
-    }
-    
-    private static Session getCurrentSession() {
-        ThreadData thread = getCurrentThreadData();
-        if (thread != null) {
-            return thread.sessions.get(thread.currentSessionId);
         }
         return null;
     }

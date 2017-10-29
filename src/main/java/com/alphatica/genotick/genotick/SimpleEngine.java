@@ -37,6 +37,7 @@ public class SimpleEngine implements Engine {
     private final UserOutput output;
     private ProfitRecorder profitRecorder;
     private Account account;
+    private MainInterface.SessionResult sessionResult;
 
     private SimpleEngine(UserOutput output) {
         this.output = output;
@@ -48,7 +49,7 @@ public class SimpleEngine implements Engine {
 
     @Override
     public void start() {
-        Thread.currentThread().setName("Main engine execution thread");
+        changeThreadName();
         initPopulation();
         final Stream<TimePoint> filteredTimePoints = data.getTimePoints(
                 engineSettings.startTimePoint,
@@ -67,7 +68,8 @@ public class SimpleEngine implements Engine {
                             MainAppData data,
                             RobotKiller killer,
                             RobotBreeder breeder,
-                            Population population) {
+                            Population population,
+                            MainInterface.SessionResult sessionResult) {
         this.engineSettings = engineSettings;
         this.timePointExecutor = timePointExecutor;
         this.killer = killer;
@@ -77,8 +79,15 @@ public class SimpleEngine implements Engine {
         this.robotDataManager = new RobotDataManager(data, engineSettings.maximumDataOffset);
         this.profitRecorder = new ProfitRecorder(engineSettings.chartMode, output);
         this.account = new Account(BigDecimal.valueOf(100_000L), output, profitRecorder);
+        this.sessionResult = sessionResult;
     }
 
+    private void changeThreadName() {
+        Thread currentThread =  Thread.currentThread();
+        String threadName = String.format("Main engine execution thread %d", currentThread.getId());
+        currentThread.setName(threadName);
+    }
+    
     private String getPopulationDirName() {
         final String path1 = output.getOutDir();
         final String path2 = "population_" + Tools.getProcessThreadIdString();
@@ -124,7 +133,9 @@ public class SimpleEngine implements Engine {
         DataSetName dataSetName = dataSetResult.getName();
         account.addPendingOrder(dataSetName, prediction);
         output.showPrediction(timePoint, dataSetResult, prediction);
-        MainInterface.savePrediction(timePoint, dataSetName, prediction);
+        if (sessionResult != null) {
+            sessionResult.savePrediction(timePoint, dataSetName, prediction);
+        }
     }
     
     private void updatePredictions(List<RobotInfo> list, Map<RobotName, List<RobotResult>> map) {

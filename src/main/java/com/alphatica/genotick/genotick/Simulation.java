@@ -29,14 +29,14 @@ public class Simulation {
         this.output = output;
     }
 
-    public void start(MainSettings mainSettings, MainAppData data) throws IllegalAccessException {
+    public void start(MainSettings mainSettings, MainAppData data, MainInterface.SessionResult sessionResult) throws IllegalAccessException {
         if(validateSettings(mainSettings)) {
             logSettings(mainSettings);
             RobotKiller killer = createRobotKiller(mainSettings);
             Mutator mutator = createMutator(mainSettings);
             RobotBreeder breeder = createRobotBreeder(mainSettings, mutator);
             Population population = createPopulation(mainSettings);
-            Engine engine = createEngine(mainSettings, data, killer, breeder, population);
+            Engine engine = createEngine(mainSettings, data, killer, breeder, population, sessionResult);
             engine.start();
         }
     }
@@ -53,10 +53,10 @@ public class Simulation {
     }
 
     private Engine createEngine(MainSettings mainSettings, MainAppData data, RobotKiller killer,
-                                RobotBreeder breeder, Population population) {
+                                RobotBreeder breeder, Population population, MainInterface.SessionResult sessionResult) {
         EngineSettings engineSettings = new EngineSettings(mainSettings);
         TimePointExecutor timePointExecutor = createTimePointExecutor(mainSettings);
-        return EngineFactory.getDefaultEngine(engineSettings, data, timePointExecutor, killer, breeder, population, output);
+        return EngineFactory.getDefaultEngine(engineSettings, data, timePointExecutor, killer, breeder, population, sessionResult, output);
     }
 
     private TimePointExecutor createTimePointExecutor(MainSettings settings) {

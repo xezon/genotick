@@ -21,12 +21,6 @@ abstract public class BasicUserInput implements UserInput {
         return loadData(sources);
     }
     
-    @Override
-    public void clearCache() {
-        mainSettings = null;
-        assetData = null;
-    }
-    
     protected MainAppData loadData(String... sources) {
         if (assetData == null) {
             DataLoader loader = DataFactory.getDefaultLoader(output);

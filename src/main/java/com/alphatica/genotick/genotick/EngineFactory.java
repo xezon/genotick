@@ -13,9 +13,10 @@ class EngineFactory {
                                           RobotKiller killer,
                                           RobotBreeder breeder,
                                           Population population,
+                                          MainInterface.SessionResult sessionResult,
                                           UserOutput output) {
         Engine engine = SimpleEngine.create(output);
-        engine.setSettings(engineSettings, timePointExecutor, data, killer, breeder, population);
+        engine.setSettings(engineSettings, timePointExecutor, data, killer, breeder, population, sessionResult);
         return engine;
     }
 }

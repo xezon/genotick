@@ -9,5 +9,11 @@ import com.alphatica.genotick.timepoint.TimePointExecutor;
 public interface Engine {
     void start();
 
-    void setSettings(EngineSettings engineSettings, TimePointExecutor timePointExecutor, MainAppData data, RobotKiller killer, RobotBreeder breeder, Population population);
+    void setSettings(EngineSettings engineSettings,
+                     TimePointExecutor timePointExecutor,
+                     MainAppData data,
+                     RobotKiller killer,
+                     RobotBreeder breeder,
+                     Population population,
+                     MainInterface.SessionResult sessionResult);
 }

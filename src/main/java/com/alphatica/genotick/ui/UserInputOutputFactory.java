@@ -3,6 +3,8 @@ package com.alphatica.genotick.ui;
 import java.io.File;
 import java.io.IOException;
 
+import com.alphatica.genotick.genotick.MainInterface;
+
 import static java.lang.String.format;
 
 public class UserInputOutputFactory {
@@ -18,17 +20,17 @@ public class UserInputOutputFactory {
     private static final String OUTPUT_OPTION_CSV = "csv";
     private static final String OUTPUT_OPTION_NONE = "none";
 
-    public static UserInput createUserInput(Parameters parameters, UserOutput userOutput) {
+    public static UserInput createUserInput(Parameters parameters, UserOutput userOutput, MainInterface.Session session) {
         final String input = parameters.getAndRemoveValue(INPUT_STRING);
         if (input == null) {
             return tryConsoleInput(userOutput);
         }
         else {
-            return createUserInputByOption(input, userOutput);
+            return createUserInputByOption(input, userOutput, session);
         }
     }
 
-    private static UserInput createUserInputByOption(String input, UserOutput userOutput) {
+    private static UserInput createUserInputByOption(String input, UserOutput userOutput, MainInterface.Session session) {
         if (input.startsWith(INPUT_OPTION_FILE)) {
             return new FileInput(input, userOutput);
         }
@@ -36,7 +38,7 @@ public class UserInputOutputFactory {
             case INPUT_OPTION_DEFAULT: return new DefaultInputs(userOutput);
             case INPUT_OPTION_RANDOM: return new RandomParametersInput(userOutput);
             case INPUT_OPTION_CONSOLE: return tryConsoleInput(userOutput);
-            case INPUT_OPTION_EXTERNAL: return new ExternalInput(userOutput);
+            case INPUT_OPTION_EXTERNAL: return new ExternalInput(session);
         }
         printOptionInfo(INPUT_STRING, input,
                 INPUT_OPTION_FILE,
