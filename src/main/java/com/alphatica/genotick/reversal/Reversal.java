@@ -64,65 +64,51 @@ public class Reversal {
         Path reversedPath = Paths.get(directoryString, newName);
         return reversedPath.toString();
     }
-
+    
     private static void reverseDataLines(DataLines dataLines) {
         final int lineCount = dataLines.lineCount();
-        Number[] lastOriginal = null;
-        Number[] lastReversed = null;
+        double[] lastOriginal = dataLines.getOhlcValuesCopy(0);
+        double[] lastReversed = dataLines.getOhlcValuesCopy(0);
         for (int line = 0; line < lineCount; ++line) {
-            Number[] currentOriginal = dataLines.getColumnsCopy(line);
-            Number[] currentReversed = createReversedColumns(currentOriginal, lastOriginal, lastReversed);
-            dataLines.setColumns(line, currentReversed);
+            double[] currentOriginal = dataLines.getOhlcValuesCopy(line);
+            double[] currentReversed = createReversedOhlc(lastOriginal, currentOriginal, lastReversed);
+            dataLines.setOhlcValues(line, currentReversed);
             lastOriginal = currentOriginal;
             lastReversed = currentReversed;
-        }
+        }        
+        normalize(dataLines);
     }
-
-    /*
-     * This method is for reversing traditional open-high-low-close stock market data.
-     * What happens with numbers (by column):
-     * 0 - TimePoint: Doesn't change.
-     * 1 - Open: It goes opposite direction to original, by the same percent.
-     * 2 and 3 - High and Low: First of all they swapped. This is because data should be a mirror reflection of
-     * original, so high becomes low and low becomes high. Change is calculated comparing to open column
-     * (column 1). So it doesn't matter what High was in previous TimePoint, it matters how much higher it was comparing
-     * to the open on the same line. When High becomes low - it goes down by same percent as original high was higher
-     * than open.
-     * 4 - Close. Goes opposite to original close by the same percent.
-     * 5 and more - Volume, open interest or whatever. These don't change.
-     */
-
-    private static Number[] createReversedColumns(Number[] table, Number[] lastOriginal, Number[] lastReversed) {
-        Number[] reversed = new Number[table.length];
-        // Column 0 is unchanged
-        reversed[Column.TOHLCV.TIME] = table[Column.TOHLCV.TIME];
-        // Column 1. Rewrite if first line
-        if(lastOriginal == null) {
-            reversed[Column.TOHLCV.OPEN] = table[Column.TOHLCV.OPEN];
-        } else {
-            // Change by % if not first line
-            reversed[Column.TOHLCV.OPEN] = getReverseValue(table[Column.TOHLCV.OPEN], lastOriginal[Column.TOHLCV.OPEN], lastReversed[Column.TOHLCV.OPEN]);
-        }
-        // Check if 4 columns here, because we need time, open, high, low to do swapping later.
-        if(table.length < Column.TOHLCV.CLOSE)
-            return reversed;
-        // Column 2. Change by % comparing to open
-        // Write into 3 - we swap 2 & 3
-        reversed[Column.TOHLCV.LOW] = getReverseValue(table[Column.TOHLCV.HIGH], table[Column.TOHLCV.OPEN], reversed[Column.TOHLCV.OPEN]);
-        // Column 3. Change by % comparing to open
-        // Write into 2 - we swap 2 & 3
-        reversed[Column.TOHLCV.HIGH] = getReverseValue(table[Column.TOHLCV.LOW], table[Column.TOHLCV.OPEN], reversed[Column.TOHLCV.OPEN]);
-        if(table.length == Column.TOHLCV.CLOSE)
-            return reversed;
-        // Column 4. Change by % comparing to open.
-        reversed[Column.TOHLCV.CLOSE] = getReverseValue(table[Column.TOHLCV.CLOSE], table[Column.TOHLCV.OPEN], reversed[Column.TOHLCV.OPEN]);
-        // Rewrite rest
-        System.arraycopy(table, Column.TOHLCV.VOLUME, reversed, Column.TOHLCV.VOLUME, table.length - Column.TOHLCV.VOLUME);
+    
+    private static double[] createReversedOhlc(double[] lastOriginal, double[] original, double[] lastReversed) {
+        final double[] reversed = new double[original.length];
+        final double openDiff = original[Column.OHLCV.OPEN] - lastOriginal[Column.OHLCV.CLOSE];
+        final double highDiff = original[Column.OHLCV.HIGH] - original[Column.OHLCV.OPEN];
+        final double lowDiff = original[Column.OHLCV.LOW] - original[Column.OHLCV.OPEN];
+        final double closeDiff = original[Column.OHLCV.CLOSE] - original[Column.OHLCV.OPEN];
+        reversed[Column.OHLCV.OPEN] = lastReversed[Column.OHLCV.CLOSE] - openDiff;
+        reversed[Column.OHLCV.HIGH] = reversed[Column.OHLCV.OPEN] - lowDiff;
+        reversed[Column.OHLCV.LOW] = reversed[Column.OHLCV.OPEN] - highDiff;
+        reversed[Column.OHLCV.CLOSE] = reversed[Column.OHLCV.OPEN] - closeDiff;
         return reversed;
     }
-
-    private static Number getReverseValue(Number from, Number to, Number compare) {
-        double diff = Math.abs((from.doubleValue() / to.doubleValue()) -2);
-        return diff * compare.doubleValue();
+    
+    private static void normalize(DataLines dataLines) {
+        final int lineCount = dataLines.lineCount();
+        final double threshold = 0.01;
+        double lowest = threshold;
+        for (int line = 0; line < lineCount; ++line) {
+            final double low = dataLines.getOhlcValue(line, Column.OHLCV.LOW);
+            if (low < lowest)
+                lowest = low;
+        }
+        if (lowest < threshold) {
+            final double negOffset = lowest - threshold;
+            for (int line = 0; line < lineCount; ++line) {
+                for (int column : Column.Array.OHLC) {
+                    final double value = dataLines.getOhlcValue(line, column);
+                    dataLines.setOhlcValue(line, column, value - negOffset);
+                }
+            }
+        }
     }
 }

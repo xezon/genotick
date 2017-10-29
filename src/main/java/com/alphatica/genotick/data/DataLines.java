@@ -8,14 +8,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.alphatica.genotick.data.Column.TOHLCV;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePoints;
 import com.alphatica.genotick.utility.JniExport;
 
 public class DataLines {
     
-    private final static int MIN_LINE_COUNT = 1;
-    private final static int MIN_COLUMN_COUNT = 2;
+    private static final int MIN_LINE_COUNT = 1;
+    private static final int MIN_COLUMN_COUNT = TOHLCV.CLOSE + 1;
     private final Number[][] data;
     private final boolean firstLineIsNewest;
     
@@ -34,7 +35,7 @@ public class DataLines {
     }
     
     @JniExport
-    public DataLines(int lineCount, int columnCount, boolean firstLineIsNewest) throws DataException {
+    DataLines(int lineCount, int columnCount, boolean firstLineIsNewest) throws DataException {
         verifyLineAndColumnCount(lineCount, columnCount);
         this.data = new Number[lineCount][columnCount];
         this.firstLineIsNewest = firstLineIsNewest;
@@ -56,20 +57,36 @@ public class DataLines {
         return new DataLines(this);
     }
     
-    public Number[] getColumnsCopy(int line) {
+    Number[] getColumnsCopy(int line) {
         final int columnCount = tohlcColumnCount();
         Number[] columnsCopy = new Number[columnCount];
         System.arraycopy(data[line], 0, columnsCopy, 0, columnCount);
         return columnsCopy;
     }
     
-    public void setColumns(int line, Number[] columns) throws DataException {
+    void setColumns(int line, Number[] columns) throws DataException {
         final int columnCount = tohlcColumnCount();
         if (columns.length != columnCount) {
-            throw new DataException(format("Given column count '%d' for line '%d' does not match the expected column count '%d'.",
-                    columns.length, line, columnCount));
+            throw new DataException(format("Given column count '%d' for line '%d' does not match the expected column count '%d'.", columns.length, line, columnCount));
         }
         System.arraycopy(columns, 0, data[line], 0, columnCount);
+    }
+    
+    public double[] getOhlcValuesCopy(int line) {
+        double[] ohlcCopy = new double[Column.Array.OHLC.length];
+        for (int column : Column.Array.OHLC) {
+            ohlcCopy[column] = getOhlcValue(line, column);
+        }
+        return ohlcCopy;
+    }
+    
+    public void setOhlcValues(int line, double[] ohlcValues) throws DataException {
+        if (ohlcValues.length != Column.Array.OHLC.length) {
+            throw new DataException(format("Given column count '%d' for line '%d' does not match the expected column count '%d'.", ohlcValues.length, line, 4));
+        }
+        for (int column : Column.Array.OHLC) {
+            setOhlcValue(line, column, ohlcValues[column]);
+        }
     }
     
     private long getTime(int line) {
@@ -78,6 +95,10 @@ public class DataLines {
     
     public double getOhlcValue(int line, int ohlcColumn) {
         return data[line][ohlcColumn + Column.TOHLCV.OPEN].doubleValue();
+    }
+    
+    public void setOhlcValue(int line, int ohlcColumn, double value) {
+        data[line][ohlcColumn + Column.TOHLCV.OPEN] = value;
     }
     
     @JniExport
