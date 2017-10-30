@@ -5,7 +5,9 @@ import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Outcome;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.genotick.RobotData;
+import com.alphatica.genotick.genotick.RobotDataPair;
 import com.alphatica.genotick.genotick.RobotResult;
+import com.alphatica.genotick.genotick.RobotResultPair;
 import com.alphatica.genotick.instructions.Instruction;
 import com.alphatica.genotick.instructions.InstructionList;
 
@@ -113,6 +115,10 @@ public class Robot implements Serializable {
     public int getMaximumDataOffset() {
         return settings.maximumDataOffset;
     }
+    
+    public void recordMarketChange(RobotDataPair pair) {
+        pair.forEach(this::recordMarketChange);
+    }
 
     public void recordMarketChange(RobotData robotData) {
         ofNullable(current.remove(robotData.getName())).ifPresent(prediction -> {
@@ -130,9 +136,13 @@ public class Robot implements Serializable {
         });
     }
 
-    public void recordPrediction(RobotResult result) {
-        DataSetName dataSetName = result.getDataSetName();
-        Prediction newPrediction = result.getPrediction();
+    public void recordPrediction(RobotResultPair pair) {
+        pair.forEach(this::recordPrediction);
+    }
+
+    public void recordPrediction(RobotResult robotResult) {
+        DataSetName dataSetName = robotResult.getDataSetName();
+        Prediction newPrediction = robotResult.getPrediction();
         Prediction pendingPrediction = pending.get(dataSetName);
         current.put(dataSetName, pendingPrediction);
         pending.put(dataSetName, newPrediction);
