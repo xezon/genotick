@@ -10,31 +10,41 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Reversal {
-    private static final String REVERSE_DATA_IDENTIFIER = "reverse_";
+
     private final DataSet originalSet;
+    private DataSetName reversedName;
     private DataSet reversedSet;
-    private final DataSetName reversedName;
-    private final boolean isReversed;
 
     public Reversal(DataSet dataSet) {
-        final DataSetName name = dataSet.getName();
         this.originalSet = dataSet;
+        this.reversedName = null;
         this.reversedSet = null;
-        this.reversedName = new DataSetName(getReversedDataPath(name.getPath()));
-        this.isReversed = isReversedDataName(name.getName());
-    }
-
-    public DataSetName getReversedName() {
-        return reversedName;
     }
 
     public boolean isReversed() {
-        return isReversed;
+        return originalSet.getName().isReversed();
+    }
+    
+    public DataSetName getReversedName() {
+        if (reversedName == null) {
+            final DataSetName orginalName = originalSet.getName();
+            reversedName = new DataSetName(getReversedDataPath(orginalName.getPath()));
+        }
+        return reversedName;
+    }
+
+    public DataSet getReversedDataSet() {
+        if (reversedSet == null) {
+            final DataLines dataLines = originalSet.getDataLinesCopy();
+            reverseDataLines(dataLines);
+            reversedSet = new DataSet(getReversedName(), dataLines);
+        }
+        return reversedSet;
     }
 
     public boolean addReversedDataSetTo(MainAppData data) {
-        if (!isReversed) {
-            if (!data.containsDataSet(reversedName)) {
+        if (!isReversed()) {
+            if (!data.containsDataSet(getReversedName())) {
                 data.put(getReversedDataSet());
                 return true;
             }
@@ -42,25 +52,12 @@ public class Reversal {
         return false;
     }
 
-    public DataSet getReversedDataSet() {
-        if (null == reversedSet) {
-            final DataLines dataLines = originalSet.getDataLinesCopy();
-            reverseDataLines(dataLines);
-            reversedSet = new DataSet(reversedName, dataLines);
-        }
-        return reversedSet;
-    }
-
-    private static boolean isReversedDataName(String name) {
-        return name.startsWith(REVERSE_DATA_IDENTIFIER);
-    }
-
     private static String getReversedDataPath(String path) {
         Path originalPath = Paths.get(path);
         Path fileNamePath = originalPath.getFileName();
         Path directoryPath = originalPath.getParent();
         String directoryString = (directoryPath != null) ? directoryPath.toString() : "";
-        String newName = REVERSE_DATA_IDENTIFIER + fileNamePath.toString();
+        String newName = DataSetName.REVERSE_DATA_IDENTIFIER + fileNamePath.toString();
         Path reversedPath = Paths.get(directoryString, newName);
         return reversedPath.toString();
     }

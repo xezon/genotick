@@ -6,17 +6,29 @@ public enum Prediction {
     UP(1),
     DOWN(-1),
     OUT(0);
+    
     private final int value;
 
     Prediction(int value) {
         this.value = value;
     }
+    
+    public static Prediction getOpposite(Prediction prediction) {
+        switch (prediction) {
+            case UP : return DOWN;
+            case DOWN : return UP;
+            case OUT : default: return OUT;
+        }
+    }
+    
     public static Prediction getPrediction(double change) {
-        if(change > 0)
-            return Prediction.UP;
-        if(change < 0)
-            return Prediction.DOWN;
-        return Prediction.OUT;
+        if(change > 0) {
+            return UP;
+        }
+        if(change < 0) {
+            return DOWN;
+        }
+        return OUT;
     }
 
     @JniExport

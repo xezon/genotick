@@ -7,13 +7,18 @@ import java.io.Serializable;
 import static com.alphatica.genotick.utility.Assert.gassert;
 
 public class DataSetName implements Serializable {
+    
     private static final long serialVersionUID = -7504682119928833833L;
+    public static final String REVERSE_DATA_IDENTIFIER = "reverse_";
     private final String path;
     private final String name;
+    private final boolean isReversed;
+    
     public DataSetName(String path) {
         gassert(!path.isEmpty());
         this.path = path;
         this.name = FilenameUtils.getBaseName(path);
+        this.isReversed = name.startsWith(REVERSE_DATA_IDENTIFIER);
     }
 
     @Override
@@ -27,6 +32,10 @@ public class DataSetName implements Serializable {
 
     public String getName() {
         return name;
+    }
+    
+    public boolean isReversed() {
+        return isReversed;
     }
 
     @Override

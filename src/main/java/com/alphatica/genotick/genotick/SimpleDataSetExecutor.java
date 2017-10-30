@@ -7,19 +7,23 @@ import com.alphatica.genotick.processor.RobotExecutorFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class  SimpleDataSetExecutor implements DataSetExecutor {
-
+public class SimpleDataSetExecutor implements DataSetExecutor {
 
     @Override
-    public List<RobotResult> execute(List<RobotData> robotDataList, Robot robot, RobotExecutorFactory robotExecutorFactory) {
-        List<RobotResult> robotResultList = new ArrayList<>(robotDataList.size());
-        for(RobotData robotData : robotDataList) {
+    public List<RobotResultPair> execute(List<RobotDataPair> robotDataList, Robot robot, RobotExecutorFactory robotExecutorFactory) {
+        List<RobotResultPair> robotResultList = new ArrayList<>(robotDataList.size());
+        for(RobotDataPair pair : robotDataList) {
             RobotExecutor robotExecutor = robotExecutorFactory.getDefaultRobotExecutor();
-            Prediction prediction = robotExecutor.executeRobot(robotData, robot);
-            RobotResult result = new RobotResult(prediction, robot, robotData);
-            robotResultList.add(result);
+            RobotResult originalResult = getResult(robotExecutor, robot, pair.getOriginal());
+            RobotResult reversedResult = (pair.getReversed() != null) ? getResult(robotExecutor, robot, pair.getReversed()) : null;
+            robotResultList.add(new RobotResultPair(originalResult, reversedResult));
         }
         return robotResultList;
     }
 
+    private RobotResult getResult(RobotExecutor robotExecutor, Robot robot, RobotData robotData) {
+        Prediction prediction = robotExecutor.executeRobot(robotData, robot);
+        return new RobotResult(prediction, robot, robotData);
+    }
+    
 }

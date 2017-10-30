@@ -1,8 +1,8 @@
 package com.alphatica.genotick.timepoint;
 
 import com.alphatica.genotick.genotick.DataSetExecutor;
-import com.alphatica.genotick.genotick.RobotData;
-import com.alphatica.genotick.genotick.RobotResult;
+import com.alphatica.genotick.genotick.RobotDataPair;
+import com.alphatica.genotick.genotick.RobotResultPair;
 import com.alphatica.genotick.population.Population;
 import com.alphatica.genotick.population.Robot;
 import com.alphatica.genotick.population.RobotName;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class SimpleTimePointExecutor implements TimePointExecutor {
 
@@ -20,16 +21,16 @@ class SimpleTimePointExecutor implements TimePointExecutor {
     private RobotExecutorFactory robotExecutorFactory;
 
     @Override
-    public Map<RobotName, List<RobotResult>> execute(List<RobotData> robotDataList, Population population) {
+    public Map<RobotName, List<RobotResultPair>> execute(List<RobotDataPair> robotDataList, Population population) {
         if (robotDataList.isEmpty()) {
             return Collections.emptyMap();
         } else {
-            return population.listRobotsNames().parallelStream().map(robotName -> executeRobot(robotDataList, robotName, population))
-                    .collect(Collectors.toMap(list -> list.get(0).getName(), Function.identity()));
+            Stream<List<RobotResultPair>> stream = population.listRobotsNames().parallelStream().map(robotName -> executeRobot(robotDataList, robotName, population));
+            return stream.collect(Collectors.toMap(list -> list.get(0).getOriginal().getName(), Function.identity()));
         }
     }
 
-    private List<RobotResult> executeRobot(List<RobotData> robotDataList, RobotName robotName, Population population) {
+    private List<RobotResultPair> executeRobot(List<RobotDataPair> robotDataList, RobotName robotName, Population population) {
         Robot robot = population.getRobot(robotName);
         return dataSetExecutor.execute(robotDataList, robot, robotExecutorFactory);
     }

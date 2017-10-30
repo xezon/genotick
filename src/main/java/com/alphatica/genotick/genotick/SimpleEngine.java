@@ -21,9 +21,9 @@ import static com.alphatica.genotick.utility.Assert.gassert;
 import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SimpleEngine implements Engine {
@@ -111,13 +111,13 @@ public class SimpleEngine implements Engine {
         final int bar = data.getBar(timePoint);
         gassert(bar >= 0);
         robotDataManager.update(timePoint);
-        final List<RobotData> robotDataList = robotDataManager.getUpdatedRobotDataList();
+        final List<RobotDataPair> robotDataList = robotDataManager.getUpdatedRobotDataList();
         if (!robotDataList.isEmpty()) {
             output.reportStartingTimePoint(timePoint);
             updateAccount(robotDataList);
             List<RobotInfo> robotInfoList = population.getRobotInfoList();
             recordMarketChangesInRobots(robotDataList);
-            Map<RobotName, List<RobotResult>> robotResultMap = timePointExecutor.execute(robotDataList, population);
+            Map<RobotName, List<RobotResultPair>> robotResultMap = timePointExecutor.execute(robotDataList, population);
             updatePredictions(robotInfoList, robotResultMap);
             recordRobotsPredictions(robotResultMap);
             TimePointResult timePointResult = new TimePointResult(robotResultMap, engineSettings.requireSymmetricalRobots);
@@ -138,18 +138,19 @@ public class SimpleEngine implements Engine {
         }
     }
     
-    private void updatePredictions(List<RobotInfo> list, Map<RobotName, List<RobotResult>> map) {
+    private void updatePredictions(List<RobotInfo> list, Map<RobotName, List<RobotResultPair>> map) {
         list.parallelStream().forEach(info -> {
-            List<RobotResult> results = map.get(info.getName());
-            if(results != null) {
+            RobotName robotName = info.getName();
+            List<RobotResultPair> results = map.get(robotName);
+            if (results != null) {
                 results.stream()
-                        .filter(result -> result.getPrediction() != Prediction.OUT).findFirst()
-                        .ifPresent(result -> info.setPredicting(true));
+                        .filter(result -> result.getOriginal().getPrediction() != Prediction.OUT)
+                        .findFirst().ifPresent(result -> info.setPredicting(true));
             }
         });
     }
 
-    private void recordRobotsPredictions(Map<RobotName, List<RobotResult>> map) {
+    private void recordRobotsPredictions(Map<RobotName, List<RobotResultPair>> map) {
         if(engineSettings.performTraining) {
             map.keySet().forEach(name -> {
                 Robot robot = population.getRobot(name);
@@ -165,13 +166,16 @@ public class SimpleEngine implements Engine {
         }
     }
 
-    private void updateAccount(List<RobotData> robotDataList) {
-        Map<DataSetName, Double> map = robotDataList.stream().collect(Collectors.toMap(RobotData::getName, RobotData::getLastPriceOpen));
+    private void updateAccount(List<RobotDataPair> robotDataList) {
+        Map<DataSetName, Double> map = new HashMap<>();
+        for (RobotDataPair robotDataPair : robotDataList) {
+            robotDataPair.forEach(robotData -> map.put(robotData.getName(), robotData.getLastPriceOpen()));
+        }
         account.closeTrades(map);
         account.openTrades(map);
     }
 
-    private void recordMarketChangesInRobots(List<RobotData> robotDataList) {
+    private void recordMarketChangesInRobots(List<RobotDataPair> robotDataList) {
         if(engineSettings.performTraining) {
             population.listRobotsNames().forEach(robotName -> {
                 Robot robot = population.getRobot(robotName);
