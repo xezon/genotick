@@ -115,13 +115,12 @@ public class SimpleEngine implements Engine {
         if (!robotDataList.isEmpty()) {
             output.reportStartingTimePoint(timePoint);
             updateAccount(robotDataList);
-            List<RobotInfo> robotInfoList = population.getRobotInfoList();
             recordMarketChangesInRobots(robotDataList);
             Map<RobotName, List<RobotResultPair>> robotResultMap = timePointExecutor.execute(robotDataList, population);
-            updatePredictions(robotInfoList, robotResultMap);
             recordRobotsPredictions(robotResultMap);
             TimePointResult timePointResult = new TimePointResult(robotResultMap, engineSettings.requireSymmetricalRobots);
             timePointResult.listDataSetResults().forEach(dataSetResult -> processDataSetResult(timePoint, dataSetResult));
+            List<RobotInfo> robotInfoList = population.getRobotInfoList();
             checkTraining(robotInfoList);
             output.reportFinishedTimePoint(timePoint, account.getEquity());
         }
@@ -136,18 +135,6 @@ public class SimpleEngine implements Engine {
         if (sessionResult != null) {
             sessionResult.savePrediction(timePoint, dataSetName, prediction);
         }
-    }
-    
-    private void updatePredictions(List<RobotInfo> list, Map<RobotName, List<RobotResultPair>> map) {
-        list.parallelStream().forEach(info -> {
-            RobotName robotName = info.getName();
-            List<RobotResultPair> results = map.get(robotName);
-            if (results != null) {
-                results.stream()
-                        .filter(result -> result.getOriginal().getPrediction() != Prediction.OUT)
-                        .findFirst().ifPresent(result -> info.setPredicting(true));
-            }
-        });
     }
 
     private void recordRobotsPredictions(Map<RobotName, List<RobotResultPair>> map) {
