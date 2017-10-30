@@ -15,8 +15,20 @@ public class RobotInfo {
     private final int totalPredictions;
     private final int totalOutcomes;
     private final int bias;
-    private boolean isPredicting;
-    
+    private final boolean isPredicting;
+
+    public RobotInfo(Robot robot) {
+        name = new RobotName(robot.getName().getName());
+        weight = robot.getWeight();
+        lastChildOutcomes = robot.getOutcomesAtLastChild();
+        totalChildren = robot.getTotalChildren();
+        length = robot.getLength();
+        totalPredictions = robot.getTotalPredictions();
+        totalOutcomes = robot.getTotalOutcomes();
+        bias = robot.getBias();
+        isPredicting = robot.isPredicting();
+    }
+
     @Override
     public String toString() {
         return name.toString() + ": Outcomes: " + String.valueOf(totalPredictions) + " weight: " + format.format(weight) +
@@ -32,32 +44,15 @@ public class RobotInfo {
         return weight;
     }
 
-    public void setPredicting(boolean predicting) {
-        isPredicting = predicting;
-    }
-
     public int getTotalPredictions() {
         return totalPredictions;
     }
-
-    public RobotInfo(Robot robot) {
-        name = new RobotName(robot.getName().getName());
-        weight = robot.getWeight();
-        lastChildOutcomes = robot.getOutcomesAtLastChild();
-        totalChildren = robot.getTotalChildren();
-        length = robot.getLength();
-        totalPredictions = robot.getTotalPredictions();
-        totalOutcomes = robot.getTotalOutcomes();
-        bias = robot.getBias();
-        isPredicting = robot.isPredicting();
-    }
-
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean canBeParent(int outcomesToAllowBreeding, int outcomesBetweenBreeding) {
         if(totalPredictions < outcomesToAllowBreeding)
             return false;
-        long outcomesSinceLastChild = totalPredictions - lastChildOutcomes;
+        int outcomesSinceLastChild = totalPredictions - lastChildOutcomes;
         return outcomesSinceLastChild >= outcomesBetweenBreeding;
     }
 
