@@ -118,8 +118,8 @@ public class SimpleEngine implements Engine {
             recordMarketChangesInRobots(robotDataList);
             Map<RobotName, List<RobotResultPair>> robotResultMap = timePointExecutor.execute(robotDataList, population);
             recordRobotsPredictions(robotResultMap);
-            TimePointResult timePointResult = new TimePointResult(robotResultMap, engineSettings.requireSymmetricalRobots);
-            timePointResult.listDataSetResults().forEach(dataSetResult -> processDataSetResult(timePoint, dataSetResult));
+            TimePointResult timePointResult = new TimePointResult(robotResultMap);
+            timePointResult.get().forEach(dataSetResult -> processDataSetResult(timePoint, dataSetResult));
             List<RobotInfo> robotInfoList = population.getRobotInfoList();
             checkTraining(robotInfoList);
             output.reportFinishedTimePoint(timePoint, account.getEquity());

@@ -120,7 +120,7 @@ public class Robot implements Serializable {
         pair.forEach(this::recordMarketChange);
     }
 
-    public void recordMarketChange(RobotData robotData) {
+    private void recordMarketChange(RobotData robotData) {
         ofNullable(current.remove(robotData.getName())).ifPresent(prediction -> {
             final double priceChange = robotData.getLastPriceChange();
             final Outcome outcome = Outcome.getOutcome(prediction, priceChange);
@@ -138,18 +138,26 @@ public class Robot implements Serializable {
 
     public void recordPrediction(RobotResultPair pair) {
         pair.forEach(this::recordPrediction);
+        RobotResult originalResult = pair.getOriginal();
+        Prediction originalPred = originalResult.getPrediction();
+        if (originalPred != Prediction.OUT) {
+            isPredicting = true;
+        }
+        RobotResult reversedResult = pair.getReversed();
+        if (reversedResult != null) {
+            Prediction reversedPred = reversedResult.getPrediction();
+            if (originalPred != Prediction.getOpposite(reversedPred)) {
+                bias += 1;
+            }
+        }
     }
 
-    public void recordPrediction(RobotResult robotResult) {
+    private void recordPrediction(RobotResult robotResult) {
         DataSetName dataSetName = robotResult.getDataSetName();
         Prediction newPrediction = robotResult.getPrediction();
         Prediction pendingPrediction = pending.get(dataSetName);
         current.put(dataSetName, pendingPrediction);
         pending.put(dataSetName, newPrediction);
-        if(newPrediction != Prediction.OUT) {
-            isPredicting = true;
-        }
-        bias += newPrediction.getValue();
     }
 
     @Override
