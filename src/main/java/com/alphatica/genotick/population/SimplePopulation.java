@@ -3,8 +3,8 @@ package com.alphatica.genotick.population;
 
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SimplePopulation implements Population {
     private PopulationSettings settings;
@@ -76,10 +76,10 @@ public class SimplePopulation implements Population {
         }
         return false;
     }
-
+    
     @Override
-    public Set<RobotName> listRobotsNames() {
-        return dao.getRobotNames().collect(Collectors.toSet());
+    public Stream<Robot> getRobots() {
+        return dao.getRobots();
     }
 
     @Override

@@ -113,7 +113,7 @@ public class SimpleEngine implements Engine {
         robotDataManager.update(timePoint);
         final List<RobotDataPair> robotDataList = robotDataManager.getUpdatedRobotDataList();
         if (!robotDataList.isEmpty()) {
-            output.reportStartingTimePoint(timePoint);
+            output.reportStartedTimePoint(timePoint);
             updateAccount(robotDataList);
             recordMarketChangesInRobots(robotDataList);
             Map<RobotName, List<RobotResultPair>> robotResultMap = timePointExecutor.execute(robotDataList, population);
@@ -121,7 +121,7 @@ public class SimpleEngine implements Engine {
             TimePointResult timePointResult = new TimePointResult(robotResultMap);
             timePointResult.get().forEach(dataSetResult -> processDataSetResult(timePoint, dataSetResult));
             List<RobotInfo> robotInfoList = population.getRobotInfoList();
-            checkTraining(robotInfoList);
+            performTraining(robotInfoList);
             output.reportFinishedTimePoint(timePoint, account.getEquity());
         }
         profitRecorder.onUpdate(bar);
@@ -139,17 +139,19 @@ public class SimpleEngine implements Engine {
 
     private void recordRobotsPredictions(Map<RobotName, List<RobotResultPair>> map) {
         if(engineSettings.performTraining) {
-            map.keySet().forEach(name -> {
-                Robot robot = population.getRobot(name);
-                map.get(name).forEach(robot::recordPrediction);
+            map.entrySet().forEach(entry -> {
+                Robot robot = population.getRobot(entry.getKey());
+                entry.getValue().forEach(robot::recordPrediction);
                 population.saveRobot(robot);
             });
         }
     }
 
-    private void checkTraining(List<RobotInfo> list) {
+    private void performTraining(List<RobotInfo> list) {
         if (engineSettings.performTraining) {
-            updatePopulation(list);
+            killer.killRobots(population, list);
+            breeder.breedPopulation(population, list);
+            output.debugMessage("averageAge=" + population.getAverageAge());
         }
     }
 
@@ -164,17 +166,10 @@ public class SimpleEngine implements Engine {
 
     private void recordMarketChangesInRobots(List<RobotDataPair> robotDataList) {
         if(engineSettings.performTraining) {
-            population.listRobotsNames().forEach(robotName -> {
-                Robot robot = population.getRobot(robotName);
+            population.getRobots().forEach(robot -> {
                 robotDataList.forEach(robot::recordMarketChange);
                 population.saveRobot(robot);
             });
         }
-    }
-
-    private void updatePopulation(List<RobotInfo> list) {
-        killer.killRobots(population, list);
-        breeder.breedPopulation(population, list);
-        output.debugMessage("averageAge=" + population.getAverageAge());
     }
 }
