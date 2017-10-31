@@ -25,13 +25,12 @@ class SimpleTimePointExecutor implements TimePointExecutor {
         if (robotDataList.isEmpty()) {
             return Collections.emptyMap();
         } else {
-            Stream<List<RobotResultPair>> stream = population.listRobotsNames().parallelStream().map(robotName -> executeRobot(robotDataList, robotName, population));
+            Stream<List<RobotResultPair>> stream = population.getRobots().parallel().map(robot -> executeRobot(robotDataList, robot));
             return stream.collect(Collectors.toMap(list -> list.get(0).getOriginal().getName(), Function.identity()));
         }
     }
 
-    private List<RobotResultPair> executeRobot(List<RobotDataPair> robotDataList, RobotName robotName, Population population) {
-        Robot robot = population.getRobot(robotName);
+    private List<RobotResultPair> executeRobot(List<RobotDataPair> robotDataList, Robot robot) {
         return dataSetExecutor.execute(robotDataList, robot, robotExecutorFactory);
     }
 

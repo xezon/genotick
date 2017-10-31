@@ -80,7 +80,7 @@ class ConsoleOutput implements UserOutput {
     }
 
     @Override
-    public void reportStartingTimePoint(TimePoint timePoint) {
+    public void reportStartedTimePoint(TimePoint timePoint) {
         log(format("Starting time point %s", timePoint));
     }
 

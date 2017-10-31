@@ -2,7 +2,7 @@ package com.alphatica.genotick.population;
 
 
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Stream;
 
 public interface Population {
 
@@ -31,7 +31,7 @@ public interface Population {
     boolean saveOnDisk();
     
     void saveToFolder(String path);
-
-    Set<RobotName> listRobotsNames();
+    
+    Stream<Robot> getRobots();
 
 }

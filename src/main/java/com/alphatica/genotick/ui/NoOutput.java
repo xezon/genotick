@@ -52,7 +52,7 @@ public class NoOutput implements UserOutput {
     }
 
     @Override
-    public void reportStartingTimePoint(TimePoint timePoint) {
+    public void reportStartedTimePoint(TimePoint timePoint) {
     }
 
     @Override
