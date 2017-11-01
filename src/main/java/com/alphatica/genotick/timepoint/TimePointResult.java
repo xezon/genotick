@@ -2,8 +2,11 @@ package com.alphatica.genotick.timepoint;
 
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.DataSetResult;
+import com.alphatica.genotick.genotick.EngineSettings;
 import com.alphatica.genotick.genotick.RobotResult;
 import com.alphatica.genotick.genotick.RobotResultPair;
+import com.alphatica.genotick.population.Population;
+import com.alphatica.genotick.population.Robot;
 import com.alphatica.genotick.population.RobotName;
 
 import java.util.Collection;
@@ -14,11 +17,16 @@ import java.util.Map;
 public class TimePointResult {
     private final Map<DataSetName, DataSetResult> dataSetResultMap;
 
-    public TimePointResult(Map<RobotName, List<RobotResultPair>> robotResultMap) {
+    public TimePointResult(Map<RobotName, List<RobotResultPair>> robotResultMap, Population population, EngineSettings settings) {
         dataSetResultMap = new HashMap<>();
-        robotResultMap.values().stream().flatMap(Collection::stream).forEach(this::addRobotResult);
+        robotResultMap.entrySet().forEach(entry -> {
+            Robot robot = population.getRobot(entry.getKey());
+            if (isGoodRobot(robot, settings)) {
+                entry.getValue().forEach(this::addRobotResult);
+            }            
+        });
     }
-
+    
     public Collection<DataSetResult> get() {
         return dataSetResultMap.values();
     }
@@ -37,4 +45,13 @@ public class TimePointResult {
         return dataSetResultMap.computeIfAbsent(name, DataSetResult::new);
     }
 
+    private boolean isGoodRobot(Robot robot, EngineSettings settings) {
+        if (settings.requireSymmetricalRobots && robot.getBias() != 0) {
+            return false;
+        }
+        if (settings.killNonPredictingRobots && !robot.isPredicting()) {
+            return false;
+        }
+        return true;
+    }
 }

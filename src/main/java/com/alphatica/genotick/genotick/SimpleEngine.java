@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class SimpleEngine implements Engine {
-    private EngineSettings engineSettings;
+    private EngineSettings settings;
     private TimePointExecutor timePointExecutor;
     private RobotKiller killer;
     private RobotBreeder breeder;
@@ -52,10 +52,10 @@ public class SimpleEngine implements Engine {
         changeThreadName();
         initPopulation();
         final Stream<TimePoint> filteredTimePoints = data.getTimePoints(
-                engineSettings.startTimePoint,
-                engineSettings.endTimePoint);
+                settings.startTimePoint,
+                settings.endTimePoint);
         filteredTimePoints.forEach(this::executeTimePoint);
-        if (engineSettings.performTraining) {
+        if (settings.performTraining) {
             savePopulation();
         }
         account.closeAccount();
@@ -70,7 +70,7 @@ public class SimpleEngine implements Engine {
                             RobotBreeder breeder,
                             Population population,
                             MainInterface.SessionResult sessionResult) {
-        this.engineSettings = engineSettings;
+        this.settings = engineSettings;
         this.timePointExecutor = timePointExecutor;
         this.killer = killer;
         this.breeder = breeder;
@@ -95,7 +95,7 @@ public class SimpleEngine implements Engine {
     }
 
     private void initPopulation() {
-        if (population.getSize() == 0 && engineSettings.performTraining) {
+        if (population.getSize() == 0 && settings.performTraining) {
             breeder.breedPopulation(population, Collections.emptyList());
         }
     }
@@ -118,7 +118,7 @@ public class SimpleEngine implements Engine {
             recordMarketChangesInRobots(robotDataList);
             Map<RobotName, List<RobotResultPair>> robotResultMap = timePointExecutor.execute(robotDataList, population);
             recordRobotsPredictions(robotResultMap);
-            TimePointResult timePointResult = new TimePointResult(robotResultMap);
+            TimePointResult timePointResult = new TimePointResult(robotResultMap, population, settings);
             timePointResult.get().forEach(dataSetResult -> processDataSetResult(timePoint, dataSetResult));
             List<RobotInfo> robotInfoList = population.getRobotInfoList();
             performTraining(robotInfoList);
@@ -128,7 +128,7 @@ public class SimpleEngine implements Engine {
     }
     
     private void processDataSetResult(TimePoint timePoint, DataSetResult dataSetResult) {
-        Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
+        Prediction prediction = dataSetResult.getCumulativePrediction(settings.resultThreshold);
         DataSetName dataSetName = dataSetResult.getName();
         account.addPendingOrder(dataSetName, prediction);
         output.showPrediction(timePoint, dataSetResult, prediction);
@@ -138,7 +138,7 @@ public class SimpleEngine implements Engine {
     }
 
     private void recordRobotsPredictions(Map<RobotName, List<RobotResultPair>> map) {
-        if(engineSettings.performTraining) {
+        if(settings.performTraining) {
             map.entrySet().forEach(entry -> {
                 Robot robot = population.getRobot(entry.getKey());
                 entry.getValue().forEach(robot::recordPrediction);
@@ -148,7 +148,7 @@ public class SimpleEngine implements Engine {
     }
 
     private void performTraining(List<RobotInfo> list) {
-        if (engineSettings.performTraining) {
+        if (settings.performTraining) {
             killer.killRobots(population, list);
             breeder.breedPopulation(population, list);
             output.debugMessage("averageAge=" + population.getAverageAge());
@@ -165,7 +165,7 @@ public class SimpleEngine implements Engine {
     }
 
     private void recordMarketChangesInRobots(List<RobotDataPair> robotDataList) {
-        if(engineSettings.performTraining) {
+        if(settings.performTraining) {
             population.getRobots().forEach(robot -> {
                 robotDataList.forEach(robot::recordMarketChange);
                 population.saveRobot(robot);
