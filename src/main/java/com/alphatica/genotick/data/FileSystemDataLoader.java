@@ -28,7 +28,7 @@ public class FileSystemDataLoader implements DataLoader {
             data.put(dataSet);
         }
         if (data.isEmpty()) {
-            throw new DataException("No files to read!");
+            throw new DataException("No files to read");
         }
         return data;
     }
@@ -38,21 +38,43 @@ public class FileSystemDataLoader implements DataLoader {
         output.infoMessage(format("Loading file '%s'", fileName));
         File file = new File(fileName);
         dataFileSanityCheck(file);
-        try {
-            DataLines dataLines = new DataLines(file, false);
-            output.infoMessage(format("Read '%s' lines", dataLines.lineCount()));
-            return new DataSet(fileName, dataLines);
-        }
-        catch (DataException e) {
-            throw new DataException(format("Unable to process file '%s'", fileName), e);
-        }
+        DataLines dataLines = createDataLines(file);
+        output.infoMessage(format("Read '%s' lines", dataLines.lineCount()));
+        return createDataSet(fileName, dataLines);
     }
 
     private void dataFileSanityCheck(File file) {
         if (!file.isFile()) {
-            String message = format("Unable to process file '%s' - not a file.", file.getName());
-            output.errorMessage(message);
-            throw new DataException(message);
+            throw new DataException(format("Unable to process file '%s' - not a file", file.getName()));
+        }
+    }
+    
+    private DataLines createDataLines(File file) throws DataException {
+        try {
+            return new DataLines(file, false);
+        }
+        catch (DataException ex) {
+            // do nothing yet...
+        }
+        return createDataLinesSecondTry(file);
+    }
+    
+    private DataLines createDataLinesSecondTry(File file) throws DataException {
+        try {
+            return new DataLines(file, true);
+        }
+        catch (DataException ex)
+        {
+            throw new DataException(format("Unable to process file '%s'", file.getAbsolutePath()), ex);
+        }
+    }
+    
+    private DataSet createDataSet(String fileName, DataLines dataLines) throws DataException {
+        try {
+            return new DataSet(fileName, dataLines);
+        }
+        catch (DataException ex) {
+            throw new DataException(format("Unable to process file '%s'", fileName), ex);
         }
     }
 }
