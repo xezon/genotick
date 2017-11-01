@@ -21,7 +21,7 @@ public class DataLines {
     private final boolean firstLineIsNewest;
     
     DataLines(File file, boolean firstLineIsNewest) throws DataException {
-        final ArrayList<Number[]> dataFromFile = readData(file);
+        final ArrayList<Number[]> dataFromFile = readData(file, firstLineIsNewest);
         final int lineCount = dataFromFile.size();
         final int columnCount = (lineCount > 0) ? dataFromFile.get(0).length : 0;
         verifyLineAndColumnCount(lineCount, columnCount);
@@ -173,7 +173,7 @@ public class DataLines {
         return dataSeries;
     }
     
-    private static ArrayList<Number[]> readData(File file) throws DataException {
+    private static ArrayList<Number[]> readData(File file, boolean firstLineIsNewest) throws DataException {
         ArrayList<Number[]> dataLines = new ArrayList<>();
         int linesRead = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -198,9 +198,10 @@ public class DataLines {
                 }
                 final long currentTimeValue = columns[Column.TOHLCV.TIME].longValue();
                 final long previousTimeValue = dataLines.get(dataLines.size()-1)[Column.TOHLCV.TIME].longValue();
-                if (currentTimeValue <= previousTimeValue) {
-                    throw new DataException(format("Time value '%d' in line '%d' is not greater than previous time value '%d'",
-                            currentTimeValue, linesRead, previousTimeValue));
+                final boolean isCorrectOrder = firstLineIsNewest ? (currentTimeValue < previousTimeValue) : (currentTimeValue > previousTimeValue);
+                if (!isCorrectOrder) {
+                    throw new DataException(format("Time value '%d' in line '%d' is not %s than previous time value '%d'",
+                            currentTimeValue, linesRead, firstLineIsNewest ? "smaller" : "greater", previousTimeValue));
                 }
                 dataLines.add(columns);
             }
@@ -227,7 +228,7 @@ public class DataLines {
     }
     
     private static String getTimePointString(String field) {
-        return field.replaceAll("-", "");
+        return field.replaceAll("[-.]", "");
     }
     
     private static void verifyLineAndColumnCount(int lineCount, int columnCount) {
