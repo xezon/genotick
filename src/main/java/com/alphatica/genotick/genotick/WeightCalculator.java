@@ -55,11 +55,12 @@ public class WeightCalculator implements Serializable {
     }
         
     private static double getMirroredRate(final double a, final double b) {
-        if (a == b)
-            return 0.0;
-        else if (a > b)
+        if (a > b) {
             return (b == 0.0) ? 1.0 : (a / b);
-        else
+        }
+        else if (a < b) {
             return (a == 0.0) ? -1.0 : -(b / a);
+        }
+        return 0.0;
     }
 }
