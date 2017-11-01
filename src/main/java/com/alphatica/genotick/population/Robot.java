@@ -181,7 +181,7 @@ public class Robot implements Serializable {
         return sb.toString();
     }
 
-    boolean isPredicting() {
+    public boolean isPredicting() {
         return isPredicting;
     }
 
@@ -197,7 +197,7 @@ public class Robot implements Serializable {
         return totalOutcomes;
     }
 
-    int getBias() {
+    public int getBias() {
         return bias;
     }
 

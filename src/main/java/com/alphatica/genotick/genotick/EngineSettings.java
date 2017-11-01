@@ -3,11 +3,12 @@ package com.alphatica.genotick.genotick;
 import com.alphatica.genotick.chart.GenoChartMode;
 import com.alphatica.genotick.timepoint.TimePoint;
 
-class EngineSettings {
+public class EngineSettings {
     public final TimePoint startTimePoint;
     public final TimePoint endTimePoint;
     public final boolean performTraining;
     public final int maximumDataOffset;
+    public final boolean killNonPredictingRobots;
     public final boolean requireSymmetricalRobots;
     public final double resultThreshold;
     public final GenoChartMode chartMode;
@@ -17,6 +18,7 @@ class EngineSettings {
         this.endTimePoint = settings.endTimePoint;
         this.performTraining = settings.performTraining;
         this.maximumDataOffset = settings.maximumDataOffset;
+        this.killNonPredictingRobots = settings.killNonPredictingRobots;
         this.requireSymmetricalRobots = settings.requireSymmetricalRobots;
         this.resultThreshold = settings.resultThreshold;
         this.chartMode = settings.chartMode;
