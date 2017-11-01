@@ -1,30 +1,34 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.DataSetName;
+import com.alphatica.genotick.exceptions.ExecutionException;
 import com.alphatica.genotick.genotick.DataSetResult;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.utility.Tools;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
+
+import org.apache.commons.io.FileUtils;
 
 import static java.lang.String.format;
 
 public class CsvOutput implements UserOutput {
     private final ConsoleOutput console;
-    private final SimpleTextWriter profitWriter;
-    private final SimpleTextWriter predictionWriter;
+    private final File profitFile;
+    private final File predictionFile;
     private Boolean debug = false;
 
     public CsvOutput(String outdir) throws IOException {
         console = new ConsoleOutput(outdir);
         String identifier = Tools.getProcessThreadIdString();
-        profitWriter = new SimpleTextWriter(outdir, "profit_" + identifier + ".csv");
-        predictionWriter = new SimpleTextWriter(outdir, "predictions_" + identifier + ".csv");
+        profitFile = new File(outdir, "profit_" + identifier + ".csv");
+        predictionFile = new File(outdir, "predictions_" + identifier + ".csv");
+        printBlankFile(profitFile);
+        printBlankFile(predictionFile);
     }
 
     @Override
@@ -48,7 +52,7 @@ public class CsvOutput implements UserOutput {
                 timePoint.toString(),result.getName().toString(),prediction.toString(),
                 result.getCountUp(),result.getCountDown(),result.getWeightUp(),result.getWeightDown()
         );
-        predictionWriter.writeLine(line);
+        printPrediction(line);
     }
 
     @Override
@@ -84,7 +88,7 @@ public class CsvOutput implements UserOutput {
     @Override
     public void reportFinishedTimePoint(TimePoint timePoint, BigDecimal equity) {
         String line = format("%s,%s", timePoint.toString(), equity.toPlainString());
-        profitWriter.writeLine(line);
+        printProfit(line);
     }
 
     @Override
@@ -93,22 +97,29 @@ public class CsvOutput implements UserOutput {
 			console.infoMessage(message);
 	}
 
-
     @Override
     public void infoMessage(String message) {
         console.infoMessage(message);
     }
-}
 
-class SimpleTextWriter {
-    private final PrintWriter writer;
-
-    SimpleTextWriter(String path, String fileName) throws IOException {
-        writer = new PrintWriter(new FileOutputStream(new File(path, fileName)));
+    private void printProfit(String line) throws ExecutionException {
+        printToFile(profitFile, line);
     }
 
-    void writeLine(String line) {
-        writer.println(line);
-        writer.flush();
+    private void printPrediction(String line) throws ExecutionException {
+        printToFile(predictionFile, line);
+    }
+
+    private void printBlankFile(File file) throws IOException {
+        FileUtils.write(file, "", Charset.defaultCharset(), false);
+    }
+    
+    private void printToFile(File file, String line) throws ExecutionException {
+        try {
+            FileUtils.write(file, line + System.lineSeparator(), Charset.defaultCharset(), true);
+        }
+        catch (IOException e) {
+            throw new ExecutionException(format("Unable to write to file %s", file.getAbsoluteFile()), e);
+        }
     }
 }
