@@ -21,7 +21,7 @@ public class MainSettings {
     public int maximumRobotInstructions = 1024;
     public int maximumProcessorInstructionFactor = 256;
     public double maximumDeathByAge = 0.01;
-    public double maximumDeathByWeight = 0.1;
+    public double maximumDeathByWeight = 0.01;
     public double probabilityOfDeathByAge = 0.5;
     public double probabilityOfDeathByWeight = 0.5;
     public WeightMode weightMode = WeightMode.WIN_COUNT;
