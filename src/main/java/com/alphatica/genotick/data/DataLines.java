@@ -8,7 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.alphatica.genotick.data.Column.TOHLCV;
+import com.alphatica.genotick.data.Column.TOHLC;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePoints;
 import com.alphatica.genotick.utility.JniExport;
@@ -16,7 +16,8 @@ import com.alphatica.genotick.utility.JniExport;
 public class DataLines {
     
     private static final int MIN_LINE_COUNT = 1;
-    private static final int MIN_COLUMN_COUNT = TOHLCV.CLOSE + 1;
+    @JniExport
+    private static final int MIN_COLUMN_COUNT = TOHLC.CLOSE + 1;
     private final Number[][] data;
     private final boolean firstLineIsNewest;
     
@@ -90,50 +91,45 @@ public class DataLines {
     }
     
     private long getTime(int line) {
-        return data[line][Column.TOHLCV.TIME].longValue();
+        return data[line][Column.TOHLC.TIME].longValue();
     }
     
     public double getOhlcValue(int line, int ohlcColumn) {
-        return data[line][ohlcColumn + Column.TOHLCV.OPEN].doubleValue();
+        return data[line][ohlcColumn + 1].doubleValue();
     }
     
     public void setOhlcValue(int line, int ohlcColumn, double value) {
-        data[line][ohlcColumn + Column.TOHLCV.OPEN] = value;
+        data[line][ohlcColumn + 1] = value;
     }
     
     @JniExport
     void setTime(int line, long value) {
-        data[line][Column.TOHLCV.TIME] = value;
+        data[line][Column.TOHLC.TIME] = value;
     }
     
     @JniExport
     void setOpen(int line, double value) {
-        data[line][Column.TOHLCV.OPEN] = value;
+        data[line][Column.TOHLC.OPEN] = value;
     }
     
     @JniExport
     void setHigh(int line, double value) {
-        data[line][Column.TOHLCV.HIGH] = value;
+        data[line][Column.TOHLC.HIGH] = value;
     }
     
     @JniExport
     void setLow(int line, double value) {
-        data[line][Column.TOHLCV.LOW] = value;
+        data[line][Column.TOHLC.LOW] = value;
     }
     
     @JniExport
     void setClose(int line, double value) {
-        data[line][Column.TOHLCV.CLOSE] = value;
-    }
-    
-    @JniExport
-    void setVolume(int line, double value) {
-        data[line][Column.TOHLCV.VOLUME] = value;
+        data[line][Column.TOHLC.CLOSE] = value;
     }
     
     @JniExport
     void setOther(int line, int otherColumn, double value) {
-        data[line][otherColumn + Column.TOHLCV.OTHER] = value;
+        data[line][otherColumn + Column.TOHLC.OTHER] = value;
     }
     
     public int lineCount() {
@@ -196,8 +192,8 @@ public class DataLines {
                     throw new DataException(format("Column count '%d' in line '%d' does not match the expected column count '%d'.",
                             columns.length, linesRead, columnCount));
                 }
-                final long currentTimeValue = columns[Column.TOHLCV.TIME].longValue();
-                final long previousTimeValue = dataLines.get(dataLines.size()-1)[Column.TOHLCV.TIME].longValue();
+                final long currentTimeValue = columns[Column.TOHLC.TIME].longValue();
+                final long previousTimeValue = dataLines.get(dataLines.size()-1)[Column.TOHLC.TIME].longValue();
                 final boolean isCorrectOrder = firstLineIsNewest ? (currentTimeValue < previousTimeValue) : (currentTimeValue > previousTimeValue);
                 if (!isCorrectOrder) {
                     throw new DataException(format("Time value '%d' in line '%d' is not %s than previous time value '%d'",

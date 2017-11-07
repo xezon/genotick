@@ -141,7 +141,7 @@ public class Main {
                 for (int line = 0; line < lineCount; ++line) {
                     for (int column : Column.Array.OHLC) {
                         double value = dataLines.getOhlcValue(line, column);
-                        chart.addXYLineChart(chartName, "bar", "price", Column.Names.OHLCV[column], line, value);
+                        chart.addXYLineChart(chartName, "bar", "price", Column.Names.OHLC[column], line, value);
                     }
                 }
             }
