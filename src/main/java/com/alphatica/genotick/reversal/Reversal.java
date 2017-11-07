@@ -78,14 +78,14 @@ public class Reversal {
     
     private static double[] createReversedOhlc(double[] lastOriginal, double[] original, double[] lastReversed) {
         final double[] reversed = new double[original.length];
-        final double openDiff = original[Column.OHLCV.OPEN] - lastOriginal[Column.OHLCV.CLOSE];
-        final double highDiff = original[Column.OHLCV.HIGH] - original[Column.OHLCV.OPEN];
-        final double lowDiff = original[Column.OHLCV.LOW] - original[Column.OHLCV.OPEN];
-        final double closeDiff = original[Column.OHLCV.CLOSE] - original[Column.OHLCV.OPEN];
-        reversed[Column.OHLCV.OPEN] = lastReversed[Column.OHLCV.CLOSE] - openDiff;
-        reversed[Column.OHLCV.HIGH] = reversed[Column.OHLCV.OPEN] - lowDiff;
-        reversed[Column.OHLCV.LOW] = reversed[Column.OHLCV.OPEN] - highDiff;
-        reversed[Column.OHLCV.CLOSE] = reversed[Column.OHLCV.OPEN] - closeDiff;
+        final double openDiff = original[Column.OHLC.OPEN] - lastOriginal[Column.OHLC.CLOSE];
+        final double highDiff = original[Column.OHLC.HIGH] - original[Column.OHLC.OPEN];
+        final double lowDiff = original[Column.OHLC.LOW] - original[Column.OHLC.OPEN];
+        final double closeDiff = original[Column.OHLC.CLOSE] - original[Column.OHLC.OPEN];
+        reversed[Column.OHLC.OPEN] = lastReversed[Column.OHLC.CLOSE] - openDiff;
+        reversed[Column.OHLC.HIGH] = reversed[Column.OHLC.OPEN] - lowDiff;
+        reversed[Column.OHLC.LOW] = reversed[Column.OHLC.OPEN] - highDiff;
+        reversed[Column.OHLC.CLOSE] = reversed[Column.OHLC.OPEN] - closeDiff;
         return reversed;
     }
     
@@ -94,7 +94,7 @@ public class Reversal {
         final double threshold = 0.01;
         double lowest = threshold;
         for (int line = 0; line < lineCount; ++line) {
-            final double low = dataLines.getOhlcValue(line, Column.OHLCV.LOW);
+            final double low = dataLines.getOhlcValue(line, Column.OHLC.LOW);
             if (low < lowest)
                 lowest = low;
         }

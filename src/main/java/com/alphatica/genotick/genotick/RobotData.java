@@ -30,15 +30,15 @@ public class RobotData {
     }
 
     double getLastPriceOpen() {
-        return ohlcLookbackData.get(Column.OHLCV.OPEN, 0);
+        return ohlcLookbackData.get(Column.OHLC.OPEN, 0);
     }
 
     public double getLastPriceChange() {
         if (ohlcLookbackData.barCount() < 2) {
             return 0.0;
         }
-        final double currentOpen = ohlcLookbackData.get(Column.OHLCV.OPEN, 0);
-        final double previousOpen = ohlcLookbackData.get(Column.OHLCV.OPEN, 1);
+        final double currentOpen = ohlcLookbackData.get(Column.OHLC.OPEN, 0);
+        final double previousOpen = ohlcLookbackData.get(Column.OHLC.OPEN, 1);
         return currentOpen - previousOpen;
     }
 }
