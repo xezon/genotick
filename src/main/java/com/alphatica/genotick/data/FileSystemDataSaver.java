@@ -33,10 +33,14 @@ public class FileSystemDataSaver implements DataSaver {
                 String columnsString = makeString(columns, ",");
                 bw.write(columnsString + lineSeparator);
             }
-            output.infoMessage(format("Saved data file '%s' successfully", fileName));
+            if (output != null) {
+                output.infoMessage(format("Saved data file '%s' successfully", fileName));
+            }
         }
         catch (IOException e) {
-            output.errorMessage(format("Saving data file '%s' failed: %s", fileName, e.getMessage()));
+            if (output != null) {
+                output.errorMessage(format("Saving data file '%s' failed: %s", fileName, e.getMessage()));
+            }
             e.printStackTrace();
         }
     }

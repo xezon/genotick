@@ -35,11 +35,15 @@ public class FileSystemDataLoader implements DataLoader {
     
     @Override
     public DataSet load(String fileName) {
-        output.infoMessage(format("Loading file '%s'", fileName));
+        if (output != null) {
+            output.infoMessage(format("Loading file '%s'", fileName));
+        }
         File file = new File(fileName);
         dataFileSanityCheck(file);
         DataLines dataLines = createDataLines(file);
-        output.infoMessage(format("Read '%s' lines", dataLines.lineCount()));
+        if (output != null) {
+            output.infoMessage(format("Read '%s' lines", dataLines.lineCount()));
+        }
         return createDataSet(fileName, dataLines);
     }
 
