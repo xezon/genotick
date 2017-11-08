@@ -16,8 +16,9 @@ public class DataSetName implements Serializable {
     
     public DataSetName(String path) {
         gassert(!path.isEmpty());
+        boolean isFilename = !FilenameUtils.getExtension(path).isEmpty();
         this.path = path;
-        this.name = FilenameUtils.getBaseName(path);
+        this.name = isFilename ? FilenameUtils.getBaseName(path) : path;
         this.isReversed = name.startsWith(REVERSE_DATA_IDENTIFIER);
     }
 

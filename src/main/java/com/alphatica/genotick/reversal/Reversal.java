@@ -6,8 +6,7 @@ import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
 
 public class Reversal {
 
@@ -28,7 +27,7 @@ public class Reversal {
     public DataSetName getReversedName() {
         if (reversedName == null) {
             final DataSetName orginalName = originalSet.getName();
-            reversedName = new DataSetName(getReversedDataPath(orginalName.getPath()));
+            reversedName = createReversedDataSetName(orginalName);
         }
         return reversedName;
     }
@@ -51,15 +50,18 @@ public class Reversal {
         }
         return false;
     }
-
-    private static String getReversedDataPath(String path) {
-        Path originalPath = Paths.get(path);
-        Path fileNamePath = originalPath.getFileName();
-        Path directoryPath = originalPath.getParent();
-        String directoryString = (directoryPath != null) ? directoryPath.toString() : "";
-        String newName = DataSetName.REVERSE_DATA_IDENTIFIER + fileNamePath.toString();
-        Path reversedPath = Paths.get(directoryString, newName);
-        return reversedPath.toString();
+    
+    private static DataSetName createReversedDataSetName(DataSetName name) {
+        final StringBuilder newName = new StringBuilder(name.getPath());
+        final int index = newName.lastIndexOf(File.separator) + 1;
+        if (name.isReversed()) {
+            final int len = DataSetName.REVERSE_DATA_IDENTIFIER.length();
+            newName.delete(index, index + len);
+        }
+        else {
+            newName.insert(index, DataSetName.REVERSE_DATA_IDENTIFIER);
+        }
+        return new DataSetName(newName.toString());
     }
     
     private static void reverseDataLines(DataLines dataLines) {
