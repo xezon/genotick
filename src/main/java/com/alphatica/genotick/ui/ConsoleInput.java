@@ -41,7 +41,7 @@ class ConsoleInput extends BasicUserInput {
                 settings.maximumDataOffset = getInteger("Maximum data offset", settings.maximumDataOffset);
                 settings.populationDesiredSize = getInteger("Population desired size", settings.populationDesiredSize);
                 settings.minimumRobotInstructions = getInteger("Minimum robot instructions", settings.minimumRobotInstructions);
-                settings.maximumRobotInstructions = getInteger("Minimum robot instructions", settings.maximumRobotInstructions);
+                settings.maximumRobotInstructions = getInteger("Maximum robot instructions", settings.maximumRobotInstructions);
                 settings.maximumDeathByAge = getDouble("Maximum death rate by age", settings.maximumDeathByAge);
                 settings.maximumDeathByWeight = getDouble("Maximum death rate by weight", settings.maximumDeathByWeight);
                 settings.probabilityOfDeathByAge = getDouble("Probability of death by age", settings.probabilityOfDeathByAge);
