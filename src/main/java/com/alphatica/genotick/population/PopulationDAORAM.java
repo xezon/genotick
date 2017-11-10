@@ -36,7 +36,7 @@ public class PopulationDAORAM implements PopulationDAO {
     }
 
     @Override
-    public void saveRobot(Robot robot) {
+    public synchronized void saveRobot(Robot robot) {
         if(robot.getName() == null) {
             robot.setName(getAvailableRobotName());
         }

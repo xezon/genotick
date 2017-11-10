@@ -34,11 +34,15 @@ public class Main {
     private MainInterface.Session session;
 
     public static void main(String[] args) throws IOException, IllegalAccessException {
+	    	int poolCores = Math.max(Runtime.getRuntime().availableProcessors()*2, 2);
+	    	System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", Integer.toString(poolCores));
+	    	
         Main main = new Main();
         main.init(args, null);
     }
 
     public ErrorCode init(String[] args, MainInterface.Session session) throws IOException, IllegalAccessException {
+        long startTime = System.currentTimeMillis();
         this.session = session;
         Parameters parameters = new Parameters(args);
         if (canContinue) {
@@ -68,17 +72,17 @@ public class Main {
         if (canContinue) {
             initSimulation(parameters);
         }
-        printError(error);
+        printError(error, System.currentTimeMillis() - startTime);
         return error;
     }
-
+    
     private void setError(ErrorCode error) {
         this.error = error;
         this.canContinue = false;
     }
 
-    private void printError(final ErrorCode error) {
-        System.out.println(format("Program finished with error code %s(%d)", error.toString(), error.getValue()));
+    private void printError(final ErrorCode error, long elapseTime) {
+        System.out.println(format("Program finished with error code %s(%d) in %d seconds", error.toString(), error.getValue(), (elapseTime/1000)));
     }
 
     private void initHelp(Parameters parameters) {
@@ -215,7 +219,9 @@ public class Main {
         MainAppData data = input.getData(settings.dataDirectory);
         generateMissingData(settings, data);
         MainInterface.SessionResult sessionResult = (session != null) ? session.result : null;
+        long startTime = System.currentTimeMillis();
         simulation.start(settings, data, sessionResult);
+        System.out.println(format("Simulation finished in %d seconds", ((System.currentTimeMillis()-startTime)/1000)));
         setError(ErrorCode.NO_ERROR);
     }
     

@@ -13,9 +13,12 @@ import com.alphatica.genotick.population.RobotSettings;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ForkJoinPool;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import static com.alphatica.genotick.utility.Assert.gassert;
 
@@ -68,10 +71,21 @@ public class SimpleBreeder implements RobotBreeder {
         }
     }
 
-    private void fillWithRobots(int count, Population population) {
+    private void fillWithRobotsSync(int count, Population population) {
         for (int i = 0; i < count; i++) {
             createNewRobot(population);
         }
+    }
+
+    private void fillWithRobots(int count, Population population) {
+	    	if(count < 32 || RandomGenerator.getSeed() != 0) {
+		    		fillWithRobotsSync(count, population);
+						return;
+	    	} else {
+		    		int cores =  Math.max(2, Runtime.getRuntime().availableProcessors());
+						int taskSize = (int)Math.ceil((double)count / (double)cores);
+						IntStream.range(0, count).filter(x -> x % taskSize == 0).parallel().forEach(x -> fillWithRobotsSync(Math.min(taskSize, count-x), population));
+	    	} 
     }
 
     private void createNewRobot(Population population) {
