@@ -17,7 +17,8 @@ public class InstructionList implements Serializable {
     private final double[] variables;
 
     private int validateVariableNumber(int index) {
-        return Math.abs(index % variablesCount);
+	    	if(index < 0 || index >= variablesCount) return Math.abs(index % variablesCount);
+	    	return index;
     }
 
     private InstructionList() {

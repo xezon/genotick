@@ -29,10 +29,13 @@ public class Main {
     private static UserOutput output;
 
     public static void main(String[] args) throws IOException, IllegalAccessException {
+	    	int poolCores = Math.max(Runtime.getRuntime().availableProcessors()*2, 2);
+	    	System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", Integer.toString(poolCores));
         init(args);
     }
 
     public static ErrorCode init(String[] args) throws IOException, IllegalAccessException {
+	    	long startTime = System.currentTimeMillis();
         Parameters parameters = new Parameters(args);
         if (canContinue) {
             initHelp(parameters);
@@ -58,7 +61,7 @@ public class Main {
         if (canContinue) {
             initSimulation(parameters);
         }
-        onExit();
+        onExit(System.currentTimeMillis() - startTime);
         return error;
     }
 
@@ -67,8 +70,8 @@ public class Main {
         canContinue = false;
     }
 
-    private static void onExit() {
-        System.out.println(format("Program finished with error code %s(%d)", error.toString(), error.getValue()));
+    private static void onExit(long elapseTime) {
+        System.out.println(format("Program finished with error code %s(%d) in %d seconds", error.toString(), error.getValue(), (elapseTime/1000)));
     }
 
     private static void initShowRobot(Parameters parameters) {
@@ -250,7 +253,9 @@ public class Main {
         MainAppData data = input.getData(settings.dataDirectory);
         generateMissingData(settings, data);
         settings.validateTimePoints(data);
+	    	long startTime = System.currentTimeMillis();
         simulation.start(settings, data);
+        System.out.println(format("Simulation finished in %d seconds", ((System.currentTimeMillis()-startTime)/1000)));
         setError(ErrorCode.NO_ERROR);
     }
     

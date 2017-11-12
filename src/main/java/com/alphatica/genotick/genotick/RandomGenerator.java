@@ -1,5 +1,6 @@
 package com.alphatica.genotick.genotick;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.Random;
 
 public class RandomGenerator {
@@ -17,10 +18,14 @@ public class RandomGenerator {
     }
 
     public static Random get() {
-        Random random = new Random();
+        Random random = 0 != SEED ? new Random() : ThreadLocalRandom.current();
         if (0 != SEED) {
             random.setSeed(SEED);
         }
         return random;
+    }
+    
+    public static long getSeed() {
+	    return SEED;
     }
 }

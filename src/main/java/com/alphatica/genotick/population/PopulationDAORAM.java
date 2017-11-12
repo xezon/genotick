@@ -2,6 +2,7 @@ package com.alphatica.genotick.population;
 
 import com.alphatica.genotick.genotick.RandomGenerator;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -9,7 +10,7 @@ import java.util.stream.Stream;
 
 public class PopulationDAORAM implements PopulationDAO {
 
-    private final Map<RobotName,Robot> map = new HashMap<>();
+    private final Map<RobotName,Robot> map = new HashMap<>(100, 1.0f); 
     private final Random random;
 
     public PopulationDAORAM() {
@@ -37,11 +38,11 @@ public class PopulationDAORAM implements PopulationDAO {
     }
 
     @Override
-    public void saveRobot(Robot robot) {
+    public synchronized void saveRobot(Robot robot) {
         if(robot.getName() == null) {
-            robot.setName(getAvailableRobotName());
+	        robot.setName(getAvailableRobotName());
         }
-        map.put(robot.getName(), robot);
+	      map.put(robot.getName(), robot);
     }
 
     @Override

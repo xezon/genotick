@@ -56,13 +56,19 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     @Override
     public void saveRobot(Robot robot) {
         if(robot.getName() == null) {
+	        synchronized(this) {
             RobotName name = getAvailableName();
             robot.setName(name);
             names.add(name);
+            
+		        File file = createFileForName(robot.getName());
+		        saveRobotToFile(robot,file);
+					}
+        } else {
+	        File file = createFileForName(robot.getName());
+	        saveRobotToFile(robot,file);
         }
-        File file = createFileForName(robot.getName());
-        saveRobotToFile(robot,file);
-    }
+   }
 
     @Override
     public void removeRobot(RobotName robotName) {
