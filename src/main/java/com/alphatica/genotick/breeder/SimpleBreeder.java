@@ -72,7 +72,6 @@ public class SimpleBreeder implements RobotBreeder {
     private void fillWithRobots(int count, Population population) {
 	    	if(count < 64 || RandomGenerator.getSeed() != 0) {
 		    	fillWithRobotsSync(count, population);
-		    	return;
 	    	} else {
 		    	int cores =  Math.max(2, Runtime.getRuntime().availableProcessors());
 		    	int taskSize = (int)Math.ceil((double)count / (double)cores);
