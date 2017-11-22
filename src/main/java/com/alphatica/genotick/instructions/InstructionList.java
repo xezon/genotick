@@ -63,7 +63,11 @@ public class InstructionList implements Serializable {
     }
 
     private int validateVariableNumber(int index) {
-        return Math.abs(index % variables.length);
+    	if(index < 0 || index >= variables.length) {
+        	return Math.abs(index % variables.length);
+        } else {
+        	return index;       
+        }
     }
 
     private int fixPosition(int position) {

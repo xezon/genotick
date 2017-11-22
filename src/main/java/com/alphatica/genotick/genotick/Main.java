@@ -18,8 +18,10 @@ import com.alphatica.genotick.ui.Parameters;
 import com.alphatica.genotick.ui.UserInput;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
+import com.alphatica.genotick.utility.TimeCounter;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 import java.io.IOException;
 
 import static java.lang.String.format;
@@ -39,6 +41,8 @@ public class Main {
     }
 
     public ErrorCode init(String[] args, MainInterface.Session session) throws IOException, IllegalAccessException {
+        prepareDefaultThreadPool();
+        TimeCounter totalRunTime = new TimeCounter("Total Run Time", false);
         this.session = session;
         Parameters parameters = new Parameters(args);
         if (canContinue) {
@@ -68,17 +72,22 @@ public class Main {
         if (canContinue) {
             initSimulation(parameters);
         }
-        printError(error);
+        printError(error, totalRunTime.stop(TimeUnit.SECONDS));
         return error;
     }
-
+    
+    private void prepareDefaultThreadPool() {
+    	int poolCores = Math.max(Runtime.getRuntime().availableProcessors()*2, 2);
+    	System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", Integer.toString(poolCores));
+    }
+    
     private void setError(ErrorCode error) {
         this.error = error;
         this.canContinue = false;
     }
 
-    private void printError(final ErrorCode error) {
-        System.out.println(format("Program finished with error code %s(%d)", error.toString(), error.getValue()));
+    private void printError(final ErrorCode error, long elapseTimeSeconds) {
+        System.out.println(format("Program finished with error code %s(%d) in %d seconds", error.toString(), error.getValue(), elapseTimeSeconds));
     }
 
     private void initHelp(Parameters parameters) {

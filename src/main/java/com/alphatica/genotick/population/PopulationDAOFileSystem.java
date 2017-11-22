@@ -17,6 +17,8 @@ import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
+import com.alphatica.genotick.genotick.RandomGenerator;
+
 public class PopulationDAOFileSystem implements PopulationDAO {
     private static final String FILE_EXTENSION = ".prg";
     private final String robotsPath;
@@ -24,7 +26,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     private final List<RobotName> names;
 
     public PopulationDAOFileSystem(String path) {
-        this(new Random(), path);
+        this(RandomGenerator.create(0), path);
     }
     
     public PopulationDAOFileSystem(Random random, String path) {
@@ -58,13 +60,19 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     @Override
     public void saveRobot(Robot robot) {
         if(robot.getName() == null) {
-            RobotName name = getAvailableName();
-            robot.setName(name);
-            names.add(name);
-        }
-        File file = createFileForName(robot.getName());
-        saveRobotToFile(robot,file);
-    }
+	        synchronized(this) {
+                RobotName name = getAvailableName();
+                robot.setName(name);
+                names.add(name);
+                
+    	        File file = createFileForName(robot.getName());
+    	        saveRobotToFile(robot,file);
+        	}
+        } else {
+            File file = createFileForName(robot.getName());
+            saveRobotToFile(robot,file);
+		}
+   }
 
     @Override
     public void removeRobot(RobotName robotName) {
