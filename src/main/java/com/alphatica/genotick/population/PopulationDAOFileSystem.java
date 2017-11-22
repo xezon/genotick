@@ -26,7 +26,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     private final List<RobotName> names;
 
     public PopulationDAOFileSystem(String path) {
-        this(RandomGenerator.get(), path);
+        this(RandomGenerator.create(0), path);
     }
     
     public PopulationDAOFileSystem(Random random, String path) {
@@ -61,17 +61,17 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     public void saveRobot(Robot robot) {
         if(robot.getName() == null) {
 	        synchronized(this) {
-            RobotName name = getAvailableName();
-            robot.setName(name);
-            names.add(name);
-            
-		        File file = createFileForName(robot.getName());
-		        saveRobotToFile(robot,file);
+                RobotName name = getAvailableName();
+                robot.setName(name);
+                names.add(name);
+                
+    	        File file = createFileForName(robot.getName());
+    	        saveRobotToFile(robot,file);
         	}
         } else {
-        		File file = createFileForName(robot.getName());
-						saveRobotToFile(robot,file);
-   			}
+            File file = createFileForName(robot.getName());
+            saveRobotToFile(robot,file);
+		}
    }
 
     @Override
