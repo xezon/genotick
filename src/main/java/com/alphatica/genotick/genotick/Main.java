@@ -13,6 +13,10 @@ import com.alphatica.genotick.data.FileSystemDataLoader;
 import com.alphatica.genotick.data.FileSystemDataSaver;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.data.YahooFixer;
+import com.alphatica.genotick.population.Population;
+import com.alphatica.genotick.population.PopulationDAOFileSystem;
+import com.alphatica.genotick.population.Robot;
+import com.alphatica.genotick.population.RobotInfo;
 import com.alphatica.genotick.reversal.Reversal;
 import com.alphatica.genotick.ui.Parameters;
 import com.alphatica.genotick.ui.UserInput;
@@ -21,9 +25,9 @@ import com.alphatica.genotick.ui.UserOutput;
 import com.alphatica.genotick.utility.TimeCounter;
 import com.alphatica.genotick.utility.ParallelTasks;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-import java.io.IOException;
 
 import static java.lang.String.format;
 
@@ -65,6 +69,9 @@ public class Main {
             initShowRobot(parameters);
         }
         if (canContinue) {
+            initMerge(parameters);
+        }
+        if (canContinue) {
             initReverse(parameters);
         }
         if (canContinue) {
@@ -104,6 +111,8 @@ public class Main {
             System.out.println("    java -jar genotick.jar showPopulation=directory_with_population");
             System.out.print("Show robot info: ");
             System.out.println("    java -jar genotick.jar showRobot=directory_with_population\\system name.prg");
+            System.out.print("Merge robots: ");
+            System.out.println("    java -jar genotick.jar mergeRobots=directory_for_merged_robots candidateRobots=base_directory_of_Population_folders");
             System.out.print("Draw price curves for asset data ");
             System.out.println("    java -jar genotick.jar drawData=mydata");
             System.out.println("contact:        lukasz.wojtow@gmail.com");
@@ -178,6 +187,27 @@ public class Main {
                 System.err.println(e.getMessage());
             }
             setError(ErrorCode.NO_ERROR);
+        }
+    }
+
+    private void initMerge(Parameters parameters) {
+        String destination = parameters.getValue("mergeRobots");
+        if(destination != null) {
+            String source = parameters.getValue("candidateRobots");
+            if(source != null) {
+                ErrorCode errorCode = ErrorCode.NO_OUTPUT;
+                try {
+                    errorCode = Merge.mergePopulations(destination, source);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                    output.errorMessage(e.getMessage());
+                }
+                setError(errorCode);
+            } else {
+                output.errorMessage("mergeRobots command found but candidateRobots argument is missing.");
+                setError(ErrorCode.MISSING_ARGUMENT);
+                return;
+            }
         }
     }
 
