@@ -47,8 +47,8 @@ public class TimeCounter {
     }
     
     private void print(long elapsedNanoSeconds, int methodDepth) {        
-        final double elapsedSeconds = (double)elapsedNanoSeconds / 1000000000.0;
-        final double elapsedMilliseconds = (double)elapsedNanoSeconds / 1000.0;
+        final double elapsedSeconds      = (double)elapsedNanoSeconds / 1000000000.0;
+        final double elapsedMilliseconds = (double)elapsedNanoSeconds / 1000000.0;
         final String name = this.name.isEmpty() ? MethodName.get(methodDepth) : this.name;
         System.out.println(format("Timer '%s' elapsed time in seconds: [%.3f] in milliseconds: [%.3f]",
                 name, elapsedSeconds, elapsedMilliseconds));
