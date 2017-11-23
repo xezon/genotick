@@ -35,7 +35,6 @@ public class Simulation {
 
     public void start(MainSettings mainSettings, MainAppData data, MainInterface.SessionResult sessionResult) throws IllegalAccessException {
         TimeCounter simulationRunTime = new TimeCounter("Simulation Run Time", false);
-
         if(validateSettings(mainSettings)) {
             logSettings(mainSettings);
             RobotKiller killer = createRobotKiller(mainSettings);
@@ -45,7 +44,6 @@ public class Simulation {
             Engine engine = createEngine(mainSettings, data, killer, breeder, population, sessionResult);
             engine.start();
         }
-
         System.out.println(format("Simulation finished in %d seconds", simulationRunTime.stop(TimeUnit.SECONDS)));
     }
 

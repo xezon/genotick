@@ -18,7 +18,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.Random;
 import java.util.stream.IntStream;
 
 import static com.alphatica.genotick.utility.Assert.gassert;
@@ -26,7 +25,7 @@ import static com.alphatica.genotick.utility.Assert.gassert;
 public class SimpleBreeder implements RobotBreeder {
     private BreederSettings settings;
     private Mutator mutator;
-    private Random random;
+    private RandomGenerator random;
     private final WeightCalculator weightCalculator;
     private final UserOutput output;
 
@@ -79,13 +78,16 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private void fillWithRobots(int count, Population population) {
-    	if(count < 32 || !(random instanceof ThreadLocalRandom)) {
-        	fillWithRobotsSync(count, population);
-        		return;
+    	if(count < 32 || random.getSeed() != 0) {
+            fillWithRobotsSync(count, population);
+            return;
     	} else {
-    		int cores =  Math.max(2, Runtime.getRuntime().availableProcessors());
-			int taskSize = (int)Math.ceil((double)count / (double)cores);
-			IntStream.range(0, count).filter(blockIndex -> blockIndex % taskSize == 0).parallel().forEach(blockIndex -> fillWithRobotsSync(Math.min(taskSize, count-blockIndex), population));
+            int cores =  Math.max(2, Runtime.getRuntime().availableProcessors());
+            int taskSize = (int)Math.ceil((double)count / (double)cores);
+            IntStream.range(0, count)
+                .filter(blockIndex -> blockIndex % taskSize == 0)
+                .parallel()
+                .forEach(blockIndex -> fillWithRobotsSync(Math.min(taskSize, count-blockIndex), population));
     	} 
     }
 

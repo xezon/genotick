@@ -86,8 +86,8 @@ public class Main {
         this.canContinue = false;
     }
 
-    private void printError(final ErrorCode error, long elapseTimeSeconds) {
-        System.out.println(format("Program finished with error code %s(%d) in %d seconds", error.toString(), error.getValue(), elapseTimeSeconds));
+    private void printError(final ErrorCode error, long elapsedSeconds) {
+        System.out.println(format("Program finished with error code %s(%d) in %d seconds", error.toString(), error.getValue(), elapsedSeconds));
     }
 
     private void initHelp(Parameters parameters) {

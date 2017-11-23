@@ -1,16 +1,17 @@
 package com.alphatica.genotick.population;
 
+import com.alphatica.genotick.genotick.RandomGenerator;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Stream;
 
 public class PopulationDAORAM implements PopulationDAO {
 
     private final Map<RobotName,Robot> map;
-    private final Random random;
+    private final RandomGenerator random;
 
-    public PopulationDAORAM(Random random) {
+    public PopulationDAORAM(RandomGenerator random) {
         this.map = new HashMap<>();
         this.random = random;
     }
