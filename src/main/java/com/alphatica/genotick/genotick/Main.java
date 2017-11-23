@@ -19,6 +19,7 @@ import com.alphatica.genotick.ui.UserInput;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 import com.alphatica.genotick.utility.TimeCounter;
+import com.alphatica.genotick.utility.ParallelTasks;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +42,7 @@ public class Main {
     }
 
     public ErrorCode init(String[] args, MainInterface.Session session) throws IOException, IllegalAccessException {
-        prepareDefaultThreadPool();
+        ParallelTasks.prepareDefaultThreadPool();
         TimeCounter totalRunTime = new TimeCounter("Total Run Time", false);
         this.session = session;
         Parameters parameters = new Parameters(args);
@@ -74,11 +75,6 @@ public class Main {
         }
         printError(error, totalRunTime.stop(TimeUnit.SECONDS));
         return error;
-    }
-    
-    private void prepareDefaultThreadPool() {
-    	int poolCores = Math.max(Runtime.getRuntime().availableProcessors()*2, 2);
-    	System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", Integer.toString(poolCores));
     }
     
     private void setError(ErrorCode error) {
