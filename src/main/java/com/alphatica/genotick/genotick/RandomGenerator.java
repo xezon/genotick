@@ -8,8 +8,8 @@ public class RandomGenerator implements Serializable {
 
     private static final long serialVersionUID = -32164662984L;
 
-    Random random;
-    long seed;
+    private Random random;
+    private long seed;
     
     private RandomGenerator(long requestedSeed) {
         String seedString = System.getenv("GENOTICK_RANDOM_SEED");
