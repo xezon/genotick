@@ -16,7 +16,6 @@ public class RandomGenerator implements Serializable {
         if (seedString != null && !seedString.isEmpty()) {
             requestedSeed = Long.parseLong(seedString);
         }
-        Random random;
         if (requestedSeed != 0) {
             random = new Random();
             random.setSeed(requestedSeed);
