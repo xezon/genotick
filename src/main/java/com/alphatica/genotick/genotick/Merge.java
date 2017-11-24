@@ -50,7 +50,7 @@ class Merge {
         String source = sourcePath.toString().replace("./", "");
         File sourceFile = new File(source);
         source = sourceFile.getAbsolutePath();
-        if(destination.compareTo(source) == 0) {
+        if(destination.equals(source)) {
             return;
         }
         PopulationDAOFileSystem daoSource = new PopulationDAOFileSystem(source);
@@ -125,7 +125,7 @@ class Merge {
     }
     
     private static RobotInfo findWorstPerformingRobot(Population population) {
-        if(population.getRobotInfoList().size() < 1) {
+        if(population.getRobotInfoList().isEmpty()) {
             return null;
         }
         return population.getRobotInfoList().stream().min((a,b) -> {
@@ -134,7 +134,7 @@ class Merge {
     }
     
     private static RobotInfo findBestPerformingRobot(Population population) {
-        if(population.getRobotInfoList().size() < 1) {
+        if(population.getRobotInfoList().isEmpty()) {
             return null;
         }
         return population.getRobotInfoList().stream().max((a,b) -> {
