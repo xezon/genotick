@@ -11,18 +11,18 @@ import com.alphatica.genotick.population.Robot;
 import com.alphatica.genotick.population.RobotInfo;
 import com.alphatica.genotick.population.RobotSettings;
 import com.alphatica.genotick.ui.UserOutput;
+import com.alphatica.genotick.utility.ParallelTasks;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import static com.alphatica.genotick.utility.Assert.gassert;
 
 public class SimpleBreeder implements RobotBreeder {
     private BreederSettings settings;
     private Mutator mutator;
-    private Random random;
+    private RandomGenerator random;
     private final WeightCalculator weightCalculator;
     private final UserOutput output;
 
@@ -68,10 +68,19 @@ public class SimpleBreeder implements RobotBreeder {
         }
     }
 
-    private void fillWithRobots(int count, Population population) {
+    private void fillWithRobotsSync(int count, Population population) {
         for (int i = 0; i < count; i++) {
             createNewRobot(population);
         }
+    }
+
+    private void fillWithRobots(int count, Population population) {
+    	if(count < 32 || random.getSeed() != 0) {
+            fillWithRobotsSync(count, population);
+            return;
+    	} else {
+            ParallelTasks.parallelNumberedTask(count, (subCount) -> fillWithRobotsSync(subCount, population));
+    	} 
     }
 
     private void createNewRobot(Population population) {

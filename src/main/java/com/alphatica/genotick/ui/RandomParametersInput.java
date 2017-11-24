@@ -8,11 +8,9 @@ import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.breeder.InheritedWeightMode;
 import com.alphatica.genotick.chart.GenoChartMode;
 
-import java.util.Random;
-
 class RandomParametersInput extends BasicUserInput {
 
-    private Random random;
+    private RandomGenerator random;
     
     RandomParametersInput(UserOutput output) {
         super(output);
