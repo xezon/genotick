@@ -201,6 +201,10 @@ public class Main {
                     output.errorMessage(e.getMessage());
                 }
                 setError(errorCode);
+            } else {
+                output.errorMessage("mergeRobots command found but candidateRobots argument is missing.");
+                setError(ErrorCode.MISSING_ARGUMENT);
+                return;
             }
         }
     }
