@@ -59,6 +59,10 @@ public class DataSeries {
         return data.length;
     }
     
+    public int optionalColumnCount() {
+        return data.length - Column.OHLC.OTHER;
+    }
+    
     public int barCount() {
         return data.length > 0 ? data[0].length : 0;
     }

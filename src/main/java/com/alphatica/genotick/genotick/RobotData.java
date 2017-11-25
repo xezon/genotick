@@ -28,6 +28,10 @@ public class RobotData {
     public int getColumnCount() {
         return ohlcLookbackData.columnCount();
     }
+    
+    public int getOptionalColumnCount() {
+        return ohlcLookbackData.optionalColumnCount();
+    }
 
     double getLastPriceOpen() {
         return ohlcLookbackData.get(Column.OHLC.OPEN, 0);
