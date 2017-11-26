@@ -213,10 +213,6 @@ public class Main {
         }
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 0155b1c560c55c71c482adb3c29f62320df77bc6
     private void initYahoo(Parameters parameters) {
         String path = parameters.getValue("fixYahoo");
         if(path != null) {
