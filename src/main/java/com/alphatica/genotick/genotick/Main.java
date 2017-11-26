@@ -13,10 +13,6 @@ import com.alphatica.genotick.data.FileSystemDataLoader;
 import com.alphatica.genotick.data.FileSystemDataSaver;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.data.YahooFixer;
-import com.alphatica.genotick.population.Population;
-import com.alphatica.genotick.population.PopulationDAOFileSystem;
-import com.alphatica.genotick.population.Robot;
-import com.alphatica.genotick.population.RobotInfo;
 import com.alphatica.genotick.reversal.Reversal;
 import com.alphatica.genotick.ui.Parameters;
 import com.alphatica.genotick.ui.UserInput;
@@ -26,8 +22,6 @@ import com.alphatica.genotick.utility.TimeCounter;
 import com.alphatica.genotick.utility.ParallelTasks;
 
 import java.io.IOException;
-import java.util.Collection;
-
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
