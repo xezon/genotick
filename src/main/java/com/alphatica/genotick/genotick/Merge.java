@@ -15,7 +15,7 @@ import static java.lang.String.format;
 class Merge {
     private Merge() {}
     
-    public static ErrorCode mergePopulation(String destination, String source) throws IllegalAccessException {
+    public static ErrorCode mergePopulations(String destination, String source) throws IllegalAccessException {
         File destinationPath = new File(destination);
         destinationPath.mkdirs();
         PopulationDAOFileSystem dao = new PopulationDAOFileSystem(destinationPath.getAbsolutePath());

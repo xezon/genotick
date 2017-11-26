@@ -24,10 +24,7 @@ import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 import java.io.*;
-import java.nio.file.*;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -195,7 +192,7 @@ public class Main {
             if(source != null) {
                 ErrorCode errorCode = ErrorCode.NO_OUTPUT;
                 try {
-                    errorCode = Merge.mergePopulation(destination, source);
+                    errorCode = Merge.mergePopulations(destination, source);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                     output.errorMessage(e.getMessage());
