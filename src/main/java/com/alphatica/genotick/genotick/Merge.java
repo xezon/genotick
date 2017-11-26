@@ -31,7 +31,7 @@ class Merge {
                 .parallelStream()
                 .forEach(directory -> mergeSource(destinationPopulation, destinationPath.getAbsolutePath(), directory));
         } catch (IOException e) {
-            //
+            // Falling thruogh here just ignores folders with any access errors.
         }
         destinationPopulation.saveOnDisk();
         double newScore = populationScore(destinationPopulation);

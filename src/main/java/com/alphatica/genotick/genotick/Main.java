@@ -23,7 +23,7 @@ import com.alphatica.genotick.ui.UserInput;
 import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.Collection;
 
 import static java.lang.String.format;
