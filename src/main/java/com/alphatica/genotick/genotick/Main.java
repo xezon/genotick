@@ -26,6 +26,7 @@ import com.alphatica.genotick.utility.TimeCounter;
 import com.alphatica.genotick.utility.ParallelTasks;
 
 import java.io.IOException;
+
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
