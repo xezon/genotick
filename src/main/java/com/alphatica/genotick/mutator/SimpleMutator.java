@@ -7,11 +7,10 @@ import com.alphatica.genotick.processor.Processor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 class SimpleMutator implements Mutator {
     private MutatorSettings settings;
-    private Random random;
+    private RandomGenerator random;
     private final List<Class< ? super Instruction>> instructionList;
     private int totalInstructions;
 

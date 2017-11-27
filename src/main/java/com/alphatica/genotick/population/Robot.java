@@ -4,6 +4,7 @@ package com.alphatica.genotick.population;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Outcome;
 import com.alphatica.genotick.genotick.Prediction;
+import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.genotick.RobotData;
 import com.alphatica.genotick.genotick.RobotDataPair;
 import com.alphatica.genotick.genotick.RobotResult;
@@ -17,7 +18,6 @@ import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import static java.util.Optional.ofNullable;
 
@@ -43,7 +43,7 @@ public class Robot implements Serializable {
     private final Map<DataSetName, Prediction> current = new HashMap<>();
     private final Map<DataSetName, Prediction> pending = new HashMap<>();
 
-    public static Robot createEmptyRobot(RobotSettings settings, Random random) {
+    public static Robot createEmptyRobot(RobotSettings settings, RandomGenerator random) {
         return new Robot(settings, random);
     }
 
@@ -201,7 +201,7 @@ public class Robot implements Serializable {
         return bias;
     }
 
-    private Robot(RobotSettings settings, Random random) {
+    private Robot(RobotSettings settings, RandomGenerator random) {
         this.settings = settings;
         this.mainFunction = InstructionList.create(random);
     }

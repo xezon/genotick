@@ -1,6 +1,7 @@
 package com.alphatica.genotick.utility;
 
 import static java.lang.String.format;
+import java.util.concurrent.TimeUnit;
 
 public class TimeCounter {
     
@@ -29,12 +30,16 @@ public class TimeCounter {
     }
     
     public long stop() {
+        return stop(TimeUnit.NANOSECONDS);
+    }
+    
+    public long stop(TimeUnit timeUnit) {
         stopNanoSeconds = System.nanoTime();
         final long elapsedNanoSeconds = getElapsedNanoSeconds();
         if (printOnStop) {
             print(elapsedNanoSeconds, 2);
         }
-        return elapsedNanoSeconds;
+        return timeUnit.convert(elapsedNanoSeconds, TimeUnit.NANOSECONDS);
     }
     
     public long getElapsedNanoSeconds() {

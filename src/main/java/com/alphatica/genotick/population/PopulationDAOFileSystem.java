@@ -11,23 +11,24 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
+import com.alphatica.genotick.genotick.RandomGenerator;
+
 public class PopulationDAOFileSystem implements PopulationDAO {
     private static final String FILE_EXTENSION = ".prg";
     private final String robotsPath;
-    private final Random random;
+    private final RandomGenerator random;
     private final List<RobotName> names;
 
     public PopulationDAOFileSystem(String path) {
-        this(new Random(), path);
+        this(RandomGenerator.create(0), path);
     }
     
-    public PopulationDAOFileSystem(Random random, String path) {
+    public PopulationDAOFileSystem(RandomGenerator random, String path) {
         checkPath(path);
         this.robotsPath = path;
         this.names = loadRobotNames();
@@ -58,13 +59,16 @@ public class PopulationDAOFileSystem implements PopulationDAO {
     @Override
     public void saveRobot(Robot robot) {
         if(robot.getName() == null) {
-            RobotName name = getAvailableName();
-            robot.setName(name);
-            names.add(name);
+            synchronized(this) {
+                RobotName name = getAvailableName();
+                robot.setName(name);
+                names.add(name);
+                saveRobotToFile(robot);
+            }
+        } else {
+            saveRobotToFile(robot);
         }
-        File file = createFileForName(robot.getName());
-        saveRobotToFile(robot,file);
-    }
+   }
 
     @Override
     public void removeRobot(RobotName robotName) {
@@ -143,7 +147,8 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         return new File(robotsPath + File.separator + name.toString() + FILE_EXTENSION);
     }
 
-    private void saveRobotToFile(Robot robot, File file)  {
+    private void saveRobotToFile(Robot robot)  {
+        File file = createFileForName(robot.getName());
         deleteFileIfExists(file);
         try(ObjectOutputStream ous = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
             ous.writeObject(robot);
