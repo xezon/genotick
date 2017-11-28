@@ -89,10 +89,12 @@ public class SimplePopulation implements Population {
 
     @Override
     public void saveToFolder(String path) {
-        if (canSave() && createDirs(path)) {
-            saveToExistingFolder(path);
-        } else {
-            throw new DAOException("Unable to save to path " + path);
+        if (canSave()) {
+            if (createDirs(path)) {
+                saveToExistingFolder(path);
+            } else {
+                throw new DAOException("Unable to save to path " + path);
+            }
         }
     }
 
