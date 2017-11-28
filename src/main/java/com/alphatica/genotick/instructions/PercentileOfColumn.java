@@ -8,7 +8,8 @@ public class PercentileOfColumn extends RegRegInstruction {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -329518949586814597L;
 
-	protected int percentile = 95;
+    // This value is replaced before use by mutate()
+    protected int percentile = 95;
 
     @SuppressWarnings("unused")
     public PercentileOfColumn() {
