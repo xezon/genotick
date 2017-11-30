@@ -104,7 +104,7 @@ public class Robot implements Serializable {
     }
 
     public double getScore() {
-        return Math.abs(getInheritedWeight() + getEarnedWeight());
+        return Math.abs(getWeight());
     }
 
     public void setMainInstructionList(InstructionList newMainFunction) {

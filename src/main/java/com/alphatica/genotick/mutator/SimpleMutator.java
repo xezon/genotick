@@ -15,7 +15,7 @@ class SimpleMutator implements Mutator {
     private RandomGenerator random;
     private final List<Constructor<? super Instruction>> instructionConstructorList;
     
-    private int totalInstructions;
+    final private int totalInstructions;
 
     private SimpleMutator() throws ClassNotFoundException {
         instructionConstructorList = buildInstructionList();

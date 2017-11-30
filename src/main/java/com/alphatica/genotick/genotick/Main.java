@@ -238,9 +238,9 @@ public class Main {
 
     private void initSimulation(Parameters parameters) throws IllegalAccessException {
         int iterations = 1;
-        String iterartionsString = parameters.getAndRemoveValue("iterations");
-        if (iterartionsString != null && !iterartionsString.isEmpty()) {
-            iterations = Math.max(1, Integer.parseInt(iterartionsString));
+        String iterationsString = parameters.getAndRemoveValue("iterations");
+        if (iterationsString != null && !iterationsString.isEmpty()) {
+            iterations = Math.max(1, Integer.parseInt(iterationsString));
         }
         if(!parameters.allConsumed()) {
             output.errorMessage("Not all arguments processed: " + parameters.getUnconsumed());
