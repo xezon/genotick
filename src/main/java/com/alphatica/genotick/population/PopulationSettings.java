@@ -27,7 +27,8 @@ public class PopulationSettings {
              settings.minimumScoreToSaveToDisk);
     }
     
-    public PopulationSettings(final String dataAccess, final int desiredSize, final long randomSeed, final boolean killNonPredictingRobots, final double minimumScoreToSaveToDisk) {
+    public PopulationSettings(final String dataAccess, final int desiredSize, final long randomSeed, 
+        final boolean killNonPredictingRobots, final double minimumScoreToSaveToDisk) {
         this.desiredSize = desiredSize;
         this.daoOption = PopulationDaoOption.getOption(dataAccess);
         this.daoPath = PopulationDaoOption.getPath(dataAccess);
