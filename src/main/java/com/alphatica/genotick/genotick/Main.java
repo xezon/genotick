@@ -250,9 +250,11 @@ public class Main {
         MainSettings settings = input.getSettings();
         MainAppData data = input.getData(settings.dataDirectory);
         generateMissingData(settings, data);
+        int iterationNumber = 1;
         while(iterations-- > 0) {
             Simulation simulation = new Simulation(output);
             MainInterface.SessionResult sessionResult = (session != null) ? session.result : null;
+            settings.trainingIteration = iterationNumber++;
             simulation.start(settings, data, sessionResult);
         }
         setError(ErrorCode.NO_ERROR);

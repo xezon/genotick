@@ -11,6 +11,7 @@ public class EngineSettings {
     public final boolean killNonPredictingRobots;
     public final boolean requireSymmetricalRobots;
     public final double resultThreshold;
+    public final int trainingIteration;
     public final GenoChartMode chartMode;
     
     public EngineSettings(final MainSettings settings) {
@@ -21,6 +22,7 @@ public class EngineSettings {
         this.killNonPredictingRobots = settings.killNonPredictingRobots;
         this.requireSymmetricalRobots = settings.requireSymmetricalRobots;
         this.resultThreshold = settings.resultThreshold;
+        this.trainingIteration = settings.trainingIteration;
         this.chartMode = settings.chartMode;
     }
 }

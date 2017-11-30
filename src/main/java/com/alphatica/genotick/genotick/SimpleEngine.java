@@ -84,7 +84,7 @@ public class SimpleEngine implements Engine {
 
     private void changeThreadName() {
         Thread currentThread =  Thread.currentThread();
-        String threadName = String.format("Main engine execution thread %d", currentThread.getId());
+        String threadName = String.format("Main engine execution thread %d iteration %d", currentThread.getId(), settings.trainingIteration);
         currentThread.setName(threadName);
     }
     
