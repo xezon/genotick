@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import static java.lang.String.format;
 
@@ -43,7 +45,7 @@ public class PopulationDAOFileSystem implements PopulationDAO {
 
     @Override
     public Stream<Robot> getRobots() {
-        return names.stream().map(this::getRobotByName);
+        return names.parallelStream().map(this::getRobotByName);
     }
 
     @Override
@@ -87,14 +89,6 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         boolean result = file.delete();
         if(!result)
             throw new DAOException("Unable to remove file " + file.getAbsolutePath());
-    }
-
-    public static Robot getRobotFromFile(File file) {
-        try(ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
-            return (Robot) ois.readObject();
-        } catch (ClassNotFoundException | IOException e) {
-            throw new DAOException(e);
-        }
     }
 
     private List<RobotName> loadRobotNames() {
@@ -147,11 +141,25 @@ public class PopulationDAOFileSystem implements PopulationDAO {
         return new File(robotsPath + File.separator + name.toString() + FILE_EXTENSION);
     }
 
+    public static Robot getRobotFromFile(File file) {
+        try(FileInputStream fs = new FileInputStream(file);
+            GZIPInputStream zs = new GZIPInputStream(fs);
+            ObjectInputStream os = new ObjectInputStream(zs)) {
+            return (Robot) os.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            throw new DAOException(e);
+        }
+    }
+
     private void saveRobotToFile(Robot robot)  {
         File file = createFileForName(robot.getName());
         deleteFileIfExists(file);
-        try(ObjectOutputStream ous = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
-            ous.writeObject(robot);
+        try(FileOutputStream fs = new FileOutputStream(file);
+            GZIPOutputStream zs = new GZIPOutputStream(fs);
+            ObjectOutputStream os = new ObjectOutputStream(zs)) {
+            os.writeObject(robot);
+            zs.finish();
+            fs.flush();
         } catch (IOException ex) {
             throw new DAOException(ex);
         }
