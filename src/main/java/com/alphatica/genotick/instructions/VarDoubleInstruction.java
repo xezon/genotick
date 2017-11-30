@@ -19,6 +19,9 @@ abstract class VarDoubleInstruction extends VarInstruction {
     @Override
     public void mutate(Mutator mutator) {
         super.mutate(mutator);
+        if(doubleArgument == 0) {
+            doubleArgument = Tools.mutateDouble(1_000_000 * mutator.getNextDouble(), mutator);
+        }
         doubleArgument = Tools.mutateDouble(doubleArgument, mutator);
     }
 
