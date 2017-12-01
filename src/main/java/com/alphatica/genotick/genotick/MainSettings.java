@@ -44,7 +44,6 @@ public class MainSettings {
     public boolean requireSymmetricalRobots = true;
     public double resultThreshold = 1;
     public int ignoreColumns = 0;
-    public int trainingIteration = 1;
     public long randomSeed = DEFAULT_RANDOM_SEED;
     public GenoChartMode chartMode = GenoChartMode.NONE;
 

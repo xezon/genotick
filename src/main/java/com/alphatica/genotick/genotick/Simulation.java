@@ -33,7 +33,7 @@ public class Simulation {
         this.output = output;
     }
 
-    public void start(MainSettings mainSettings, MainAppData data, MainInterface.SessionResult sessionResult) throws IllegalAccessException {
+    public void start(MainSettings mainSettings, MainAppData data, MainInterface.SessionResult sessionResult, int trainingIteration) throws IllegalAccessException {
         TimeCounter simulationRunTime = new TimeCounter("Simulation Run Time", false);
         if(validateSettings(mainSettings)) {
             logSettings(mainSettings);
@@ -41,7 +41,7 @@ public class Simulation {
             Mutator mutator = createMutator(mainSettings);
             RobotBreeder breeder = createRobotBreeder(mainSettings, mutator);
             Population population = createPopulation(mainSettings);
-            Engine engine = createEngine(mainSettings, data, killer, breeder, population, sessionResult);
+            Engine engine = createEngine(mainSettings, data, killer, breeder, population, sessionResult, trainingIteration);
             engine.start();
         }
         System.out.println(format("Simulation finished in %d seconds", simulationRunTime.stop(TimeUnit.SECONDS)));
@@ -59,8 +59,9 @@ public class Simulation {
     }
 
     private Engine createEngine(MainSettings mainSettings, MainAppData data, RobotKiller killer,
-                                RobotBreeder breeder, Population population, MainInterface.SessionResult sessionResult) {
-        EngineSettings engineSettings = new EngineSettings(mainSettings);
+                                RobotBreeder breeder, Population population, MainInterface.SessionResult sessionResult,
+                                int trainingIteration) {
+        EngineSettings engineSettings = new EngineSettings(mainSettings, trainingIteration);
         TimePointExecutor timePointExecutor = createTimePointExecutor(mainSettings);
         return EngineFactory.getDefaultEngine(engineSettings, data, timePointExecutor, killer, breeder, population, sessionResult, output);
     }

@@ -254,8 +254,7 @@ public class Main {
         while(iterations-- > 0) {
             Simulation simulation = new Simulation(output);
             MainInterface.SessionResult sessionResult = (session != null) ? session.result : null;
-            settings.trainingIteration = iterationNumber++;
-            simulation.start(settings, data, sessionResult);
+            simulation.start(settings, data, sessionResult, iterationNumber++);
         }
         setError(ErrorCode.NO_ERROR);
     }
