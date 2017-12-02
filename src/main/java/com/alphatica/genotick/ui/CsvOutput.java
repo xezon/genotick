@@ -25,8 +25,6 @@ public class CsvOutput implements UserOutput {
     public CsvOutput(String outdir) throws IOException {
         console = new ConsoleOutput(outdir);
         buildFileNames();
-        printBlankFile(profitFile);
-        printBlankFile(predictionFile);
     }
 
     private void buildFileNames() {
@@ -124,10 +122,6 @@ public class CsvOutput implements UserOutput {
 
     private void printPrediction(String line) throws ExecutionException {
         printToFile(predictionFile, line);
-    }
-
-    private void printBlankFile(File file) throws IOException {
-        FileUtils.write(file, "", Charset.defaultCharset(), false);
     }
     
     private void printToFile(File file, String line) throws ExecutionException {
