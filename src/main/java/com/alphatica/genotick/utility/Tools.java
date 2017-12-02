@@ -1,6 +1,9 @@
 package com.alphatica.genotick.utility;
 
 import java.lang.management.ManagementFactory;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class Tools {
 
@@ -20,7 +23,14 @@ public class Tools {
         return String.valueOf(threadId);
     }
     
-    public static String getProcessThreadIdString() {
-        return getProcessIdString() + "_" + getThreadIdString();
+    private static String getCurrentDateTimeString(String format) {
+        return new SimpleDateFormat(format, Locale.US).format(new Date());
+    }
+    
+    public static String generateCommonIdentifier() {
+        String time = Tools.getCurrentDateTimeString("yyyyMMdd'T'HHmmssSSS");
+        String process = Tools.getProcessIdString();
+        String thread = getThreadIdString();
+        return "p" + process + "_t" + thread + "_" + time;
     }
 }
