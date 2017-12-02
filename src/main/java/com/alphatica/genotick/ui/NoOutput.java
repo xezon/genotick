@@ -15,7 +15,7 @@ public class NoOutput implements UserOutput {
 
     public NoOutput(String outdir) {
         this.outdir = outdir;
-        this.identifier = Tools.getProcessThreadIdString();
+        this.identifier = Tools.generateCommonIdentifier();
     }
 
     @Override
