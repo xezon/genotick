@@ -15,7 +15,6 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
 
 import com.alphatica.genotick.ui.UserOutput;
-import com.alphatica.genotick.utility.Tools;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -125,7 +124,7 @@ class GenoJFreeChart implements GenoChart {
 
     private String makeFileName(final String title) {
         String chartName = title.toLowerCase().replace(" ", "_");
-        String identifier = Tools.getProcessThreadIdString();
+        String identifier = output.getIdentifier();
         return String.format("chart_%s_%s.png", chartName, identifier);
     }
 

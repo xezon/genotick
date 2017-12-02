@@ -11,6 +11,10 @@ public interface UserOutput {
 	
     String getOutDir();
     
+    void setIdentifier(String identifier);
+    
+    String getIdentifier();
+    
     void errorMessage(String message);
 
     void warningMessage(String message);
