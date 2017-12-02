@@ -20,16 +20,7 @@ public class Tools {
         return String.valueOf(threadId);
     }
     
-    private static String getThreadTrainingIterationString() {
-        String threadName = Thread.currentThread().getName();
-        int idIndex = threadName.lastIndexOf("iteration ");
-        if (idIndex < 0) {
-            return "0";
-        }
-        return threadName.substring(idIndex+10);
-    }
-    
     public static String getProcessThreadIdString() {
-        return getProcessIdString() + "_" + getThreadIdString() + "_" + getThreadTrainingIterationString();
+        return getProcessIdString() + "_" + getThreadIdString();
     }
 }

@@ -17,17 +17,34 @@ import java.nio.charset.Charset;
 
 class ConsoleOutput implements UserOutput {
 
-    private final File logFile;
+    private final String outdir;
+    private String identifier;
+    private File logFile;
     private final Boolean debugEnabled = false;
 
     ConsoleOutput(String outdir) {
-        final String filename = format("log_%s.txt", Tools.getProcessThreadIdString());
-        logFile = new File(outdir, filename);
+        this.outdir = outdir;
+        setIdentifier(Tools.getProcessThreadIdString());
+    }
+    
+    private void buildFileName() {
+        logFile = new File(outdir, "log_" + identifier + ".txt");
+    }
+    
+    @Override
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+        buildFileName();
+    }
+    
+    @Override
+    public String getIdentifier() {
+        return identifier;
     }
     
     @Override
     public String getOutDir() {
-        return logFile.getParent();
+        return outdir;
     }
     
     @Override
