@@ -24,7 +24,7 @@ class ConsoleOutput implements UserOutput {
 
     ConsoleOutput(String outdir) {
         this.outdir = outdir;
-        setIdentifier(Tools.getProcessThreadIdString());
+        setIdentifier(Tools.generateCommonIdentifier());
     }
     
     private void buildFileName() {

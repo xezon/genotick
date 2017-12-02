@@ -35,8 +35,9 @@ public class Simulation {
     }
 
     public void start(MainSettings mainSettings, MainAppData data, MainInterface.SessionResult sessionResult, int simulationIteration) throws IllegalAccessException {
-        output.setIdentifier(Tools.getProcessThreadIdString() + "_" + simulationIteration);
-        TimeCounter simulationRunTime = new TimeCounter("Simulation Run Time", false);
+        output.setIdentifier(Tools.generateCommonIdentifier() + "_i" + simulationIteration);
+        output.infoMessage(format("Simulation %s started", output.getIdentifier()));
+        TimeCounter simulationRunTime = new TimeCounter("", false);
         if(validateSettings(mainSettings)) {
             logSettings(mainSettings);
             RobotKiller killer = createRobotKiller(mainSettings);
@@ -46,7 +47,7 @@ public class Simulation {
             Engine engine = createEngine(mainSettings, data, killer, breeder, population, sessionResult);
             engine.start();
         }
-        System.out.println(format("Simulation %s finished in %d seconds", output.getIdentifier(), simulationRunTime.stop(TimeUnit.SECONDS)));
+        output.infoMessage(format("Simulation %s finished in %d seconds", output.getIdentifier(), simulationRunTime.stop(TimeUnit.SECONDS)));
     }
 
     private boolean validateSettings(MainSettings settings) {
