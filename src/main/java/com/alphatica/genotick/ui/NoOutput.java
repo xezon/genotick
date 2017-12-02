@@ -6,14 +6,28 @@ import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.DataSetResult;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.utility.Tools;
 
 public class NoOutput implements UserOutput {
+
     private final String outdir;
+    private String identifier;
 
     public NoOutput(String outdir) {
         this.outdir = outdir;
+        this.identifier = Tools.getProcessThreadIdString();
     }
 
+    @Override
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+    
+    @Override
+    public String getIdentifier() {
+        return identifier;
+    }
+    
     @Override
     public String getOutDir() {
         return this.outdir;

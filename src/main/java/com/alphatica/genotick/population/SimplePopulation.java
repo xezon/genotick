@@ -2,6 +2,7 @@ package com.alphatica.genotick.population;
 
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -91,7 +92,9 @@ public class SimplePopulation implements Population {
     public void saveToFolder(String path) {
         if (canSave()) {
             if (createDirs(path)) {
-                saveToExistingFolder(path);
+                if(saveToExistingFolder(path) == 0) {
+                    removeDir(path);
+                }
             } else {
                 throw new DAOException("Unable to save to path " + path);
             }
@@ -103,10 +106,25 @@ public class SimplePopulation implements Population {
         return dirFile.exists() || dirFile.mkdirs();
     }
 
-    private void saveToExistingFolder(String path) {
+    private static void removeDir(String path) {
+        File dirFile = new File(path);
+        if(dirFile.isDirectory()) {
+            dirFile.delete();
+        }
+    }
+
+    private int saveToExistingFolder(String path) {
         PopulationDAO fs = new PopulationDAOFileSystem(path);
         fs.removeAllRobots();
-        dao.getRobots().forEach(fs::saveRobot);
+        AtomicInteger savedCount = new AtomicInteger(0);
+        dao.getRobots().forEach((robot) -> {
+            if((settings.killNonPredictingRobots == false || robot.isPredicting()) &&
+                Math.abs(robot.getWeight()) >= settings.minimumScoreToSaveToDisk) {
+                fs.saveRobot(robot);
+                savedCount.incrementAndGet();
+            }
+        });
+        return savedCount.get();
     }
 
     private boolean canSave() {

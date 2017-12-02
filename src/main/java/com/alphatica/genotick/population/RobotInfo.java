@@ -43,6 +43,10 @@ public class RobotInfo {
     public double getWeight() {
         return weight;
     }
+    
+    public double getScore() {
+        return Math.abs(weight);
+    }
 
     public int getTotalPredictions() {
         return totalPredictions;

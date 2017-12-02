@@ -20,6 +20,7 @@ import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointExecutorFactory;
 import com.alphatica.genotick.ui.UserOutput;
 import com.alphatica.genotick.utility.TimeCounter;
+import com.alphatica.genotick.utility.Tools;
 
 import static java.lang.String.format;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +34,8 @@ public class Simulation {
         this.output = output;
     }
 
-    public void start(MainSettings mainSettings, MainAppData data, MainInterface.SessionResult sessionResult) throws IllegalAccessException {
+    public void start(MainSettings mainSettings, MainAppData data, MainInterface.SessionResult sessionResult, int simulationIteration) throws IllegalAccessException {
+        output.setIdentifier(Tools.getProcessThreadIdString() + "_" + simulationIteration);
         TimeCounter simulationRunTime = new TimeCounter("Simulation Run Time", false);
         if(validateSettings(mainSettings)) {
             logSettings(mainSettings);
@@ -44,7 +46,7 @@ public class Simulation {
             Engine engine = createEngine(mainSettings, data, killer, breeder, population, sessionResult);
             engine.start();
         }
-        System.out.println(format("Simulation finished in %d seconds", simulationRunTime.stop(TimeUnit.SECONDS)));
+        System.out.println(format("Simulation %s finished in %d seconds", output.getIdentifier(), simulationRunTime.stop(TimeUnit.SECONDS)));
     }
 
     private boolean validateSettings(MainSettings settings) {

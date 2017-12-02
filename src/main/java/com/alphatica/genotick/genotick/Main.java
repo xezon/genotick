@@ -22,6 +22,7 @@ import com.alphatica.genotick.utility.TimeCounter;
 import com.alphatica.genotick.utility.ParallelTasks;
 
 import java.io.IOException;
+
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
@@ -98,7 +99,7 @@ public class Main {
             System.out.print("Reversing data: ");
             System.out.println("    java -jar genotick.jar reverse=mydata");
             System.out.print("Inputs from a file: ");
-            System.out.println("    java -jar genotick.jar input=file:path\\to\\file");
+            System.out.println("    java -jar genotick.jar input=file:path\\to\\file iterations=X (optional)");
             System.out.print("Output to a file: ");
             System.out.println("    java -jar genotick.jar output=csv");
             System.out.print("Custom output directory for generated files (log, charts, population): ");
@@ -236,17 +237,25 @@ public class Main {
     }
 
     private void initSimulation(Parameters parameters) throws IllegalAccessException {
+        int iterations = 1;
+        String iterationsString = parameters.getAndRemoveValue("iterations");
+        if (iterationsString != null && !iterationsString.isEmpty()) {
+            iterations = Math.max(1, Integer.parseInt(iterationsString));
+        }
         if(!parameters.allConsumed()) {
             output.errorMessage("Not all arguments processed: " + parameters.getUnconsumed());
             setError(ErrorCode.UNKNOWN_ARGUMENT);
             return;
         }
-        Simulation simulation = new Simulation(output);
         MainSettings settings = input.getSettings();
         MainAppData data = input.getData(settings.dataDirectory);
         generateMissingData(settings, data);
-        MainInterface.SessionResult sessionResult = (session != null) ? session.result : null;
-        simulation.start(settings, data, sessionResult);
+        int simulationIteration = 0;
+        while (iterations-- > 0) {
+            Simulation simulation = new Simulation(output);
+            MainInterface.SessionResult sessionResult = (session != null) ? session.result : null;
+            simulation.start(settings, data, sessionResult, ++simulationIteration);
+        }
         setError(ErrorCode.NO_ERROR);
     }
     

@@ -14,7 +14,6 @@ import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointResult;
 import com.alphatica.genotick.ui.UserOutput;
-import com.alphatica.genotick.utility.Tools;
 
 import static com.alphatica.genotick.utility.Assert.gassert;
 
@@ -83,14 +82,14 @@ public class SimpleEngine implements Engine {
     }
 
     private void changeThreadName() {
-        Thread currentThread =  Thread.currentThread();
-        String threadName = String.format("Main engine execution thread %d", currentThread.getId());
+        Thread currentThread = Thread.currentThread();
+        String threadName = String.format("Main engine thread %d identifier %s", currentThread.getId(), output.getIdentifier());
         currentThread.setName(threadName);
     }
     
     private String getPopulationDirName() {
         final String path1 = output.getOutDir();
-        final String path2 = "population_" + Tools.getProcessThreadIdString();
+        final String path2 = "population_" + output.getIdentifier();
         return (path1 == null) ? path2 : Paths.get(path1, path2).toString();
     }
 

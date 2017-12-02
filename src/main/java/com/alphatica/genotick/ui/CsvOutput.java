@@ -5,7 +5,6 @@ import com.alphatica.genotick.exceptions.ExecutionException;
 import com.alphatica.genotick.genotick.DataSetResult;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.timepoint.TimePoint;
-import com.alphatica.genotick.utility.Tools;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,20 +16,35 @@ import org.apache.commons.io.FileUtils;
 import static java.lang.String.format;
 
 public class CsvOutput implements UserOutput {
+
     private final ConsoleOutput console;
-    private final File profitFile;
-    private final File predictionFile;
+    private File profitFile;
+    private File predictionFile;
     private Boolean debug = false;
 
     public CsvOutput(String outdir) throws IOException {
         console = new ConsoleOutput(outdir);
-        String identifier = Tools.getProcessThreadIdString();
-        profitFile = new File(outdir, "profit_" + identifier + ".csv");
-        predictionFile = new File(outdir, "predictions_" + identifier + ".csv");
-        printBlankFile(profitFile);
-        printBlankFile(predictionFile);
+        buildFileNames();
     }
 
+    private void buildFileNames() {
+        String outdir = console.getOutDir();
+        String identifier = console.getIdentifier();
+        profitFile = new File(outdir, "profit_" + identifier + ".csv");
+        predictionFile = new File(outdir, "predictions_" + identifier + ".csv");
+    }
+    
+    @Override
+    public void setIdentifier(String identifier) {
+        console.setIdentifier(identifier);
+        buildFileNames();
+    }
+    
+    @Override
+    public String getIdentifier() {
+        return console.getIdentifier();
+    }
+    
     @Override
     public String getOutDir() {
         return console.getOutDir();
@@ -108,10 +122,6 @@ public class CsvOutput implements UserOutput {
 
     private void printPrediction(String line) throws ExecutionException {
         printToFile(predictionFile, line);
-    }
-
-    private void printBlankFile(File file) throws IOException {
-        FileUtils.write(file, "", Charset.defaultCharset(), false);
     }
     
     private void printToFile(File file, String line) throws ExecutionException {
