@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 import com.alphatica.genotick.data.Column.TOHLC;
 import com.alphatica.genotick.timepoint.TimePoint;
@@ -22,7 +23,7 @@ public class DataLines {
     private final boolean firstLineIsNewest;
     
     DataLines(File file, boolean firstLineIsNewest) throws DataException {
-        final ArrayList<Number[]> dataFromFile = readData(file, firstLineIsNewest);
+        final ArrayList<Number[]> dataFromFile = parseData(file, firstLineIsNewest);
         final int lineCount = dataFromFile.size();
         final int columnCount = (lineCount > 0) ? dataFromFile.get(0).length : 0;
         verifyLineAndColumnCount(lineCount, columnCount);
@@ -169,43 +170,91 @@ public class DataLines {
         return dataSeries;
     }
     
-    private static ArrayList<Number[]> readData(File file, boolean firstLineIsNewest) throws DataException {
-        ArrayList<Number[]> dataLines = new ArrayList<>();
-        int linesRead = 0;
+    private static class DataLineParseResult
+    {
+        Number[] previousColumns = null;
+        Number[] columns = null;
+        int number = 0;
+        int expectedColumnCount = MIN_COLUMN_COUNT;
+    }
+    
+    private static class UnscopedBoolean
+    {
+        boolean value = false;
+    }
+    
+    private static void parseDataLines(File file, Predicate<DataLineParseResult> predicate) throws DataException {
+        DataLineParseResult line = new DataLineParseResult();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            int columnCount = 0;
-            String line;
-            while ((line = reader.readLine()) != null) {
-                linesRead++;
-                String[] rawColumns = getLineFields(line);
+            String rawLine;
+            while ((rawLine = reader.readLine()) != null) {
+                line.number++;
+                String[] rawColumns = getLineFields(rawLine);
                 if (rawColumns.length >= MIN_COLUMN_COUNT) {
-                    columnCount = rawColumns.length;
-                    Number[] columns = processLine(line);
-                    dataLines.add(columns);
+                    line.expectedColumnCount = rawColumns.length;
+                    line.columns = processLine(rawLine);
+                    if (!predicate.test(line)) {
+                        return;
+                    }
                     break;
                 }
             }
-            while ((line = reader.readLine()) != null) {
-                linesRead++;
-                Number[] columns = processLine(line);
-                if (columns.length != columnCount) {
-                    throw new DataException(format("Column count '%d' in line '%d' does not match the expected column count '%d'.",
-                            columns.length, linesRead, columnCount));
+            while ((rawLine = reader.readLine()) != null) {
+                line.number++;
+                line.previousColumns = line.columns;
+                line.columns = processLine(rawLine);
+                if (!predicate.test(line)) {
+                    return;
                 }
-                final long currentTimeValue = columns[Column.TOHLC.TIME].longValue();
-                final long previousTimeValue = dataLines.get(dataLines.size()-1)[Column.TOHLC.TIME].longValue();
-                final boolean isCorrectOrder = firstLineIsNewest ? (currentTimeValue < previousTimeValue) : (currentTimeValue > previousTimeValue);
-                if (!isCorrectOrder) {
-                    throw new DataException(format("Time value '%d' in line '%d' is not %s than previous time value '%d'",
-                            currentTimeValue, linesRead, firstLineIsNewest ? "smaller" : "greater", previousTimeValue));
-                }
-                dataLines.add(columns);
             }
         }
         catch (IOException | NumberFormatException ex) {
-            throw new DataException(format("Unable to process line '%d'", linesRead), ex);
+            throw new DataException(format("Unable to process line '%d'", line.number), ex);
         }
+    }
+    
+    static boolean isFirstLineNewestTimePoint(File file) throws DataException {
+        UnscopedBoolean firstLineIsNewest = new UnscopedBoolean();
+        parseDataLines(file, line -> {
+            if (line.previousColumns != null) {
+                final long currentTimeValue = line.columns[Column.TOHLC.TIME].longValue();
+                final long previousTimeValue = line.previousColumns[Column.TOHLC.TIME].longValue();
+                firstLineIsNewest.value = currentTimeValue < previousTimeValue;
+                return false;
+            }
+            return true;
+        });
+        return firstLineIsNewest.value;
+    }
+    
+    private static ArrayList<Number[]> parseData(File file, boolean firstLineIsNewest) throws DataException {
+        final ArrayList<Number[]> dataLines = new ArrayList<>();
+        parseDataLines(file, line -> {
+            verifyColumnCount(line);
+            verifyTimePointOrder(line, firstLineIsNewest);
+            dataLines.add(line.columns);
+            return true;
+        });
         return dataLines;
+    }
+    
+    private static void verifyColumnCount(DataLineParseResult line) throws DataException {
+        if (line.columns.length != line.expectedColumnCount) {
+            throw new DataException(format("Column count '%d' in line '%d' does not match the expected column count '%d'.",
+                    line.columns.length, line.number, line.expectedColumnCount));
+        }
+    }
+    
+    private static void verifyTimePointOrder(DataLineParseResult line, boolean firstLineIsNewest) throws DataException {
+        if (line.previousColumns != null) {
+            final long currentTimeValue = line.columns[Column.TOHLC.TIME].longValue();
+            final long previousTimeValue = line.previousColumns[Column.TOHLC.TIME].longValue();
+            final boolean isCorrectOrder = firstLineIsNewest ? (currentTimeValue < previousTimeValue) : (currentTimeValue > previousTimeValue);
+            if (!isCorrectOrder) {
+                throw new DataException(format("Time value '%d' in line '%d' is not %s than previous time value '%d'",
+                        currentTimeValue, line.number, firstLineIsNewest ? "smaller" : "greater", previousTimeValue));
+            }
+        }
     }
     
     private static Number[] processLine(String line) {

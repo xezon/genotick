@@ -55,20 +55,10 @@ public class FileSystemDataLoader implements DataLoader {
     
     private DataLines createDataLines(File file) throws DataException {
         try {
-            return new DataLines(file, false);
+            boolean firstLineIsNewest = DataLines.isFirstLineNewestTimePoint(file);
+            return new DataLines(file, firstLineIsNewest);
         }
         catch (DataException ex) {
-            // do nothing yet...
-        }
-        return createDataLinesSecondTry(file);
-    }
-    
-    private DataLines createDataLinesSecondTry(File file) throws DataException {
-        try {
-            return new DataLines(file, true);
-        }
-        catch (DataException ex)
-        {
             throw new DataException(format("Unable to process file '%s'", file.getAbsolutePath()), ex);
         }
     }
