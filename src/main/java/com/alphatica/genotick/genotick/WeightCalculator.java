@@ -22,7 +22,7 @@ public class WeightCalculator implements Serializable {
 
     public double calculateWeight(Robot robot) {
         Double weight = 0.0;
-        switch (this.mode) {
+        switch (mode) {
             case WIN_COUNT: weight = getWinCount(robot); break;
             case WIN_RATE: weight = getWinRate(robot); break;
             case PROFIT_COUNT: weight = getProfitCount(robot); break;
