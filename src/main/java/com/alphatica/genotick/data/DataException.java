@@ -1,6 +1,6 @@
 package com.alphatica.genotick.data;
 
-public class DataException extends RuntimeException {
+class DataException extends RuntimeException {
 
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -5264726885012607329L;
