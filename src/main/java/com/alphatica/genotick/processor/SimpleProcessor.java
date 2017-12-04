@@ -115,7 +115,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         processorInstructionLimit = settings.maximumProcessorInstructionFactor;
     }
     
-    public static SimpleProcessor createProcessor(RobotExecutorSettings settings) {
+    public static SimpleProcessor getInstance(RobotExecutorSettings settings) {
         return new SimpleProcessor(settings);
     }
 

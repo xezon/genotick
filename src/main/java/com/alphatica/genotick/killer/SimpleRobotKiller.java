@@ -18,7 +18,7 @@ class SimpleRobotKiller implements RobotKiller {
         this.output = output;
     }
 
-    static RobotKiller create(UserOutput output) {
+    static RobotKiller getInstance(UserOutput output) {
         return new SimpleRobotKiller(output);
     }
 

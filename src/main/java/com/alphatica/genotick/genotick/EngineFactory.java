@@ -15,7 +15,7 @@ class EngineFactory {
                                           Population population,
                                           MainInterface.SessionResult sessionResult,
                                           UserOutput output) {
-        Engine engine = SimpleEngine.create(output);
+        Engine engine = SimpleEngine.getInstance(output);
         engine.setSettings(engineSettings, timePointExecutor, data, killer, breeder, population, sessionResult);
         return engine;
     }

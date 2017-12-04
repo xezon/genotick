@@ -5,7 +5,7 @@ import com.alphatica.genotick.ui.UserOutput;
 
 public class RobotBreederFactory {
     public static RobotBreeder getDefaultBreeder(BreederSettings breederSettings, Mutator mutator, UserOutput output) {
-        RobotBreeder breeder = SimpleBreeder.create(output);
+        RobotBreeder breeder = SimpleBreeder.getInstance(output);
         breeder.setSettings(breederSettings,mutator);
         return breeder;
     }
