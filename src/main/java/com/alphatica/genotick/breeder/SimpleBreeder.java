@@ -31,7 +31,7 @@ public class SimpleBreeder implements RobotBreeder {
         this.output = output;
     }
     
-    public static RobotBreeder create(UserOutput output) {
+    public static RobotBreeder getInstance(UserOutput output) {
         return new SimpleBreeder(output);
     }
 

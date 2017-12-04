@@ -42,7 +42,7 @@ public class SimpleEngine implements Engine {
         this.output = output;
     }
     
-    static Engine create(UserOutput output) {
+    static Engine getInstance(UserOutput output) {
         return new SimpleEngine(output);
     }
 
