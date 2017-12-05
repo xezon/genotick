@@ -22,7 +22,7 @@ public class DataLines {
     private final Number[][] data;
     private final boolean firstLineIsNewest;
     
-    DataLines(File file, boolean firstLineIsNewest) throws DataException {
+    DataLines(File file, boolean firstLineIsNewest) {
         final ArrayList<Number[]> dataFromFile = parseData(file, firstLineIsNewest);
         final int lineCount = dataFromFile.size();
         final int columnCount = (lineCount > 0) ? dataFromFile.get(0).length : 0;
@@ -37,7 +37,7 @@ public class DataLines {
     }
     
     @JniExport
-    DataLines(int lineCount, int columnCount, boolean firstLineIsNewest) throws DataException {
+    DataLines(int lineCount, int columnCount, boolean firstLineIsNewest) {
         verifyLineAndColumnCount(lineCount, columnCount);
         this.data = new Number[lineCount][columnCount];
         this.firstLineIsNewest = firstLineIsNewest;
@@ -66,7 +66,7 @@ public class DataLines {
         return columnsCopy;
     }
     
-    void setColumns(int line, Number[] columns) throws DataException {
+    void setColumns(int line, Number[] columns) {
         final int columnCount = tohlcColumnCount();
         if (columns.length != columnCount) {
             throw new DataException(format("Given column count '%d' for line '%d' does not match the expected column count '%d'.", columns.length, line, columnCount));
@@ -82,7 +82,7 @@ public class DataLines {
         return ohlcCopy;
     }
     
-    public void setOhlcValues(int line, double[] ohlcValues) throws DataException {
+    public void setOhlcValues(int line, double[] ohlcValues) {
         if (ohlcValues.length != Column.Array.OHLC.length) {
             throw new DataException(format("Given column count '%d' for line '%d' does not match the expected column count '%d'.", ohlcValues.length, line, 4));
         }
@@ -183,7 +183,7 @@ public class DataLines {
         boolean value = false;
     }
     
-    private static void parseDataLines(File file, Predicate<DataLineParseResult> predicate) throws DataException {
+    private static void parseDataLines(File file, Predicate<DataLineParseResult> predicate) {
         DataLineParseResult line = new DataLineParseResult();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String rawLine;
@@ -213,7 +213,7 @@ public class DataLines {
         }
     }
     
-    static boolean isFirstLineNewestTimePoint(File file) throws DataException {
+    static boolean isFirstLineNewestTimePoint(File file) {
         UnscopedBoolean firstLineIsNewest = new UnscopedBoolean();
         parseDataLines(file, line -> {
             if (line.previousColumns != null) {
@@ -227,7 +227,7 @@ public class DataLines {
         return firstLineIsNewest.value;
     }
     
-    private static ArrayList<Number[]> parseData(File file, boolean firstLineIsNewest) throws DataException {
+    private static ArrayList<Number[]> parseData(File file, boolean firstLineIsNewest) {
         final ArrayList<Number[]> dataLines = new ArrayList<>();
         parseDataLines(file, line -> {
             verifyColumnCount(line);
@@ -238,14 +238,14 @@ public class DataLines {
         return dataLines;
     }
     
-    private static void verifyColumnCount(DataLineParseResult line) throws DataException {
+    private static void verifyColumnCount(DataLineParseResult line) {
         if (line.columns.length != line.expectedColumnCount) {
             throw new DataException(format("Column count '%d' in line '%d' does not match the expected column count '%d'.",
                     line.columns.length, line.number, line.expectedColumnCount));
         }
     }
     
-    private static void verifyTimePointOrder(DataLineParseResult line, boolean firstLineIsNewest) throws DataException {
+    private static void verifyTimePointOrder(DataLineParseResult line, boolean firstLineIsNewest) {
         if (line.previousColumns != null) {
             final long currentTimeValue = line.columns[Column.TOHLC.TIME].longValue();
             final long previousTimeValue = line.previousColumns[Column.TOHLC.TIME].longValue();

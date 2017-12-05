@@ -16,7 +16,7 @@ public class FileSystemDataLoader implements DataLoader {
     }
 
     @Override
-    public MainAppData loadAll(String... sources) throws DataException {
+    public MainAppData loadAll(String... sources) {
         MainAppData data = new MainAppData();
         String extension = ".csv";
         List<String> names = DataUtils.listFiles(extension,sources);
@@ -53,7 +53,7 @@ public class FileSystemDataLoader implements DataLoader {
         }
     }
     
-    private DataLines createDataLines(File file) throws DataException {
+    private DataLines createDataLines(File file) {
         try {
             boolean firstLineIsNewest = DataLines.isFirstLineNewestTimePoint(file);
             return new DataLines(file, firstLineIsNewest);
@@ -63,7 +63,7 @@ public class FileSystemDataLoader implements DataLoader {
         }
     }
     
-    private DataSet createDataSet(String fileName, DataLines dataLines) throws DataException {
+    private DataSet createDataSet(String fileName, DataLines dataLines) {
         try {
             return new DataSet(fileName, dataLines);
         }

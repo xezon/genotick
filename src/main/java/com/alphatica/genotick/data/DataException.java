@@ -9,7 +9,7 @@ class DataException extends RuntimeException {
         super(s, throwable);
     }
 
-    public DataException(String s) {
+    DataException(String s) {
         super(s);
     }
 }
