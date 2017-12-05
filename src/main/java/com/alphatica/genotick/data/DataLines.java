@@ -278,7 +278,7 @@ public class DataLines {
     
     private static void verifyLineAndColumnCount(int lineCount, int columnCount) {
         if (lineCount < MIN_LINE_COUNT || columnCount < MIN_COLUMN_COUNT) {
-            throw new DataException(format("Line count %d and column count %d are insufficient"));
+            throw new DataException(format("Line count %d and column count %d are insufficient", lineCount, columnCount));
         }
     }
 }
