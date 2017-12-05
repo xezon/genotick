@@ -11,6 +11,10 @@ public interface UserOutput {
 	
     String getOutDir();
     
+    void setIdentifier(String identifier);
+    
+    String getIdentifier();
+    
     void errorMessage(String message);
 
     void warningMessage(String message);
@@ -31,7 +35,7 @@ public interface UserOutput {
 
     void infoMessage(String message);
 
-    void reportStartingTimePoint(TimePoint timePoint);
+    void reportStartedTimePoint(TimePoint timePoint);
 
     void reportFinishedTimePoint(TimePoint timePoint, BigDecimal equity);
 }

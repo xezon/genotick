@@ -10,11 +10,11 @@ import com.alphatica.genotick.chart.GenoChartMode;
 
 import java.io.Console;
 
-@SuppressWarnings("unused")
 class ConsoleInput extends BasicUserInput {
     private final Console console;
 
-    ConsoleInput() {
+    ConsoleInput(UserOutput output) {
+        super(output);
         console = System.console();
         if(console == null) {
             throw new RuntimeException("Unable to create system console");
@@ -59,6 +59,7 @@ class ConsoleInput extends BasicUserInput {
                 settings.minimumOutcomesToAllowBreeding = getInteger("Minimum outcomes to allow breeding", settings.minimumOutcomesToAllowBreeding);
                 settings.minimumOutcomesBetweenBreeding = getInteger("Minimum outcomes between breeding", settings.minimumOutcomesBetweenBreeding);
                 settings.killNonPredictingRobots = getBoolean("Kill non-predicting robots", settings.killNonPredictingRobots);
+                settings.minimumScoreToSaveToDisk = getDouble("Minimum score to save robot to disk", settings.minimumScoreToSaveToDisk);
                 settings.randomRobotsAtEachUpdate = getDouble("Random robots at each update", settings.randomRobotsAtEachUpdate);
                 settings.protectBestRobots = getDouble("Protect best robots", settings.protectBestRobots);
                 settings.ignoreColumns = getInteger("Ignore columns for training", settings.ignoreColumns);

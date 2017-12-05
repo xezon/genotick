@@ -8,18 +8,22 @@ import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.breeder.InheritedWeightMode;
 import com.alphatica.genotick.chart.GenoChartMode;
 
-import java.util.Random;
-
-@SuppressWarnings("unused")
 class RandomParametersInput extends BasicUserInput {
-    private Random random = RandomGenerator.get();
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
+
+    private RandomGenerator random;
+    
+    RandomParametersInput(UserOutput output) {
+        super(output);
+    }
 
     @Override
     public MainSettings getSettings() {
         MainSettings settings = getMainSettings();
         if (settings == null) {
             MainSettings defaults = MainSettings.getSettings();
+            if (random == null) {
+                random = RandomGenerator.create(defaults.randomSeed);
+            }
             defaults.populationDAO = "";
             defaults.requireSymmetricalRobots = true;
             defaults.killNonPredictingRobots = true;
@@ -71,7 +75,5 @@ class RandomParametersInput extends BasicUserInput {
         settings.randomRobotsAtEachUpdate = random.nextDouble();
         settings.resultThreshold = 1 + (random.nextDouble() * 9);
         return settings;
-
     }
-
 }

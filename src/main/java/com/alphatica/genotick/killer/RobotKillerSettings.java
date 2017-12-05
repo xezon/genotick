@@ -11,6 +11,7 @@ public class RobotKillerSettings {
     public final double protectBestRobots;
     public final boolean killNonPredictingRobots;
     public final boolean requireSymmetricalRobots;
+    public final long randomSeed;
     
     public RobotKillerSettings(final MainSettings settings) {
         this.maximumDeathByAge = settings.maximumDeathByAge;
@@ -21,5 +22,6 @@ public class RobotKillerSettings {
         this.protectBestRobots = settings.protectBestRobots;
         this.killNonPredictingRobots = settings.killNonPredictingRobots;
         this.requireSymmetricalRobots = settings.requireSymmetricalRobots;
+        this.randomSeed = settings.randomSeed;
     }
 }

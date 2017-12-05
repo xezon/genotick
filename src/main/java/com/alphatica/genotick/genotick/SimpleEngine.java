@@ -13,7 +13,6 @@ import com.alphatica.genotick.population.RobotName;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePointExecutor;
 import com.alphatica.genotick.timepoint.TimePointResult;
-import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 import static com.alphatica.genotick.utility.Assert.gassert;
@@ -21,36 +20,41 @@ import static com.alphatica.genotick.utility.Assert.gassert;
 import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SimpleEngine implements Engine {
-    private EngineSettings engineSettings;
+    private EngineSettings settings;
     private TimePointExecutor timePointExecutor;
     private RobotKiller killer;
     private RobotBreeder breeder;
     private Population population;
     private MainAppData data;
     private RobotDataManager robotDataManager;
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
-    private final ProfitRecorder profitRecorder = new ProfitRecorder(output);
-    private final Account account = new Account(BigDecimal.valueOf(100_000L), output, profitRecorder);
+    private final UserOutput output;
+    private ProfitRecorder profitRecorder;
+    private Account account;
+    private MainInterface.SessionResult sessionResult;
 
-    static Engine getEngine() {
-        return new SimpleEngine();
+    private SimpleEngine(UserOutput output) {
+        this.output = output;
+    }
+    
+    static Engine getInstance(UserOutput output) {
+        return new SimpleEngine(output);
     }
 
     @Override
     public void start() {
-        Thread.currentThread().setName("Main engine execution thread");
+        changeThreadName();
         initPopulation();
-        final int startBar = data.getNearestBar(engineSettings.startTimePoint);
-        final int endBar = data.getNearestBar(engineSettings.endTimePoint);
-        for (int bar = startBar; bar < endBar; ++bar) {
-            executeBar(bar);
-        }
-        if (engineSettings.performTraining) {
+        final Stream<TimePoint> filteredTimePoints = data.getTimePoints(
+                settings.startTimePoint,
+                settings.endTimePoint);
+        filteredTimePoints.forEach(this::executeTimePoint);
+        if (settings.performTraining) {
             savePopulation();
         }
         account.closeAccount();
@@ -63,106 +67,108 @@ public class SimpleEngine implements Engine {
                             MainAppData data,
                             RobotKiller killer,
                             RobotBreeder breeder,
-                            Population population) {
-        this.engineSettings = engineSettings;
+                            Population population,
+                            MainInterface.SessionResult sessionResult) {
+        this.settings = engineSettings;
         this.timePointExecutor = timePointExecutor;
         this.killer = killer;
         this.breeder = breeder;
         this.population = population;
         this.data = data;
         this.robotDataManager = new RobotDataManager(data, engineSettings.maximumDataOffset);
+        this.profitRecorder = new ProfitRecorder(engineSettings.chartMode, output);
+        this.account = new Account(BigDecimal.valueOf(100_000L), output, profitRecorder);
+        this.sessionResult = sessionResult;
     }
 
-    private String getSavedPopulationDirName() {
+    private void changeThreadName() {
+        Thread currentThread = Thread.currentThread();
+        String threadName = String.format("Main engine thread %d identifier %s", currentThread.getId(), output.getIdentifier());
+        currentThread.setName(threadName);
+    }
+    
+    private String getPopulationDirName() {
         final String path1 = output.getOutDir();
-        final String path2 = "savedPopulation_" + Tools.getPidString();
+        final String path2 = "population_" + output.getIdentifier();
         return (path1 == null) ? path2 : Paths.get(path1, path2).toString();
     }
 
     private void initPopulation() {
-        if (population.getSize() == 0 && engineSettings.performTraining) {
+        if (population.getSize() == 0 && settings.performTraining) {
             breeder.breedPopulation(population, Collections.emptyList());
         }
     }
 
     private void savePopulation() {
         if (!population.saveOnDisk()) {
-            String path = getSavedPopulationDirName();
+            String path = getPopulationDirName();
             population.saveToFolder(path);
         }
     }
     
-    private void executeBar(final int bar) {
-        final TimePoint timePoint = data.getTimePoint(bar);
-        gassert(timePoint != null);
+    private void executeTimePoint(final TimePoint timePoint) {
+        final int bar = data.getBar(timePoint);
+        gassert(bar >= 0);
         robotDataManager.update(timePoint);
-        final List<RobotData> robotDataList = robotDataManager.getUpdatedRobotDataList();
+        final List<RobotDataPair> robotDataList = robotDataManager.getUpdatedRobotDataList();
         if (!robotDataList.isEmpty()) {
-            output.reportStartingTimePoint(timePoint);
+            output.reportStartedTimePoint(timePoint);
             updateAccount(robotDataList);
-            List<RobotInfo> robotInfoList = population.getRobotInfoList();
             recordMarketChangesInRobots(robotDataList);
-            Map<RobotName, List<RobotResult>> robotResultMap = timePointExecutor.execute(robotDataList, population);
-            updatePredictions(robotInfoList, robotResultMap);
+            Map<RobotName, List<RobotResultPair>> robotResultMap = timePointExecutor.execute(robotDataList, population);
             recordRobotsPredictions(robotResultMap);
-            TimePointResult timePointResult = new TimePointResult(robotResultMap, engineSettings.requireSymmetricalRobots);
-            timePointResult.listDataSetResults().forEach(dataSetResult -> {
-                Prediction prediction = dataSetResult.getCumulativePrediction(engineSettings.resultThreshold);
-                account.addPendingOrder(dataSetResult.getName(), prediction);
-                output.showPrediction(timePoint, dataSetResult, prediction);
-            });
-            checkTraining(robotInfoList);
+            TimePointResult timePointResult = new TimePointResult(robotResultMap, population, settings);
+            timePointResult.get().forEach(dataSetResult -> processDataSetResult(timePoint, dataSetResult));
+            List<RobotInfo> robotInfoList = population.getRobotInfoList();
+            performTraining(robotInfoList);
             output.reportFinishedTimePoint(timePoint, account.getEquity());
         }
         profitRecorder.onUpdate(bar);
     }
     
-    private void updatePredictions(List<RobotInfo> list, Map<RobotName, List<RobotResult>> map) {
-        list.parallelStream().forEach(info -> {
-            List<RobotResult> results = map.get(info.getName());
-            if(results != null) {
-                results.stream()
-                        .filter(result -> result.getPrediction() != Prediction.OUT).findFirst()
-                        .ifPresent(result -> info.setPredicting(true));
-            }
-        });
+    private void processDataSetResult(TimePoint timePoint, DataSetResult dataSetResult) {
+        Prediction prediction = dataSetResult.getCumulativePrediction(settings.resultThreshold);
+        DataSetName dataSetName = dataSetResult.getName();
+        account.addPendingOrder(dataSetName, prediction);
+        output.showPrediction(timePoint, dataSetResult, prediction);
+        if (sessionResult != null) {
+            sessionResult.savePrediction(timePoint, dataSetName, prediction);
+        }
     }
 
-    private void recordRobotsPredictions(Map<RobotName, List<RobotResult>> map) {
-        if(engineSettings.performTraining) {
-            map.keySet().forEach(name -> {
-                Robot robot = population.getRobot(name);
-                map.get(name).forEach(robot::recordPrediction);
+    private void recordRobotsPredictions(Map<RobotName, List<RobotResultPair>> map) {
+        if(settings.performTraining) {
+            map.entrySet().forEach(entry -> {
+                Robot robot = population.getRobot(entry.getKey());
+                entry.getValue().forEach(robot::recordPrediction);
                 population.saveRobot(robot);
             });
         }
     }
 
-    private void checkTraining(List<RobotInfo> list) {
-        if (engineSettings.performTraining) {
-            updatePopulation(list);
+    private void performTraining(List<RobotInfo> list) {
+        if (settings.performTraining) {
+            killer.killRobots(population, list);
+            breeder.breedPopulation(population, list);
+            output.debugMessage("averageAge=" + population.getAverageAge());
         }
     }
 
-    private void updateAccount(List<RobotData> robotDataList) {
-        Map<DataSetName, Double> map = robotDataList.stream().collect(Collectors.toMap(RobotData::getName, RobotData::getLastPriceOpen));
+    private void updateAccount(List<RobotDataPair> robotDataList) {
+        Map<DataSetName, Double> map = new HashMap<>();
+        for (RobotDataPair robotDataPair : robotDataList) {
+            robotDataPair.forEach(robotData -> map.put(robotData.getName(), robotData.getLastPriceOpen()));
+        }
         account.closeTrades(map);
         account.openTrades(map);
     }
 
-    private void recordMarketChangesInRobots(List<RobotData> robotDataList) {
-        if(engineSettings.performTraining) {
-            population.listRobotsNames().forEach(robotName -> {
-                Robot robot = population.getRobot(robotName);
+    private void recordMarketChangesInRobots(List<RobotDataPair> robotDataList) {
+        if(settings.performTraining) {
+            population.getRobots().forEach(robot -> {
                 robotDataList.forEach(robot::recordMarketChange);
                 population.saveRobot(robot);
             });
         }
-    }
-
-    private void updatePopulation(List<RobotInfo> list) {
-        killer.killRobots(population, list);
-        breeder.breedPopulation(population, list);
-        output.debugMessage("averageAge=" + population.getAverageAge());
     }
 }

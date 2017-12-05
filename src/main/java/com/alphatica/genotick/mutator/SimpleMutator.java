@@ -4,35 +4,43 @@ import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.instructions.Instruction;
 import com.alphatica.genotick.processor.Processor;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 class SimpleMutator implements Mutator {
     private MutatorSettings settings;
-    private final Random random;
-    private final List<Class< ? super Instruction>> instructionList;
-    private int totalInstructions;
+    private RandomGenerator random;
+    private final List<Constructor<? super Instruction>> instructionConstructorList;
+    
+    final private int totalInstructions;
 
     private SimpleMutator() throws ClassNotFoundException {
-        random = RandomGenerator.get();
-        instructionList = new ArrayList<>();
-        buildInstructionList(instructionList);
+        instructionConstructorList = buildInstructionList();
+        totalInstructions = instructionConstructorList.size();
     }
 
     @SuppressWarnings("unchecked")
-    private void buildInstructionList(List<Class<? super Instruction>> instructionList) throws ClassNotFoundException {
+    private static List<Constructor<? super Instruction>> buildInstructionList() throws ClassNotFoundException {
+        List<Constructor<? super Instruction>> instructionConstructorList = new ArrayList<>();
         Class<Processor> processorClass = Processor.class;
         Method[] methods = processorClass.getDeclaredMethods();
         for(Method m: methods) {
             Class<?> [] types = m.getParameterTypes();
             for(Class<?> t: types) {
                 Class<Instruction> c = (Class<Instruction>)Class.forName(t.getName());
-                instructionList.add(c);
+                try {
+                    Constructor<? super Instruction> constructor = c.getDeclaredConstructor();
+                    constructor.setAccessible(true);
+                    instructionConstructorList.add(constructor); 
+                } catch (NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
-        totalInstructions = instructionList.size();
+        return instructionConstructorList;
     }
 
     static Mutator getInstance() {
@@ -51,8 +59,8 @@ class SimpleMutator implements Mutator {
 
     private Instruction createNewInstruction(int index) {
         try {
-            return (Instruction) instructionList.get(index).newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return (Instruction) instructionConstructorList.get(index).newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
@@ -89,6 +97,7 @@ class SimpleMutator implements Mutator {
     @Override
     public void setSettings(MutatorSettings mutatorSettings) {
         this.settings = mutatorSettings;
+        this.random = RandomGenerator.create(mutatorSettings.randomSeed);
     }
 
     @Override

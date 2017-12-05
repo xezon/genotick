@@ -4,8 +4,9 @@ import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.exceptions.ExecutionException;
 import com.alphatica.genotick.genotick.DataSetResult;
 import com.alphatica.genotick.genotick.Prediction;
-import com.alphatica.genotick.genotick.Tools;
 import com.alphatica.genotick.timepoint.TimePoint;
+import com.alphatica.genotick.utility.Tools;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -14,20 +15,36 @@ import static java.lang.String.format;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 
-
 class ConsoleOutput implements UserOutput {
 
-    private final File logFile;
+    private final String outdir;
+    private String identifier;
+    private File logFile;
     private final Boolean debugEnabled = false;
 
     ConsoleOutput(String outdir) {
-        final String filename = format("genotick-log-%s.txt", Tools.getPidString());
-        logFile = new File(outdir, filename);
+        this.outdir = outdir;
+        setIdentifier(Tools.generateCommonIdentifier());
+    }
+    
+    private void buildFileName() {
+        logFile = new File(outdir, "log_" + identifier + ".txt");
+    }
+    
+    @Override
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+        buildFileName();
+    }
+    
+    @Override
+    public String getIdentifier() {
+        return identifier;
     }
     
     @Override
     public String getOutDir() {
-        return logFile.getParent();
+        return outdir;
     }
     
     @Override
@@ -80,7 +97,7 @@ class ConsoleOutput implements UserOutput {
     }
 
     @Override
-    public void reportStartingTimePoint(TimePoint timePoint) {
+    public void reportStartedTimePoint(TimePoint timePoint) {
         log(format("Starting time point %s", timePoint));
     }
 

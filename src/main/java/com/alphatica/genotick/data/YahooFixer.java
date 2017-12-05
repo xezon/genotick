@@ -1,79 +1,45 @@
 package com.alphatica.genotick.data;
 
-import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.io.File;
 import java.util.List;
 
 public class YahooFixer {
     private final String path;
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
+    private final UserOutput output;
 
-    public YahooFixer(String yahooValue) {
-        this.path = yahooValue;
+    public YahooFixer(String path, UserOutput output) {
+        this.path = path;
+        this.output = output;
     }
 
     public void fixFiles() {
         String extension = ".csv";
         List<String> names = DataUtils.listFiles(extension,path);
-        for(String name: names) {
+        for (String name : names) {
             fixFile(name);
         }
     }
 
     private void fixFile(String name) {
         output.infoMessage("Fixing file: " + name);
-        List<Number[]> originalList = buildOriginalList(name);
-        List<List<Number>> newList = fixList(originalList);
-        saveListToFile(newList,name);
+        DataLines dataLines = new DataLines(new File(name), false);
+        DataLines fixedDataLines = getFixedLines(dataLines);
+        DataSaver dataSaver = DataFactory.getDefaultSaver(output);
+        dataSaver.save(new DataSet(name, fixedDataLines));
     }
 
-    private void saveListToFile(List<List<Number>> newList, String name) {
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File(name)))) {
-            writeList(newList,bw);
-        } catch (IOException e) {
-            throw new DataException("Unable to write file " + name, e);
+    private DataLines getFixedLines(DataLines dataLines) {
+        final int lineCount = dataLines.lineCount();
+        final int columnCount = dataLines.tohlcColumnCount();
+        final DataLines fixedDataLines = new DataLines(lineCount, columnCount, dataLines.firstLineIsNewest());
+        for (int line = 0; line < lineCount; ++line) {
+            final Number[] columns = dataLines.getColumnsCopy(line);
+            fixColumns(columns);
+            dataLines.setColumns(line, columns);
         }
-    }
-
-    private void writeList(List<List<Number>> newList, BufferedWriter bw) throws IOException {
-        for(List<Number> line: newList) {
-            writeLine(line,bw);
-        }
-    }
-
-    private void writeLine(List<Number> line, BufferedWriter bw) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
-        Iterator<Number> iterator = line.iterator();
-        while(iterator.hasNext()) {
-            Number number = iterator.next();
-            stringBuilder.append(String.valueOf(number));
-            if(iterator.hasNext())
-                stringBuilder.append(",");
-        }
-        stringBuilder.append("\n");
-        bw.append(stringBuilder.toString());
-    }
-
-    private List<List<Number>> fixList(List<Number[]> originalList) {
-        List<List<Number>> newList = new ArrayList<>(originalList.size());
-        for (Number[] line : originalList) {
-            List<Number> fixedLine = fixLine(line);
-            newList.add(fixedLine);
-        }
-        return newList;
-    }
-
-    private List<Number []> buildOriginalList(String name) {
-        try(BufferedReader br = new BufferedReader(new FileReader(new File(name)))) {
-            ignoreFirstLine(br);
-            return DataUtils.createLineList(br);
-        } catch (IOException e) {
-            throw new DataException("Unable to read file " + name, e);
-        }
+        return fixedDataLines;
     }
 
     /*
@@ -83,36 +49,25 @@ public class YahooFixer {
         to calculate new value.
     The same for numbers 2 and 3.
     4th number - replace with adjusted close
-    5th number - volume. Recalcute according to adjusted close
+    5th number - volume. Recalculate according to adjusted close
      */
-    private List<Number> fixLine(Number[] line) {
-        List<Number> newLine = new ArrayList<>(line.length);
-        double originalClose = line[4].doubleValue();
-        double adjustedClose = line[6].doubleValue();
-        // Nothing to be done with Date
-        newLine.add(line[0]);
-        double open = calculateNew(line[1],originalClose,adjustedClose);
-        newLine.add(open);
-        double high = calculateNew(line[2],originalClose,adjustedClose);
-        newLine.add(high);
-        double low = calculateNew(line[3],originalClose,adjustedClose);
-        newLine.add(low);
-        // add adjusted close as 'close'
-        newLine.add(adjustedClose);
-        // recalcute volume
-        double volumeValue = originalClose * line[5].doubleValue();
+    private void fixColumns(Number[] columns) {
+        double originalClose = columns[4].doubleValue();
+        double adjustedClose = columns[6].doubleValue();
+        double volumeValue = originalClose * columns[5].doubleValue();
         double volumeCount = volumeValue / adjustedClose;
-        newLine.add(volumeCount);
-        return newLine;
+        double open = calculateNew(columns[1],originalClose,adjustedClose);
+        double high = calculateNew(columns[2],originalClose,adjustedClose);
+        double low  = calculateNew(columns[3],originalClose,adjustedClose);
+        columns[1] = open;
+        columns[2] = high;
+        columns[3] = low;
+        columns[4] = adjustedClose;
+        columns[5] = volumeCount;
     }
 
     private double calculateNew(Number number, double originalClose, double adjustedClose) {
         double change = number.doubleValue() / originalClose;
         return adjustedClose * change;
     }
-
-    private void ignoreFirstLine(BufferedReader br) throws IOException {
-        br.readLine();
-    }
-
 }

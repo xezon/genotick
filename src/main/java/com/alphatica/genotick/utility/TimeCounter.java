@@ -1,20 +1,14 @@
 package com.alphatica.genotick.utility;
 
-import com.alphatica.genotick.ui.UserInputOutputFactory;
-import com.alphatica.genotick.ui.UserOutput;
 import static java.lang.String.format;
+import java.util.concurrent.TimeUnit;
 
 public class TimeCounter {
     
-    private static final TimeCounter INSTANCE = new TimeCounter();
     private final String name;
     private final boolean printOnStop;
     private long startNanoSeconds;
     private long stopNanoSeconds;
-    
-    public static TimeCounter get() {
-        return INSTANCE;
-    }
     
     public TimeCounter() {
         this("", true);
@@ -36,12 +30,16 @@ public class TimeCounter {
     }
     
     public long stop() {
+        return stop(TimeUnit.NANOSECONDS);
+    }
+    
+    public long stop(TimeUnit timeUnit) {
         stopNanoSeconds = System.nanoTime();
         final long elapsedNanoSeconds = getElapsedNanoSeconds();
         if (printOnStop) {
             print(elapsedNanoSeconds, 2);
         }
-        return elapsedNanoSeconds;
+        return timeUnit.convert(elapsedNanoSeconds, TimeUnit.NANOSECONDS);
     }
     
     public long getElapsedNanoSeconds() {
@@ -54,11 +52,10 @@ public class TimeCounter {
     }
     
     private void print(long elapsedNanoSeconds, int methodDepth) {        
-        UserOutput output = UserInputOutputFactory.getUserOutput();
-        final double elapsedSeconds = (double)elapsedNanoSeconds / 1000000000.0;
-        final double elapsedMilliseconds = (double)elapsedNanoSeconds / 1000.0;
+        final double elapsedSeconds      = (double)elapsedNanoSeconds / 1000000000.0;
+        final double elapsedMilliseconds = (double)elapsedNanoSeconds / 1000000.0;
         final String name = this.name.isEmpty() ? MethodName.get(methodDepth) : this.name;
-        output.infoMessage(format("Timer '%s' elapsed time in seconds: [%.3f] in milliseconds: [%.3f]",
+        System.out.println(format("Timer '%s' elapsed time in seconds: [%.3f] in milliseconds: [%.3f]",
                 name, elapsedSeconds, elapsedMilliseconds));
     }
 }

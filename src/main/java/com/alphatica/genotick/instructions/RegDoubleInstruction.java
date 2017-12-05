@@ -22,6 +22,6 @@ abstract class RegDoubleInstruction extends RegInstruction {
         if(doubleArgument == 0) {
             doubleArgument = Tools.mutateDouble(1_000_000 * mutator.getNextDouble(), mutator);
         }
-        doubleArgument = Tools.mutateDouble(doubleArgument, mutator);
+        doubleArgument = Tools.mutateDouble(doubleArgument, mutator);    
     }
 }

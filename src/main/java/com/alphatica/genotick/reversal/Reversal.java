@@ -1,128 +1,113 @@
 package com.alphatica.genotick.reversal;
 
 import com.alphatica.genotick.data.Column;
+import com.alphatica.genotick.data.DataLines;
 import com.alphatica.genotick.data.DataSet;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
 
 public class Reversal {
-    private static final String REVERSE_DATA_IDENTIFIER = "reverse_";
+
     private final DataSet originalSet;
+    private DataSetName reversedName;
     private DataSet reversedSet;
-    private final DataSetName reversedName;
-    private final boolean isReversed;
 
     public Reversal(DataSet dataSet) {
-        final DataSetName name = dataSet.getName();
         this.originalSet = dataSet;
+        this.reversedName = null;
         this.reversedSet = null;
-        this.reversedName = new DataSetName(getReversedDataPath(name.getPath()));
-        this.isReversed = isReversedDataName(name.getName());
-    }
-
-    public DataSetName getReversedName() {
-        return reversedName;
     }
 
     public boolean isReversed() {
-        return isReversed;
+        return originalSet.getName().isReversed();
+    }
+    
+    public DataSetName getReversedName() {
+        if (reversedName == null) {
+            final DataSetName orginalName = originalSet.getName();
+            reversedName = createReversedDataSetName(orginalName);
+        }
+        return reversedName;
+    }
+
+    public DataSet getReversedDataSet() {
+        if (reversedSet == null) {
+            final DataLines dataLines = originalSet.getDataLinesCopy();
+            reverseDataLines(dataLines);
+            reversedSet = new DataSet(getReversedName(), dataLines);
+        }
+        return reversedSet;
     }
 
     public boolean addReversedDataSetTo(MainAppData data) {
-        if (!isReversed) {
-            if (!data.containsDataSet(reversedName)) {
-                data.addDataSet(getReversedDataSet());
+        if (!isReversed()) {
+            if (!data.containsDataSet(getReversedName())) {
+                data.put(getReversedDataSet());
                 return true;
             }
         }
         return false;
     }
-
-    public DataSet getReversedDataSet() {
-        if (null == reversedSet) {
-            final List<Number[]> original = originalSet.getAllLines();
-            final List<Number[]> reversed = reverseList(original);
-            reversedSet = new DataSet(reversed, reversedName);
+    
+    private static DataSetName createReversedDataSetName(DataSetName name) {
+        final StringBuilder newName = new StringBuilder(name.getPath());
+        final int index = newName.lastIndexOf(File.separator) + 1;
+        if (name.isReversed()) {
+            final int len = DataSetName.REVERSE_DATA_IDENTIFIER.length();
+            newName.delete(index, index + len);
         }
-        return reversedSet;
+        else {
+            newName.insert(index, DataSetName.REVERSE_DATA_IDENTIFIER);
+        }
+        return new DataSetName(newName.toString());
     }
     
-    private static boolean isReversedDataName(String name) {
-        return name.startsWith(REVERSE_DATA_IDENTIFIER);
+    private static void reverseDataLines(DataLines dataLines) {
+        final int lineCount = dataLines.lineCount();
+        double[] lastOriginal = dataLines.getOhlcValuesCopy(0);
+        double[] lastReversed = dataLines.getOhlcValuesCopy(0);
+        for (int line = 0; line < lineCount; ++line) {
+            double[] currentOriginal = dataLines.getOhlcValuesCopy(line);
+            double[] currentReversed = createReversedOhlc(lastOriginal, currentOriginal, lastReversed);
+            dataLines.setOhlcValues(line, currentReversed);
+            lastOriginal = currentOriginal;
+            lastReversed = currentReversed;
+        }        
+        normalize(dataLines);
     }
-
-    private static String getReversedDataPath(String path) {
-        Path originalPath = Paths.get(path);
-        Path fileNameOnly = originalPath.getFileName();
-        Path directoryOnly = originalPath.getParent();
-        String newName = REVERSE_DATA_IDENTIFIER + fileNameOnly.toString();
-        Path reversedPath = Paths.get(directoryOnly.toString(), newName);
-        return reversedPath.toString();
-    }
-
-    private static List<Number[]> reverseList(List<Number[]> original) {
-        List<Number[]> reverse = new ArrayList<>();
-        Number[] lastOriginal = null;
-        Number[] lastReversed = null;
-        for(Number[] table: original) {
-            Number[] last = reverseLineOHLCV(table, lastOriginal, lastReversed);
-            reverse.add(last);
-            lastOriginal = table;
-            lastReversed = last;
-        }
-        return reverse;
-    }
-
-    /*
-     * This method is for reversing traditional open-high-low-close stock market data.
-     * What happens with numbers (by column):
-     * 0 - TimePoint: Doesn't change.
-     * 1 - Open: It goes opposite direction to original, by the same percent.
-     * 2 and 3 - High and Low: First of all they swapped. This is because data should be a mirror reflection of
-     * original, so high becomes low and low becomes high. Change is calculated comparing to open column
-     * (column 1). So it doesn't matter what High was in previous TimePoint, it matters how much higher it was comparing
-     * to the open on the same line. When High becomes low - it goes down by same percent as original high was higher
-     * than open.
-     * 4 - Close. Goes opposite to original close by the same percent.
-     * 5 and more - Volume, open interest or whatever. These don't change.
-     */
-
-    private static Number[] reverseLineOHLCV(Number[] table, Number[] lastOriginal, Number[] lastReversed) {
-        Number[] reversed = new Number[table.length];
-        // Column 0 is unchanged
-        reversed[Column.TOHLCV.TIME] = table[Column.TOHLCV.TIME];
-        // Column 1. Rewrite if first line
-        if(lastOriginal == null) {
-            reversed[Column.TOHLCV.OPEN] = table[Column.TOHLCV.OPEN];
-        } else {
-            // Change by % if not first line
-            reversed[Column.TOHLCV.OPEN] = getReverseValue(table[Column.TOHLCV.OPEN], lastOriginal[Column.TOHLCV.OPEN], lastReversed[Column.TOHLCV.OPEN]);
-        }
-        // Check if 4 columns here, because we need time, open, high, low to do swapping later.
-        if(table.length < Column.TOHLCV.CLOSE)
-            return reversed;
-        // Column 2. Change by % comparing to open
-        // Write into 3 - we swap 2 & 3
-        reversed[Column.TOHLCV.LOW] = getReverseValue(table[Column.TOHLCV.HIGH], table[Column.TOHLCV.OPEN], reversed[Column.TOHLCV.OPEN]);
-        // Column 3. Change by % comparing to open
-        // Write into 2 - we swap 2 & 3
-        reversed[Column.TOHLCV.HIGH] = getReverseValue(table[Column.TOHLCV.LOW], table[Column.TOHLCV.OPEN], reversed[Column.TOHLCV.OPEN]);
-        if(table.length == Column.TOHLCV.CLOSE)
-            return reversed;
-        // Column 4. Change by % comparing to open.
-        reversed[Column.TOHLCV.CLOSE] = getReverseValue(table[Column.TOHLCV.CLOSE], table[Column.TOHLCV.OPEN], reversed[Column.TOHLCV.OPEN]);
-        // Rewrite rest
-        System.arraycopy(table, Column.TOHLCV.VOLUME, reversed, Column.TOHLCV.VOLUME, table.length - Column.TOHLCV.VOLUME);
+    
+    private static double[] createReversedOhlc(double[] lastOriginal, double[] original, double[] lastReversed) {
+        final double[] reversed = new double[original.length];
+        final double openDiff = original[Column.OHLC.OPEN] - lastOriginal[Column.OHLC.CLOSE];
+        final double highDiff = original[Column.OHLC.HIGH] - original[Column.OHLC.OPEN];
+        final double lowDiff = original[Column.OHLC.LOW] - original[Column.OHLC.OPEN];
+        final double closeDiff = original[Column.OHLC.CLOSE] - original[Column.OHLC.OPEN];
+        reversed[Column.OHLC.OPEN] = lastReversed[Column.OHLC.CLOSE] - openDiff;
+        reversed[Column.OHLC.HIGH] = reversed[Column.OHLC.OPEN] - lowDiff;
+        reversed[Column.OHLC.LOW] = reversed[Column.OHLC.OPEN] - highDiff;
+        reversed[Column.OHLC.CLOSE] = reversed[Column.OHLC.OPEN] - closeDiff;
         return reversed;
     }
-
-    private static Number getReverseValue(Number from, Number to, Number compare) {
-        double diff = Math.abs((from.doubleValue() / to.doubleValue()) -2);
-        return diff * compare.doubleValue();
+    
+    private static void normalize(DataLines dataLines) {
+        final int lineCount = dataLines.lineCount();
+        final double threshold = 0.01;
+        double lowest = threshold;
+        for (int line = 0; line < lineCount; ++line) {
+            final double low = dataLines.getOhlcValue(line, Column.OHLC.LOW);
+            if (low < lowest)
+                lowest = low;
+        }
+        if (lowest < threshold) {
+            final double negOffset = lowest - threshold;
+            for (int line = 0; line < lineCount; ++line) {
+                for (int column : Column.Array.OHLC) {
+                    final double value = dataLines.getOhlcValue(line, column);
+                    dataLines.setOhlcValue(line, column, value - negOffset);
+                }
+            }
+        }
     }
 }

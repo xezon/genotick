@@ -5,31 +5,24 @@ import com.alphatica.genotick.genotick.RandomGenerator;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class InstructionList implements Serializable {
-    @SuppressWarnings("unused")
+
     private static final long serialVersionUID = 267402795981161615L;
 
-    private final Random random;
+    private final RandomGenerator random;
     private final List<Instruction> list;
-    private final int variablesCount;
     private final double[] variables;
 
-    private int validateVariableNumber(int index) {
-	    	if(index < 0 || index >= variablesCount) return Math.abs(index % variablesCount);
-	    	return index;
+    private InstructionList(RandomGenerator random) {
+        this.random = random;
+        this.list = new ArrayList<>();
+        int variablesCount = 1 + Math.abs(random.nextInt() % 1024);
+        this.variables = new double[variablesCount];
     }
 
-    private InstructionList() {
-        random = RandomGenerator.get();
-        list = new ArrayList<>();
-        variablesCount = 1 + Math.abs(random.nextInt() % 1024);
-        variables = new double[variablesCount];
-    }
-
-    public static InstructionList createInstructionList() {
-        return new InstructionList();
+    public static InstructionList create(RandomGenerator random) {
+        return new InstructionList(random);
     }
 
     public Instruction getInstruction(int index) {
@@ -55,8 +48,13 @@ public class InstructionList implements Serializable {
     public void addInstruction(Instruction instruction) {
         list.add(instruction);
     }
-    public int getSize() {
+    
+    public int getInstructionCount() {
         return list.size();
+    }
+
+    public int getVariableCount() {
+        return variables.length;
     }
 
     @SuppressWarnings("unused")
@@ -65,14 +63,18 @@ public class InstructionList implements Serializable {
         list.add(position,instruction);
     }
 
+    private int validateVariableNumber(int index) {
+    	if(index < 0 || index >= variables.length) {
+        	return Math.abs(index % variables.length);
+        } else {
+        	return index;       
+        }
+    }
+
     private int fixPosition(int position) {
         if(position >= 0 && position < list.size())
             return position;
         else
             return random.nextInt(list.size());
-    }
-
-    public int getVariablesCount() {
-        return variablesCount;
     }
 }

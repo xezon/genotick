@@ -4,95 +4,42 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.alphatica.genotick.data.Column;
+import com.alphatica.genotick.data.DataSeries;
 import com.alphatica.genotick.data.DataSet;
-import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.timepoint.TimePoint;
-import com.alphatica.genotick.utility.Friendship;
 
-public class RobotDataManager extends Friendship {
-        
+public class RobotDataManager {
+
     private final MainAppData data;
     private final int maxBars;
-    private final List<RobotData> robotDataList;
-    private final List<RobotData> updatedRobotDataList;
+    private final List<RobotDataPair> robotDataList;
 
     RobotDataManager(MainAppData data, int maxBars) {
         this.data = data;
         this.maxBars = maxBars;
-        this.robotDataList = new ArrayList<>();
-        this.updatedRobotDataList = Collections.synchronizedList(new ArrayList<>());
-        for (DataSet dataSet : data.getDataSets()) {
-            final DataSetName name = dataSet.getName();
-            final List<double[]> emptyLookbackData = new ArrayList<>();
-            robotDataList.add(RobotData.create(name, emptyLookbackData));
-        }
+        this.robotDataList = Collections.synchronizedList(new ArrayList<>());
     }
     
-    List<RobotData> getUpdatedRobotDataList() {
-        return updatedRobotDataList;
+    List<RobotDataPair> getUpdatedRobotDataList() {
+        return robotDataList;
     }
     
     void update(TimePoint timePoint) {
-        updatedRobotDataList.clear();
-        robotDataList.parallelStream().forEach(robotData -> {
-            final DataSetName name = robotData.getName();
-            final DataSet dataSet = data.getDataSet(name);
-            final int bar = dataSet.getBar(timePoint);
+        robotDataList.clear();
+        data.getOriginalDataSets().parallelStream().forEach(dataSet -> {
+            int bar = dataSet.getBar(timePoint);
             if (bar >= 0) {
-                final List<double[]> ohlcDataSource = dataSet.getOhlcColumnsOfData(befriend);
-                final List<double[]> ohlcLookbackData = robotData.getOhlcLookbackData(befriend);
-                updateLookbackData(ohlcDataSource, ohlcLookbackData, bar);
-                updatedRobotDataList.add(robotData);
+                DataSet reversedDataSet = data.getReversedDataSet(dataSet.getName());     
+                RobotData originalData = createRobotData(dataSet, bar);
+                RobotData reversedData = (reversedDataSet != null) ? createRobotData(reversedDataSet, bar) : null;
+                robotDataList.add(new RobotDataPair(originalData, reversedData));
             }
         });
     }
-        
-    private void updateLookbackData(
-            final List<double[]> ohlcDataSource,
-            final List<double[]> ohlcLookbackData,
-            final int bar) {
-        final int barCount = (bar >= maxBars) ? maxBars : bar + 1;
-        final int allocatedBarCount = getBarCount(ohlcLookbackData);
-        final int columnCount = getColumnCount(ohlcDataSource);
-        final int allocatedColumnCount = getColumnCount(ohlcLookbackData);
-        if ((barCount != allocatedBarCount) || (columnCount != allocatedColumnCount)) {
-            allocateLookbackData(ohlcLookbackData, columnCount, barCount);
-        }
-        fillLookbackData(ohlcDataSource, ohlcLookbackData, bar, barCount);
-    }
     
-    private static int getColumnCount(final List<double[]> ohlcData) {
-        return ohlcData.size();
+    private RobotData createRobotData(DataSet dataSet, int bar) {
+        DataSeries series = dataSet.createOhlcDataSection(bar, maxBars, true);
+        return RobotData.create(dataSet.getName(), series);
     }
-    
-    private static int getBarCount(final List<double[]> ohlcData) {
-        return !ohlcData.isEmpty() ? ohlcData.get(Column.OHLCV.OPEN).length : 0;
-    }
-    
-    private static void allocateLookbackData(
-            final List<double[]> ohlcLookbackData,
-            final int columnCount,
-            final int barCount) {
-        ohlcLookbackData.clear();
-        for (int i = 0; i < columnCount; ++i) {
-            ohlcLookbackData.add(new double[barCount]);
-        }
-    }
-    
-    private static void fillLookbackData(
-            final List<double[]> ohlcDataSource,
-            final List<double[]> ohlcLookbackData,
-            final int bar,
-            final int barCount) {
-        final int columnCount = ohlcDataSource.size();
-        for (int column = 0; column < columnCount; ++column) {
-            final double[] src = ohlcDataSource.get(column);
-            final double[] dst = ohlcLookbackData.get(column);
-            for (int b = 0; b < barCount; ++b) {
-                dst[b] = src[bar - b];
-            }
-        }
-    } 
 }

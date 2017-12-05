@@ -3,6 +3,8 @@ package com.alphatica.genotick.ui;
 import java.io.File;
 import java.io.IOException;
 
+import com.alphatica.genotick.genotick.MainInterface;
+
 import static java.lang.String.format;
 
 public class UserInputOutputFactory {
@@ -17,27 +19,26 @@ public class UserInputOutputFactory {
     private static final String OUTPUT_OPTION_CONSOLE = "console";
     private static final String OUTPUT_OPTION_CSV = "csv";
     private static final String OUTPUT_OPTION_NONE = "none";
-    private static UserOutput userOutput;
 
-    public static UserInput createUserInput(Parameters parameters) {
+    public static UserInput createUserInput(Parameters parameters, UserOutput userOutput, MainInterface.Session session) {
         final String input = parameters.getAndRemoveValue(INPUT_STRING);
         if (input == null) {
-            return tryConsoleInput();
+            return tryConsoleInput(userOutput);
         }
         else {
-            return createUserInputByOption(input);
+            return createUserInputByOption(input, userOutput, session);
         }
     }
-    
-    private static UserInput createUserInputByOption(String input) {
+
+    private static UserInput createUserInputByOption(String input, UserOutput userOutput, MainInterface.Session session) {
         if (input.startsWith(INPUT_OPTION_FILE)) {
-            return new FileInput(input);
+            return new FileInput(input, userOutput);
         }
         switch (input) {
-            case INPUT_OPTION_DEFAULT: return new DefaultInputs();
-            case INPUT_OPTION_RANDOM: return new RandomParametersInput();
-            case INPUT_OPTION_CONSOLE: return tryConsoleInput();
-            case INPUT_OPTION_EXTERNAL: return new ExternalInput();
+            case INPUT_OPTION_DEFAULT: return new DefaultInputs(userOutput);
+            case INPUT_OPTION_RANDOM: return new RandomParametersInput(userOutput);
+            case INPUT_OPTION_CONSOLE: return tryConsoleInput(userOutput);
+            case INPUT_OPTION_EXTERNAL: return new ExternalInput(session);
         }
         printOptionInfo(INPUT_STRING, input,
                 INPUT_OPTION_FILE,
@@ -47,14 +48,14 @@ public class UserInputOutputFactory {
         return null;
     }
 
-    private static UserInput tryConsoleInput() {
+    private static UserInput tryConsoleInput(UserOutput userOutput) {
         UserInput input;
         try {
-            input = new ConsoleInput();
+            input = new ConsoleInput(userOutput);
             return input;
         } catch (RuntimeException ex) {
             System.err.println("Unable to get Console Input. Resorting to Default Input");
-            return new DefaultInputs();
+            return new DefaultInputs(userOutput);
         }
     }
 
@@ -65,14 +66,11 @@ public class UserInputOutputFactory {
             createDirsThrowable(outdir);
         }
         if (output == null) {
-            userOutput = new ConsoleOutput(outdir);
+            return new ConsoleOutput(outdir);
         }
-        else {
-            userOutput = createUserOutputByOption(output, outdir);
-        }
-        return userOutput;
+        return createUserOutputByOption(output, outdir);
     }
-    
+
     private static UserOutput createUserOutputByOption(String output, String outdir) throws IOException {
         switch (output) {
             case OUTPUT_OPTION_CONSOLE: return new ConsoleOutput(outdir);
@@ -85,25 +83,18 @@ public class UserInputOutputFactory {
                 OUTPUT_OPTION_NONE);
         return null;
     }
-    
-    public static UserOutput getUserOutput() {
-    	if(userOutput == null) {
-    		userOutput = new ConsoleOutput(null);
-    	}
-    	return userOutput;
-    }
-    
+
     private static void createDirsThrowable(String path) throws IOException {
         if (!createDirs(path)) {
             throw new IOException(format("Unable to create output directory %s", path));
         }
     }
-    
+
     private static boolean createDirs(String path) {
         File dirFile = new File(path);
         return dirFile.exists() || dirFile.mkdirs();
     }
-    
+
     private static void printOptionInfo(String optionName, String optionValue, String... availableOptionValues) {
         System.out.println(format("'%s=%s' is not a valid option.", optionName, optionValue));
         System.out.println("Options are:");

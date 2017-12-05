@@ -2,9 +2,10 @@ package com.alphatica.genotick.population;
 
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SimplePopulation implements Population {
     private PopulationSettings settings;
@@ -17,7 +18,7 @@ public class SimplePopulation implements Population {
 
     @Override
     public int getDesiredSize() {
-        return settings.desiredSize();
+        return settings.desiredSize;
     }
 
     @Override
@@ -52,7 +53,7 @@ public class SimplePopulation implements Population {
 
     @Override
     public boolean hasSpaceToBreed() {
-        return getSize() < settings.desiredSize();
+        return getSize() < settings.desiredSize;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class SimplePopulation implements Population {
         if (canSave()) {
             dao.removeAllRobots();
             PopulationDAO fs = new PopulationDAOFileSystem(path);
-            int size = settings.desiredSize();
+            int size = settings.desiredSize;
             fs.getRobots().limit(size).forEach(dao::saveRobot);
         }
     }
@@ -68,7 +69,7 @@ public class SimplePopulation implements Population {
     @Override
     public boolean saveOnDisk() {
         if (canSave()) {
-            String path = settings.daoPath();
+            String path = settings.daoPath;
             if (!path.isEmpty()) {
                 saveToExistingFolder(path);
                 return true;
@@ -76,10 +77,10 @@ public class SimplePopulation implements Population {
         }
         return false;
     }
-
+    
     @Override
-    public Set<RobotName> listRobotsNames() {
-        return dao.getRobotNames().collect(Collectors.toSet());
+    public Stream<Robot> getRobots() {
+        return dao.getRobots();
     }
 
     @Override
@@ -89,10 +90,14 @@ public class SimplePopulation implements Population {
 
     @Override
     public void saveToFolder(String path) {
-        if (canSave() && createDirs(path)) {
-            saveToExistingFolder(path);
-        } else {
-            throw new DAOException("Unable to save to path " + path);
+        if (canSave()) {
+            if (createDirs(path)) {
+                if(saveToExistingFolder(path) == 0) {
+                    removeDir(path);
+                }
+            } else {
+                throw new DAOException("Unable to save to path " + path);
+            }
         }
     }
 
@@ -101,10 +106,25 @@ public class SimplePopulation implements Population {
         return dirFile.exists() || dirFile.mkdirs();
     }
 
-    private void saveToExistingFolder(String path) {
+    private static void removeDir(String path) {
+        File dirFile = new File(path);
+        if(dirFile.isDirectory()) {
+            dirFile.delete();
+        }
+    }
+
+    private int saveToExistingFolder(String path) {
         PopulationDAO fs = new PopulationDAOFileSystem(path);
         fs.removeAllRobots();
-        dao.getRobots().forEach(fs::saveRobot);
+        AtomicInteger savedCount = new AtomicInteger(0);
+        dao.getRobots().forEach((robot) -> {
+            if((settings.killNonPredictingRobots == false || robot.isPredicting()) &&
+                Math.abs(robot.getWeight()) >= settings.minimumScoreToSaveToDisk) {
+                fs.saveRobot(robot);
+                savedCount.incrementAndGet();
+            }
+        });
+        return savedCount.get();
     }
 
     private boolean canSave() {

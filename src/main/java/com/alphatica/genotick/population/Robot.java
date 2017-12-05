@@ -4,9 +4,11 @@ package com.alphatica.genotick.population;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Outcome;
 import com.alphatica.genotick.genotick.Prediction;
+import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.genotick.RobotData;
+import com.alphatica.genotick.genotick.RobotDataPair;
 import com.alphatica.genotick.genotick.RobotResult;
-import com.alphatica.genotick.genotick.WeightCalculator;
+import com.alphatica.genotick.genotick.RobotResultPair;
 import com.alphatica.genotick.instructions.Instruction;
 import com.alphatica.genotick.instructions.InstructionList;
 
@@ -20,13 +22,12 @@ import java.util.Map;
 import static java.util.Optional.ofNullable;
 
 public class Robot implements Serializable {
-    @SuppressWarnings("unused")
+
     private static final long serialVersionUID = -32164662984L;
     private static final DecimalFormat weightFormat = new DecimalFormat("0.00");
 
     private RobotName name;
-    private final int maximumDataOffset;
-    private final int ignoreColumns;
+    private final RobotSettings settings;
     private InstructionList mainFunction;
     private int totalChildren = 0;
     private int correctPredictions = 0;
@@ -42,12 +43,12 @@ public class Robot implements Serializable {
     private final Map<DataSetName, Prediction> current = new HashMap<>();
     private final Map<DataSetName, Prediction> pending = new HashMap<>();
 
-    public static Robot createEmptyRobot(int maximumDataOffset, int ignoreColumns) {
-        return new Robot(maximumDataOffset, ignoreColumns);
+    public static Robot createEmptyRobot(RobotSettings settings, RandomGenerator random) {
+        return new Robot(settings, random);
     }
 
     public int getLength() {
-        return mainFunction.getSize();
+        return mainFunction.getInstructionCount();
     }
 
     public RobotName getName() {
@@ -55,7 +56,7 @@ public class Robot implements Serializable {
     }
 
     public int getIgnoreColumns() {
-        return ignoreColumns;
+        return settings.ignoreColumns;
     }
 
     public void setInheritedWeight(double inheritedWeight) {
@@ -91,7 +92,7 @@ public class Robot implements Serializable {
     }
 
     public double getEarnedWeight() {
-        return WeightCalculator.calculateWeight(this);
+        return settings.weightCalculator.calculateWeight(this);
     }
     
     public double getInheritedWeight() {
@@ -100,6 +101,10 @@ public class Robot implements Serializable {
     
     public double getWeight() {
         return getInheritedWeight() + getEarnedWeight();
+    }
+
+    public double getScore() {
+        return Math.abs(getWeight());
     }
 
     public void setMainInstructionList(InstructionList newMainFunction) {
@@ -112,10 +117,14 @@ public class Robot implements Serializable {
     }
 
     public int getMaximumDataOffset() {
-        return maximumDataOffset;
+        return settings.maximumDataOffset;
+    }
+    
+    public void recordMarketChange(RobotDataPair pair) {
+        pair.forEach(this::recordMarketChange);
     }
 
-    public void recordMarketChange(RobotData robotData) {
+    private void recordMarketChange(RobotData robotData) {
         ofNullable(current.remove(robotData.getName())).ifPresent(prediction -> {
             final double priceChange = robotData.getLastPriceChange();
             final Outcome outcome = Outcome.getOutcome(prediction, priceChange);
@@ -131,21 +140,33 @@ public class Robot implements Serializable {
         });
     }
 
-    public void recordPrediction(RobotResult result) {
-        DataSetName dataSetName = result.getData().getName();
-        Prediction newPrediction = result.getPrediction();
+    public void recordPrediction(RobotResultPair pair) {
+        pair.forEach(this::recordPrediction);
+        RobotResult originalResult = pair.getOriginal();
+        Prediction originalPred = originalResult.getPrediction();
+        if (originalPred != Prediction.OUT) {
+            isPredicting = true;
+        }
+        RobotResult reversedResult = pair.getReversed();
+        if (reversedResult != null) {
+            Prediction reversedPred = reversedResult.getPrediction();
+            if (originalPred != Prediction.getOpposite(reversedPred)) {
+                bias += 1;
+            }
+        }
+    }
+
+    private void recordPrediction(RobotResult robotResult) {
+        DataSetName dataSetName = robotResult.getDataSetName();
+        Prediction newPrediction = robotResult.getPrediction();
         Prediction pendingPrediction = pending.get(dataSetName);
         current.put(dataSetName, pendingPrediction);
         pending.put(dataSetName, newPrediction);
-        if(newPrediction != Prediction.OUT) {
-            isPredicting = true;
-        }
-        bias += newPrediction.getValue();
     }
 
     @Override
     public String toString() {
-        int length = mainFunction.getSize();
+        int length = mainFunction.getInstructionCount();
         return "Name: " + this.name.toString()
                 + " Outcomes: " + String.valueOf(totalOutcomes)
                 + " Weight: " + weightFormat.format(getWeight())
@@ -164,7 +185,7 @@ public class Robot implements Serializable {
         return sb.toString();
     }
 
-    boolean isPredicting() {
+    public boolean isPredicting() {
         return isPredicting;
     }
 
@@ -180,20 +201,19 @@ public class Robot implements Serializable {
         return totalOutcomes;
     }
 
-    int getBias() {
+    public int getBias() {
         return bias;
     }
 
-    private Robot(int maximumDataOffset, int ignoreColumns) {
-        mainFunction = InstructionList.createInstructionList();
-        this.maximumDataOffset = maximumDataOffset;
-        this.ignoreColumns = ignoreColumns;
+    private Robot(RobotSettings settings, RandomGenerator random) {
+        this.settings = settings;
+        this.mainFunction = InstructionList.create(random);
     }
 
     private void addMainFunction(StringBuilder sb) throws IllegalAccessException {
         sb.append("MainFunction:").append("\n");
-        sb.append("VariableCount: ").append(mainFunction.getVariablesCount()).append("\n");
-        for(int i = 0; i < mainFunction.getSize(); i++) {
+        sb.append("VariableCount: ").append(mainFunction.getVariableCount()).append("\n");
+        for(int i = 0; i < mainFunction.getInstructionCount(); i++) {
             Instruction instruction = mainFunction.getInstruction(i);
             sb.append(instruction.instructionString()).append("\n");
         }

@@ -4,31 +4,36 @@ import com.alphatica.genotick.population.Robot;
 
 import static com.alphatica.genotick.utility.Assert.gassert;
 
-public class WeightCalculator {
+import java.io.Serializable;
 
-    private static WeightMode MODE = WeightMode.WIN_COUNT;
-    private static double EXPONENT = 1.0;
+public class WeightCalculator implements Serializable {
 
-    private WeightCalculator() {}
+    private static final long serialVersionUID = 3856847185557738171L;
+    private WeightMode mode = WeightMode.WIN_COUNT;
+    private double exponent = 1.0;
 
-    public static void setWeightMode(WeightMode mode) {
-        MODE = mode;
+    public void setWeightMode(WeightMode mode) {
+        this.mode = mode;
     }
 
-    public static void setWeightExponent(double exponent) {
-        EXPONENT = exponent;
+    public void setWeightExponent(double exponent) {
+        this.exponent = exponent;
     }
 
-    public static double calculateWeight(Robot robot) {
+    public double calculateWeight(Robot robot) {
         Double weight = 0.0;
-        switch (MODE) {
+        switch (mode) {
             case WIN_COUNT: weight = getWinCount(robot); break;
             case WIN_RATE: weight = getWinRate(robot); break;
             case PROFIT_COUNT: weight = getProfitCount(robot); break;
             case PROFIT_FACTOR: weight = getProfitFactor(robot); break;
         }
-        double weightPow = Math.pow(weight, EXPONENT);
-        weight = (weight >= 0.0) ? weightPow : -weightPow;
+        if (weight >= 0.0) {
+            weight = Math.pow(weight, this.exponent);
+        }
+        else {
+            weight = -Math.pow(-weight, this.exponent);
+        }
         gassert(!weight.isNaN());
         return weight;
     }
@@ -50,11 +55,12 @@ public class WeightCalculator {
     }
         
     private static double getMirroredRate(final double a, final double b) {
-        if (a == b)
-            return 0.0;
-        else if (a > b)
+        if (a > b) {
             return (b == 0.0) ? 1.0 : (a / b);
-        else
+        }
+        else if (a < b) {
             return (a == 0.0) ? -1.0 : -(b / a);
+        }
+        return 0.0;
     }
 }

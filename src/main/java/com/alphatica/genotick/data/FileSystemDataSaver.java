@@ -6,11 +6,14 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import com.alphatica.genotick.ui.UserInputOutputFactory;
 import com.alphatica.genotick.ui.UserOutput;
 
 public class FileSystemDataSaver implements DataSaver {
-    private final UserOutput output = UserInputOutputFactory.getUserOutput();
+    private final UserOutput output;
+    
+    public FileSystemDataSaver(UserOutput output) {
+        this.output = output;
+    }
     
     @Override
     public void saveAll(MainAppData data) {
@@ -22,16 +25,22 @@ public class FileSystemDataSaver implements DataSaver {
     @Override
     public void save(DataSet set) {
         final String fileName = set.getName().getPath();
+        final String lineSeparator = System.lineSeparator();
+        final DataLines dataLines = set.getDataLinesCopy();
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
-            for (int i = 0; i < set.getLinesCount(); ++i) {
-                Number[] row = set.getLine(i);
-                String rowString = makeString(row, ",");
-                bw.write(rowString + "\n");
+            for (int i = 0, lineCount = dataLines.lineCount(); i < lineCount; ++i) {
+                Number[] columns = dataLines.getColumnsCopy(i);
+                String columnsString = makeString(columns, ",");
+                bw.write(columnsString + lineSeparator);
             }
-            output.infoMessage(format("Saved data file '%s' successfully", fileName));
+            if (output != null) {
+                output.infoMessage(format("Saved data file '%s' successfully", fileName));
+            }
         }
         catch (IOException e) {
-            output.errorMessage(format("Saving data file '%s' failed: %s", fileName, e.getMessage()));
+            if (output != null) {
+                output.errorMessage(format("Saving data file '%s' failed: %s", fileName, e.getMessage()));
+            }
             e.printStackTrace();
         }
     }

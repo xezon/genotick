@@ -23,6 +23,6 @@ abstract class VarDoubleInstruction extends VarInstruction {
             doubleArgument = Tools.mutateDouble(1_000_000 * mutator.getNextDouble(), mutator);
         }
         doubleArgument = Tools.mutateDouble(doubleArgument, mutator);
-    }
-
+     }
 }
+

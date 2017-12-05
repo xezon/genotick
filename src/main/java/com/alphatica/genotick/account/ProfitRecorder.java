@@ -2,7 +2,9 @@ package com.alphatica.genotick.account;
 
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.ui.UserOutput;
+import com.alphatica.genotick.chart.GenoChart;
 import com.alphatica.genotick.chart.GenoChartFactory;
+import com.alphatica.genotick.chart.GenoChartMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,19 +23,21 @@ public class ProfitRecorder {
     private final Map<DataSetName, Integer> wins = new HashMap<>();
     private final Map<DataSetName, Integer> losses = new HashMap<>();
     private final Set<DataSetName> names = new HashSet<>();
+    private final GenoChart chart;
     private final UserOutput output;
     private double accumulatedProfit = 0.0;
     
-    public ProfitRecorder(UserOutput output) {
+    public ProfitRecorder(GenoChartMode chartMode, UserOutput output) {
+        this.chart = GenoChartFactory.create(chartMode, output);
         this.output = output;
     }
     
     public void onUpdate(final int bar) {
-        GenoChartFactory.get().addXYLineChart(PROFIT_CHART_NAME, "Bar", "Profit", "Total", (double)bar, accumulatedProfit);
+        chart.addXYLineChart(PROFIT_CHART_NAME, "Bar", "Profit", "Total", (double)bar, accumulatedProfit);
     }
     
     public void onFinish() {
-        GenoChartFactory.get().plot(PROFIT_CHART_NAME);
+        chart.plot(PROFIT_CHART_NAME);
     }
     
     void addTradeResult(DataSetName name, double profit) {

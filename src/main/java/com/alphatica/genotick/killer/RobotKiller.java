@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface RobotKiller {
     void killRobots(Population population, List<RobotInfo> robotsInfos);
-
     void setSettings(RobotKillerSettings killerSettings);
 }

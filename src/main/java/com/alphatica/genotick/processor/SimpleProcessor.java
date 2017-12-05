@@ -70,6 +70,7 @@ import com.alphatica.genotick.instructions.MultiplyVariableByVariable;
 import com.alphatica.genotick.instructions.NaturalLogarithmOfData;
 import com.alphatica.genotick.instructions.NaturalLogarithmOfRegister;
 import com.alphatica.genotick.instructions.NaturalLogarithmOfVariable;
+import com.alphatica.genotick.instructions.PercentileOfColumn;
 import com.alphatica.genotick.instructions.ReturnRegisterAsResult;
 import com.alphatica.genotick.instructions.ReturnVariableAsResult;
 import com.alphatica.genotick.instructions.SqRootOfRegister;
@@ -114,7 +115,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         processorInstructionLimit = settings.maximumProcessorInstructionFactor;
     }
     
-    public static SimpleProcessor createProcessor(RobotExecutorSettings settings) {
+    public static SimpleProcessor getInstance(RobotExecutorSettings settings) {
         return new SimpleProcessor(settings);
     }
 
@@ -651,6 +652,22 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         return sum;
     }
 
+    @Override
+    public void execute(PercentileOfColumn ins) {
+        int column = fixColumn(ins.getRegister1());
+        int length = fixOffset(registers[ins.getRegister2()]);
+        if(length == 0) {
+            return;
+        }
+        double[] priceDataList = new double[length];
+        for(int i = 0; i < length; i++) {
+            priceDataList[i] = data.getPriceData(column,i);
+        }
+        Arrays.sort(priceDataList);
+        int percentileIndex = (int)Math.ceil(((double)ins.getPercentile() / (double)100) * (double)priceDataList.length);
+        registers[0] = priceDataList[percentileIndex-1];
+    }
+ 
     @Override
     public void execute(SwapVariables ins) {
         double var1 = instructionList.getVariable(ins.getVariable1Argument());

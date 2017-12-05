@@ -7,22 +7,26 @@ import com.alphatica.genotick.genotick.MainSettings;
 
 @SuppressWarnings("WeakerAccess")
 abstract public class BasicUserInput implements UserInput {
+    
     private MainSettings mainSettings = null;
     private MainAppData assetData = null;
+    private final UserOutput output;
 
-    @Override
-    public MainAppData getData(String... sources) {
-        if (assetData == null) {
-            DataLoader loader = DataFactory.getDefaultLoader();
-            assetData = loader.loadAll(sources);
-        }
-        return assetData;
+    BasicUserInput(UserOutput output) {
+        this.output = output;
     }
     
     @Override
-    public void clearCache() {
-        mainSettings = null;
-        assetData = null;
+    public MainAppData getData(String... sources) {
+        return loadData(sources);
+    }
+    
+    protected MainAppData loadData(String... sources) {
+        if (assetData == null) {
+            DataLoader loader = DataFactory.getDefaultLoader(output);
+            assetData = loader.loadAll(sources);
+        }
+        return assetData;
     }
     
     protected void setMainSettings(MainSettings mainSettings) {

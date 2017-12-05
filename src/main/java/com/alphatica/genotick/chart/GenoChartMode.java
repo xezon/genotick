@@ -1,5 +1,7 @@
 package com.alphatica.genotick.chart;
 
+import com.alphatica.genotick.utility.JniExport;
+
 public enum GenoChartMode {
     NONE                (0),
     DRAW                (1<<0),
@@ -15,6 +17,7 @@ public enum GenoChartMode {
         this.value = value;
     }
     
+    @JniExport
     private int value() {
         return value;
     }
