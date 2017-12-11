@@ -14,6 +14,7 @@ import com.alphatica.genotick.ui.UserOutput;
 import com.alphatica.genotick.utility.ParallelTasks;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -133,6 +134,9 @@ public class SimpleBreeder implements RobotBreeder {
         child.setInheritedWeight(weight);
         InstructionList instructionList = mixMainInstructionLists(parent1, parent2);
         child.setMainInstructionList(instructionList);
+        BitSet childAllowedColumns = (BitSet)parent1.getAllowedColumns().clone();
+        childAllowedColumns.or(parent2.getAllowedColumns());
+        child.setAllowedColumns(childAllowedColumns);
     }
 
     private double calculateWeightForChild(final Robot parent1, final Robot parent2) {

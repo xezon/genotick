@@ -13,11 +13,12 @@ public class BreederSettings {
     public final double randomRobots;
     public final int maximumDataOffset;
     public final int ignoreColumns;
+    public final int columnCount;
     public final int maximumRobotInstructions;
     public final int minimumRobotInstructions;
     public final long randomSeed;
 
-    public BreederSettings(final MainSettings settings) {
+    public BreederSettings(final MainSettings settings, final int columnCount) {
         this.minimumOutcomesBetweenBreeding = settings.minimumOutcomesBetweenBreeding;
         this.minimumOutcomesToAllowBreeding = settings.minimumOutcomesToAllowBreeding;
         this.weightMode = settings.weightMode;
@@ -27,6 +28,7 @@ public class BreederSettings {
         this.randomRobots = settings.randomRobotsAtEachUpdate;
         this.maximumDataOffset = settings.maximumDataOffset;
         this.ignoreColumns = settings.ignoreColumns;
+        this.columnCount = columnCount;
         this.maximumRobotInstructions = settings.maximumRobotInstructions;
         this.minimumRobotInstructions = settings.minimumRobotInstructions;
         this.randomSeed = settings.randomSeed;

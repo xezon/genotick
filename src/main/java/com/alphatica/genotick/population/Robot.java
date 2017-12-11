@@ -1,6 +1,7 @@
 package com.alphatica.genotick.population;
 
 
+import com.alphatica.genotick.data.Column;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Outcome;
 import com.alphatica.genotick.genotick.Prediction;
@@ -16,6 +17,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +41,7 @@ public class Robot implements Serializable {
     private int outcomesAtLastChild = 0;
     private int bias = 0;
     private boolean isPredicting = false;
+    private BitSet allowedColumns;
 
     private final Map<DataSetName, Prediction> current = new HashMap<>();
     private final Map<DataSetName, Prediction> pending = new HashMap<>();
@@ -204,12 +207,35 @@ public class Robot implements Serializable {
     public int getBias() {
         return bias;
     }
+    
+    public BitSet getAllowedColumns() {
+    		return allowedColumns; 
+    }
+    
+    public void setAllowedColumns(final BitSet allowedColumns) {
+    		this.allowedColumns = allowedColumns; 
+    }
 
     private Robot(RobotSettings settings, RandomGenerator random) {
         this.settings = settings;
+        createAllowedColumns(random);
         this.mainFunction = InstructionList.create(random);
     }
 
+    private void createAllowedColumns(RandomGenerator random) {
+        allowedColumns = new BitSet(settings.columnCount);
+        int optionalColumns = settings.columnCount - Column.OHLC.OTHER;
+        for(int column = 0; column < settings.columnCount; column++) {
+            if(column < Column.OHLC.OTHER) {
+                allowedColumns.set(column);
+            } else {
+                if(random.nextInt(optionalColumns+1) == 0) {
+                    allowedColumns.set(column);
+                }
+            }
+        }
+    }
+    
     private void addMainFunction(StringBuilder sb) throws IllegalAccessException {
         sb.append("MainFunction:").append("\n");
         sb.append("VariableCount: ").append(mainFunction.getVariableCount()).append("\n");

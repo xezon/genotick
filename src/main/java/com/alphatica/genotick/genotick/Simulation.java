@@ -42,7 +42,7 @@ public class Simulation {
             logSettings(mainSettings);
             RobotKiller killer = createRobotKiller(mainSettings);
             Mutator mutator = createMutator(mainSettings);
-            RobotBreeder breeder = createRobotBreeder(mainSettings, mutator);
+            RobotBreeder breeder = createRobotBreeder(mainSettings, mutator, data.getMaximumColumnCount());
             Population population = createPopulation(mainSettings);
             Engine engine = createEngine(mainSettings, data, killer, breeder, population, sessionResult);
             engine.start();
@@ -81,8 +81,8 @@ public class Simulation {
         return PopulationFactory.getDefaultPopulation(populationSettings, dao);
     }
 
-    private RobotBreeder createRobotBreeder(MainSettings settings, Mutator mutator) {
-        BreederSettings breederSettings = new BreederSettings(settings);
+    private RobotBreeder createRobotBreeder(MainSettings settings, Mutator mutator, int maximumColumnCount) {
+        BreederSettings breederSettings = new BreederSettings(settings, maximumColumnCount);
         return RobotBreederFactory.getDefaultBreeder(breederSettings, mutator, output);
     }
 
