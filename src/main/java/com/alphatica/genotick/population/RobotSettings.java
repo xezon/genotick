@@ -11,11 +11,13 @@ public class RobotSettings implements Serializable {
     
     public final int maximumDataOffset;
     public final int ignoreColumns;
+    public final int columnCount;
     public final WeightCalculator weightCalculator;
     
     public RobotSettings(final BreederSettings settings, final WeightCalculator weightCalculator) {
         this.maximumDataOffset = settings.maximumDataOffset;
         this.ignoreColumns = settings.ignoreColumns;
+        this.columnCount = settings.columnCount;
         this.weightCalculator = weightCalculator;
     }
 }

@@ -48,6 +48,10 @@ public class DataSet {
     public DataLines getDataLinesCopy() {
         return tohlcLines.createCopy();
     }
+    
+    public int getColumnCount() {
+    	    return ohlcData.columnCount();
+    }
 
     @Override
     public boolean equals(Object other) {

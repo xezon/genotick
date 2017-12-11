@@ -113,4 +113,8 @@ public class MainAppData {
     public boolean isEmpty() {
         return dataSetMap.isEmpty();
     }
+    
+    public int getMaximumColumnCount() {
+        return dataSetMap.values().stream().mapToInt(DataSet::getColumnCount).max().orElse(0);
+    }
 }
