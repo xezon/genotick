@@ -189,14 +189,16 @@ public class DataLines {
             String rawLine;
             while ((rawLine = reader.readLine()) != null) {
                 line.number++;
-                String[] rawColumns = getLineFields(rawLine);
-                if (rawColumns.length >= MIN_COLUMN_COUNT) {
-                    line.expectedColumnCount = rawColumns.length;
+                try {
                     line.columns = processLine(rawLine);
+                    line.expectedColumnCount = line.columns.length;
                     if (!predicate.test(line)) {
                         return;
                     }
                     break;
+                }
+                catch (NumberFormatException ex) {
+                    // do nothing: might be the CSV header
                 }
             }
             while ((rawLine = reader.readLine()) != null) {
