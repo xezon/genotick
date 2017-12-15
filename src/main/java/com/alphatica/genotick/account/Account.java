@@ -17,15 +17,20 @@ import static java.lang.String.format;
 public class Account {
     private Map<DataSetName, Prediction> pendingOrders = new HashMap<>();
     private Map<DataSetName, Trade> trades = new HashMap<>();
+    private final BigDecimal deposit;
     private BigDecimal balance;
+    private final BigDecimal reinvestFactor;
     private final UserOutput output;
     private final ProfitRecorder profitRecorder;
 
-    public Account(BigDecimal balance, UserOutput output, ProfitRecorder profitRecorder) {
-        this.balance = balance;
+
+    public Account(BigDecimal deposit, BigDecimal reinvestFactor, UserOutput output, ProfitRecorder profitRecorder) {
+        this.deposit = deposit;
+        this.balance = deposit;
+        this.reinvestFactor = reinvestFactor;
         this.output = output;
         this.profitRecorder = profitRecorder;
-        output.reportAccountOpening(balance);
+        output.reportAccountOpening(deposit);
     }
 
     public BigDecimal getEquity() {
@@ -35,10 +40,13 @@ public class Account {
     BigDecimal getBalance() {
         return balance;
     }
-
+    
     public void openTrades(Map<DataSetName, Double> prices) {
         if(!pendingOrders.isEmpty()) {
-            final BigDecimal cashPerTrade = balance.divide(BigDecimal.valueOf(pendingOrders.size()), MathContext.DECIMAL128);
+            final BigDecimal profit = balance.subtract(deposit);
+            final BigDecimal reinvestableProfit = profit.multiply(reinvestFactor);
+            final BigDecimal usableBalance = deposit.add(reinvestableProfit);
+            final BigDecimal cashPerTrade = usableBalance.divide(BigDecimal.valueOf(pendingOrders.size()), MathContext.DECIMAL128);
             prices.forEach((name, price) -> openTrade(cashPerTrade, name, BigDecimal.valueOf(price)));
         }
     }

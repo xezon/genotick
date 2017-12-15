@@ -77,7 +77,9 @@ public class SimpleEngine implements Engine {
         this.data = data;
         this.robotDataManager = new RobotDataManager(data, engineSettings.maximumDataOffset);
         this.profitRecorder = new ProfitRecorder(engineSettings.chartMode, output);
-        this.account = new Account(BigDecimal.valueOf(100_000L), output, profitRecorder);
+        BigDecimal deposit = BigDecimal.valueOf(100_000L);
+        BigDecimal reinvestFactor = BigDecimal.valueOf(engineSettings.profitReinvestFactor);
+        this.account = new Account(deposit, reinvestFactor, output, profitRecorder);
         this.sessionResult = sessionResult;
     }
 
