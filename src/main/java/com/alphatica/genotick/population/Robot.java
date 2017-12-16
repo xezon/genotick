@@ -1,7 +1,7 @@
 package com.alphatica.genotick.population;
 
-
-import com.alphatica.genotick.data.Column;
+import com.alphatica.genotick.data.ColumnAccess;
+import com.alphatica.genotick.data.ColumnAccessMergeStrategy;
 import com.alphatica.genotick.data.DataSetName;
 import com.alphatica.genotick.genotick.Outcome;
 import com.alphatica.genotick.genotick.Prediction;
@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,13 +40,13 @@ public class Robot implements Serializable {
     private int outcomesAtLastChild = 0;
     private int bias = 0;
     private boolean isPredicting = false;
-    private BitSet allowedColumns;
+    private ColumnAccess columnAccess;
 
     private final Map<DataSetName, Prediction> current = new HashMap<>();
     private final Map<DataSetName, Prediction> pending = new HashMap<>();
 
-    public static Robot createEmptyRobot(RobotSettings settings, RandomGenerator random) {
-        return new Robot(settings, random);
+    public static Robot createEmptyRobot(final RobotSettings settings, final ColumnAccessMergeStrategy columnAccessMergeStrategy, final RandomGenerator random) {
+        return new Robot(settings, columnAccessMergeStrategy, random);
     }
 
     public int getLength() {
@@ -208,34 +207,20 @@ public class Robot implements Serializable {
         return bias;
     }
     
-    public BitSet getAllowedColumns() {
-    		return allowedColumns; 
+    public ColumnAccess getColumnAccess() {
+    	    return columnAccess; 
     }
     
-    public void setAllowedColumns(final BitSet allowedColumns) {
-    		this.allowedColumns = allowedColumns; 
+    public void setColumnAccess(final ColumnAccess columnAccess) {
+        this.columnAccess = columnAccess; 
     }
 
-    private Robot(RobotSettings settings, RandomGenerator random) {
+    private Robot(RobotSettings settings, ColumnAccessMergeStrategy columnAccessMergeStrategy, RandomGenerator random) {
         this.settings = settings;
-        createAllowedColumns(random);
+        this.columnAccess = new ColumnAccess(settings.columnCount, settings.ignoreColumns, columnAccessMergeStrategy, random);
         this.mainFunction = InstructionList.create(random);
     }
 
-    private void createAllowedColumns(RandomGenerator random) {
-        allowedColumns = new BitSet(settings.columnCount);
-        int optionalColumns = settings.columnCount - Column.OHLC.OTHER;
-        for(int column = 0; column < settings.columnCount; column++) {
-            if(column < Column.OHLC.OTHER) {
-                allowedColumns.set(column);
-            } else {
-                if(random.nextInt(optionalColumns+1) == 0) {
-                    allowedColumns.set(column);
-                }
-            }
-        }
-    }
-    
     private void addMainFunction(StringBuilder sb) throws IllegalAccessException {
         sb.append("MainFunction:").append("\n");
         sb.append("VariableCount: ").append(mainFunction.getVariableCount()).append("\n");

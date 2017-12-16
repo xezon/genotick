@@ -1,5 +1,6 @@
 package com.alphatica.genotick.processor;
 
+import com.alphatica.genotick.data.ColumnAccess;
 import com.alphatica.genotick.genotick.Prediction;
 import com.alphatica.genotick.genotick.RobotData;
 import com.alphatica.genotick.instructions.AddDoubleToRegister;
@@ -110,6 +111,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     private int totalInstructionExecuted;
     private int maximumDataOffset;
     private int ignoreColumns;
+    private ColumnAccess columnAccess;
 
     private SimpleProcessor(RobotExecutorSettings settings) {
         processorInstructionLimit = settings.maximumProcessorInstructionFactor;
@@ -144,6 +146,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         totalInstructionExecuted = 0;
         maximumDataOffset = robot.getMaximumDataOffset();
         ignoreColumns = robot.getIgnoreColumns();
+        columnAccess = robot.getColumnAccess();
         zeroOutRegisters();
     }
 
@@ -328,6 +331,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int reg = ins.getRegister();
         int offset = fixOffset(ins.getDataOffsetIndex());
         int column = fixColumn(ins.getDataColumnIndex());
+        if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         registers[reg] = data.getPriceData(column, offset);
     }
 
@@ -336,6 +340,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     public void execute(MoveDataToVariable ins) {
         int offset = fixOffset(ins.getDataOffsetIndex());
         int column = fixColumn(ins.getDataColumnIndex());
+        if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         double value = data.getPriceData(column, offset);
         instructionList.setVariable(ins.getVariableArgument(),value);
     }
@@ -345,6 +350,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int reg = ins.getRegister();
         int varOffset = getRelativeOffset(ins);
         int column = fixColumn(ins.getDataColumnIndex());
+        if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         registers[reg] = data.getPriceData(column, varOffset);
     }
 
@@ -352,6 +358,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     public void execute(MoveRelativeDataToVariable ins) {
         int varOffset = getRelativeOffset(ins);
         int column = fixColumn(ins.getDataColumnIndex());
+        if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         double value = data.getPriceData(column, varOffset);
         instructionList.setVariable(ins.getVariableArgument(), value);
     }
@@ -600,6 +607,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     public void execute(NaturalLogarithmOfData ins) {
         int column = fixColumn(ins.getDataColumnIndex());
         int offset = fixOffset(ins.getDataOffsetIndex());
+        if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         double value = Math.log(data.getPriceData(column,offset));
         registers[ins.getRegister()] = value;
     }
@@ -646,6 +654,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     private double getSum(int column, int length) {
         double sum = 0;
+        if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         for(int i = 0; i < length; i++) {
             sum += data.getPriceData(column,i);
         }
@@ -659,6 +668,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         if(length == 0) {
             return;
         }
+        if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         double[] priceDataList = new double[length];
         for(int i = 0; i < length; i++) {
             priceDataList[i] = data.getPriceData(column,i);
@@ -783,6 +793,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     public void execute(HighestOfColumn ins) {
         int column = fixColumn(ins.getRegister1());
         int length = fixOffset(registers[ins.getRegister2()]);
+        if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         double highest = data.getPriceData(column,0);
         for(int i = 1; i < length; i++) {
             double check = data.getPriceData(column,i);
@@ -797,6 +808,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     public void execute(LowestOfColumn ins) {
         int column = fixColumn(ins.getRegister1());
         int length = fixOffset(registers[ins.getRegister2()]);
+        if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         double lowest = data.getPriceData(column,0);
         for(int i = 1; i < length; i++) {
             double check = data.getPriceData(column,i);
@@ -818,6 +830,4 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     private int fixColumn(double value) {
         return ignoreColumns + (int)Math.abs(value % (dataColumns - ignoreColumns));
     }
-
-
 }
