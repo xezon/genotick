@@ -185,30 +185,34 @@ public class DataLines {
             String rawLine;
             while ((rawLine = reader.readLine()) != null) {
                 line.number++;
-                try {
-                    line.columns = processLine(rawLine);
-                    line.expectedColumnCount = line.columns.length;
+                line.previousColumns = line.columns;
+                if (parseLine(line, rawLine)) {
                     if (!predicate.test(line)) {
                         return;
                     }
-                    break;
-                }
-                catch (NumberFormatException ex) {
-                    // do nothing: might be the CSV header
-                }
-            }
-            while ((rawLine = reader.readLine()) != null) {
-                line.number++;
-                line.previousColumns = line.columns;
-                line.columns = processLine(rawLine);
-                if (!predicate.test(line)) {
-                    return;
                 }
             }
         }
         catch (IOException | NumberFormatException ex) {
             throw new DataException(format("Unable to process line '%d'", line.number), ex);
         }
+    }
+    
+    private static boolean parseLine(DataLineParseResult line, String rawLine) {
+        if (line.columns == null) {
+            try {
+                line.columns = processLine(rawLine);
+                line.expectedColumnCount = line.columns.length;
+            }
+            catch (NumberFormatException ex) {
+                // might be the CSV header
+                return false;
+            }
+        }
+        else {
+            line.columns = processLine(rawLine);
+        }
+        return true;
     }
     
     static boolean isFirstLineNewestTimePoint(File file) {
