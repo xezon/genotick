@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.function.Predicate;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.alphatica.genotick.data.Column.TOHLC;
 import com.alphatica.genotick.timepoint.TimePoint;
@@ -178,11 +179,6 @@ public class DataLines {
         int expectedColumnCount = MIN_COLUMN_COUNT;
     }
     
-    private static class UnscopedBoolean
-    {
-        boolean value = false;
-    }
-    
     private static void parseDataLines(File file, Predicate<DataLineParseResult> predicate) {
         DataLineParseResult line = new DataLineParseResult();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -216,17 +212,17 @@ public class DataLines {
     }
     
     static boolean isFirstLineNewestTimePoint(File file) {
-        UnscopedBoolean firstLineIsNewest = new UnscopedBoolean();
+        final AtomicBoolean firstLineIsNewest = new AtomicBoolean();
         parseDataLines(file, line -> {
             if (line.previousColumns != null) {
                 final long currentTimeValue = line.columns[Column.TOHLC.TIME].longValue();
                 final long previousTimeValue = line.previousColumns[Column.TOHLC.TIME].longValue();
-                firstLineIsNewest.value = currentTimeValue < previousTimeValue;
+                firstLineIsNewest.set(currentTimeValue < previousTimeValue);
                 return false;
             }
             return true;
         });
-        return firstLineIsNewest.value;
+        return firstLineIsNewest.get();
     }
     
     private static ArrayList<Number[]> parseData(File file, boolean firstLineIsNewest) {
