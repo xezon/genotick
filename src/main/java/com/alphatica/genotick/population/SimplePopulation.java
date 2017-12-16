@@ -1,6 +1,5 @@
 package com.alphatica.genotick.population;
 
-
 import java.io.File;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.List;
@@ -12,7 +11,7 @@ public class SimplePopulation implements Population {
     private PopulationDAO dao;
 
     @Override
-    public void setSettings(PopulationSettings settings) {
+    public void setSettings(final PopulationSettings settings) {
         this.settings = settings;
     }
 

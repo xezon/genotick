@@ -1,5 +1,6 @@
 package com.alphatica.genotick.mutator;
 
+import com.alphatica.genotick.data.ColumnAccess;
 import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.instructions.Instruction;
 import com.alphatica.genotick.processor.Processor;
@@ -13,6 +14,7 @@ import java.util.List;
 class SimpleMutator implements Mutator {
     private MutatorSettings settings;
     private RandomGenerator random;
+    private ColumnAccess columnAccess;
     private final List<Constructor<? super Instruction>> instructionConstructorList;
     
     final private int totalInstructions;
@@ -103,5 +105,24 @@ class SimpleMutator implements Mutator {
     @Override
     public boolean skipNextInstruction() {
         return random.nextDouble() < settings.skipInstructionProbability;
+    }
+
+    @Override
+    public int getNextColumn() {
+        if(columnAccess == null) {
+            return getNextInt();
+        } else {
+            while(true) {
+                int column = getNextInt();
+                if(columnAccess.isAllowedColumn(column)) {
+                    return column;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setColumnAccess(ColumnAccess columnAccess) {
+        this.columnAccess = columnAccess;
     }
 }

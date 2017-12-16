@@ -1,5 +1,7 @@
 package com.alphatica.genotick.breeder;
 
+import com.alphatica.genotick.data.ColumnAccessMergeStrategy;
+import com.alphatica.genotick.data.SimpleColumnAccessMergeStrategy;
 import com.alphatica.genotick.genotick.RandomGenerator;
 import com.alphatica.genotick.genotick.WeightCalculator;
 import com.alphatica.genotick.instructions.Instruction;
@@ -14,7 +16,6 @@ import com.alphatica.genotick.ui.UserOutput;
 import com.alphatica.genotick.utility.ParallelTasks;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,10 +26,12 @@ public class SimpleBreeder implements RobotBreeder {
     private Mutator mutator;
     private RandomGenerator random;
     private final WeightCalculator weightCalculator;
+    private final ColumnAccessMergeStrategy columnAccessMergeStrategy;
     private final UserOutput output;
 
     private SimpleBreeder(UserOutput output) {
         this.weightCalculator = new WeightCalculator();
+        this.columnAccessMergeStrategy = new SimpleColumnAccessMergeStrategy();
         this.output = output;
     }
     
@@ -37,7 +40,7 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     @Override
-    public void breedPopulation(Population population, List<RobotInfo> list) {
+    public void breedPopulation(final Population population, final List<RobotInfo> list) {
         if (population.hasSpaceToBreed()) {
             int before = population.getSize(), after;
             addRequiredRandomRobots(population);
@@ -76,17 +79,18 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private void fillWithRobots(int count, Population population) {
-    	if(count < 32 || random.getSeed() != 0) {
-            fillWithRobotsSync(count, population);
+        	if(count < 32 || random.getSeed() != 0) {
+        	    fillWithRobotsSync(count, population);
             return;
-    	} else {
-            ParallelTasks.parallelNumberedTask(count, (subCount) -> fillWithRobotsSync(subCount, population));
-    	} 
+        	} else {
+        	    ParallelTasks.parallelNumberedTask(count, (subCount) -> fillWithRobotsSync(subCount, population));
+        	} 
     }
 
     private void createNewRobot(Population population) {
         final RobotSettings robotSettings = new RobotSettings(settings, weightCalculator);
-        final Robot robot = Robot.createEmptyRobot(robotSettings, random);
+        final Robot robot = Robot.createEmptyRobot(robotSettings, columnAccessMergeStrategy, random);
+        mutator.setColumnAccess(robot.getColumnAccess());
         final int maximumRobotInstructionCount = settings.maximumRobotInstructions - settings.minimumRobotInstructions;
         int instructionCount = settings.minimumRobotInstructions + Math.abs(mutator.getNextInt() % maximumRobotInstructionCount);
         final InstructionList main = robot.getMainFunction();
@@ -119,7 +123,7 @@ public class SimpleBreeder implements RobotBreeder {
             if (parent1 == null || parent2 == null)
                 break;
             RobotSettings robotSettings = new RobotSettings(settings, weightCalculator);
-            Robot child = Robot.createEmptyRobot(robotSettings, random);
+            Robot child = Robot.createEmptyRobot(robotSettings, columnAccessMergeStrategy, random);
             makeChild(parent1, parent2, child);
             population.saveRobot(child);
             parent1.increaseChildren();
@@ -132,11 +136,10 @@ public class SimpleBreeder implements RobotBreeder {
     private void makeChild(Robot parent1, Robot parent2, Robot child) {
         double weight = calculateWeightForChild(parent1, parent2);
         child.setInheritedWeight(weight);
+        child.setColumnAccess(columnAccessMergeStrategy.merge(parent1.getColumnAccess(), parent2.getColumnAccess()));
+        mutator.setColumnAccess(child.getColumnAccess());
         InstructionList instructionList = mixMainInstructionLists(parent1, parent2);
         child.setMainInstructionList(instructionList);
-        BitSet childAllowedColumns = (BitSet)parent1.getAllowedColumns().clone();
-        childAllowedColumns.or(parent2.getAllowedColumns());
-        child.setAllowedColumns(childAllowedColumns);
     }
 
     private double calculateWeightForChild(final Robot parent1, final Robot parent2) {
@@ -228,7 +231,6 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private Robot getPossibleParent(Population population, List<RobotInfo> list) {
-
         double totalWeight = sumTotalWeight(list);
         double target = Math.abs(totalWeight * mutator.getNextDouble());
         double weightSoFar = 0;
@@ -261,3 +263,4 @@ public class SimpleBreeder implements RobotBreeder {
         this.weightCalculator.setWeightExponent(breederSettings.weightExponent);
     }
 }
+
