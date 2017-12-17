@@ -12,6 +12,7 @@ public class EngineSettings {
     public final boolean requireSymmetricalRobots;
     public final double resultThreshold;
     public final GenoChartMode chartMode;
+    public final double profitReinvestFactor;
     
     public EngineSettings(final MainSettings settings) {
         this.startTimePoint = settings.startTimePoint;
@@ -22,5 +23,6 @@ public class EngineSettings {
         this.requireSymmetricalRobots = settings.requireSymmetricalRobots;
         this.resultThreshold = settings.resultThreshold;
         this.chartMode = settings.chartMode;
+        this.profitReinvestFactor = settings.profitReinvestFactor;
     }
 }
