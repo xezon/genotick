@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.function.Predicate;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.alphatica.genotick.data.Column.TOHLC;
 import com.alphatica.genotick.timepoint.TimePoint;
@@ -178,35 +179,17 @@ public class DataLines {
         int expectedColumnCount = MIN_COLUMN_COUNT;
     }
     
-    private static class UnscopedBoolean
-    {
-        boolean value = false;
-    }
-    
     private static void parseDataLines(File file, Predicate<DataLineParseResult> predicate) {
         DataLineParseResult line = new DataLineParseResult();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String rawLine;
             while ((rawLine = reader.readLine()) != null) {
                 line.number++;
-                try {
-                    line.columns = processLine(rawLine);
-                    line.expectedColumnCount = line.columns.length;
+                line.previousColumns = line.columns;
+                if (parseLine(line, rawLine)) {
                     if (!predicate.test(line)) {
                         return;
                     }
-                    break;
-                }
-                catch (NumberFormatException ex) {
-                    // do nothing: might be the CSV header
-                }
-            }
-            while ((rawLine = reader.readLine()) != null) {
-                line.number++;
-                line.previousColumns = line.columns;
-                line.columns = processLine(rawLine);
-                if (!predicate.test(line)) {
-                    return;
                 }
             }
         }
@@ -215,18 +198,35 @@ public class DataLines {
         }
     }
     
+    private static boolean parseLine(DataLineParseResult line, String rawLine) {
+        if (line.columns == null) {
+            try {
+                line.columns = processLine(rawLine);
+                line.expectedColumnCount = line.columns.length;
+            }
+            catch (NumberFormatException ex) {
+                // might be the CSV header
+                return false;
+            }
+        }
+        else {
+            line.columns = processLine(rawLine);
+        }
+        return true;
+    }
+    
     static boolean isFirstLineNewestTimePoint(File file) {
-        UnscopedBoolean firstLineIsNewest = new UnscopedBoolean();
+        final AtomicBoolean firstLineIsNewest = new AtomicBoolean();
         parseDataLines(file, line -> {
             if (line.previousColumns != null) {
                 final long currentTimeValue = line.columns[Column.TOHLC.TIME].longValue();
                 final long previousTimeValue = line.previousColumns[Column.TOHLC.TIME].longValue();
-                firstLineIsNewest.value = currentTimeValue < previousTimeValue;
+                firstLineIsNewest.set(currentTimeValue < previousTimeValue);
                 return false;
             }
             return true;
         });
-        return firstLineIsNewest.value;
+        return firstLineIsNewest.get();
     }
     
     private static ArrayList<Number[]> parseData(File file, boolean firstLineIsNewest) {
