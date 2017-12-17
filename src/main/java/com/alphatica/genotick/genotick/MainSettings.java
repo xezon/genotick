@@ -46,6 +46,7 @@ public class MainSettings {
     public int ignoreColumns = 0;
     public long randomSeed = DEFAULT_RANDOM_SEED;
     public GenoChartMode chartMode = GenoChartMode.NONE;
+    public double profitReinvestFactor = 1.0;
 
     private MainSettings() {
         String minimumScoreString = System.getenv("GENOTICK_MINIMUM_SCORE");
@@ -86,10 +87,11 @@ public class MainSettings {
         ensure(minimumOutcomesToAllowBreeding >= 0, atLeastZeroString("Minimum outcomes to allow breeding"));
         ensure(minimumOutcomesBetweenBreeding >= 0, atLeastZeroString("Minimum outcomes between breeding"));
         ensure(minimumScoreToSaveToDisk >= 0, atLeastZeroString("Minimum score to save to disk"));
-        ensure(randomRobotsAtEachUpdate >=0, zeroToOneString("Random Robots at Each Update"));
+        ensure(randomRobotsAtEachUpdate >= 0, zeroToOneString("Random Robots at Each Update"));
         ensure(protectBestRobots >= 0, zeroToOneString("Protect Best Robots"));
         ensure(resultThreshold >= 1,atLeastOneString("Result threshold"));
         ensure(ignoreColumns >= 0, atLeastZeroString("Ignore columns"));
+        ensure(profitReinvestFactor >= 0, atLeastZeroString("Profit reinvest factor"));
     }
 
     private String atLeastZeroString(String s) {

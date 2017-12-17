@@ -150,3 +150,6 @@ randomSeed 0
 # [chartMode JFREECHART_SAVE] Save genotick charts in the user's working directory with JFreeChart.
 # [chartMode JFREECHART_DRAW_SAVE] Draw and save genotick charts with JFreeChart.
 chartMode NONE
+
+# The factor of profit to be reinvested for the simulated trade profit
+profitReinvestFactor 1.0

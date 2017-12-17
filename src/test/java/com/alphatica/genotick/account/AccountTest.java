@@ -22,6 +22,7 @@ public class AccountTest {
     
     private Account account;
     private BigDecimal initial;
+    private BigDecimal reinvestFactor;
 
     private final DataSetName name1 = new DataSetName("one");
     private final double price1 = 100;
@@ -42,9 +43,40 @@ public class AccountTest {
     @BeforeMethod
     public void init() throws IOException {
         initial = BigDecimal.valueOf(1_000_000);
+        reinvestFactor = new BigDecimal("1.0");
         output = new MockUserOutput();
         profitRecorder = new MockProfitRecorder(output);
-        account = new Account(initial, output, profitRecorder);
+        account = new Account(initial, reinvestFactor, output, profitRecorder);
+    }
+
+    @Test
+    public void profitReinvesment() {
+        BigDecimal deposit = BigDecimal.valueOf(100_000);
+        BigDecimal reinvestf = new BigDecimal("1.0");
+        Account account = new Account(deposit, reinvestf, output, profitRecorder);
+        account.addPendingOrder(name1, Prediction.UP);
+        account.openTrades(Collections.singletonMap(name1, 1.0));
+        account.closeTrades(Collections.singletonMap(name1, 2.0));
+        compare(account.getBalance(), BigDecimal.valueOf(200_000));
+        account.addPendingOrder(name1, Prediction.UP);
+        account.openTrades(Collections.singletonMap(name1, 2.0));
+        account.closeTrades(Collections.singletonMap(name1, 4.0));
+        compare(account.getBalance(), BigDecimal.valueOf(400_000));
+    }
+    
+    @Test
+    public void noProfitReinvesment() {
+        BigDecimal deposit = BigDecimal.valueOf(100_000);
+        BigDecimal reinvestf = new BigDecimal("0.0");
+        Account account = new Account(deposit, reinvestf, output, profitRecorder);
+        account.addPendingOrder(name1, Prediction.UP);
+        account.openTrades(Collections.singletonMap(name1, 1.0));
+        account.closeTrades(Collections.singletonMap(name1, 2.0));
+        compare(account.getBalance(), BigDecimal.valueOf(200_000));
+        account.addPendingOrder(name1, Prediction.UP);
+        account.openTrades(Collections.singletonMap(name1, 2.0));
+        account.closeTrades(Collections.singletonMap(name1, 4.0));
+        compare(account.getBalance(), BigDecimal.valueOf(300_000));
     }
 
     @Test
@@ -62,7 +94,7 @@ public class AccountTest {
 
     @Test
     public void reportsAccountClosing() {
-        Account acc = new Account(initial, output, profitRecorder);
+        Account acc = new Account(initial, reinvestFactor, output, profitRecorder);
         output.clear();
         acc.closeAccount();
         compare(initial, output.accountClosing);
@@ -85,7 +117,7 @@ public class AccountTest {
         account.openTrades(map1);
         assertEquals(name1, output.name);
         BigDecimal price = BigDecimal.valueOf(map1.get(name1));
-        assertEquals(initial.divide(price, MathContext.DECIMAL128), output.quantity);
+        compare(initial.divide(price, MathContext.DECIMAL128), output.quantity);
         assertEquals(map1.get(name1), output.price);
     }
 
@@ -120,7 +152,7 @@ public class AccountTest {
         output.clear();
         account.closeAccount();
         assertEquals(profitRecorder.addTradeResultCount, map1.size());
-        assertEquals(initial, account.getBalance());
+        compare(initial, account.getBalance());
     }
 
     @Test
@@ -139,7 +171,7 @@ public class AccountTest {
         account.closeTrades(map1);
         output.clear();
         account.closeAccount();
-        assertEquals(initial, account.getBalance());
+        compare(initial, account.getBalance());
     }
 
     @Test
@@ -241,10 +273,10 @@ public class AccountTest {
         }
     }
     
-    private void compare(BigDecimal one, BigDecimal two) {
+    private void compare(BigDecimal actual, BigDecimal expected) {
         assertEquals(
-                one.setScale(10, BigDecimal.ROUND_HALF_DOWN),
-                two.setScale(10, BigDecimal.ROUND_HALF_DOWN)
+                actual.setScale(10, BigDecimal.ROUND_HALF_DOWN),
+                expected.setScale(10, BigDecimal.ROUND_HALF_DOWN)
         );
     }
 

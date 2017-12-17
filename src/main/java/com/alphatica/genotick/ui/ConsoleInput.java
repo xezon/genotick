@@ -64,6 +64,7 @@ class ConsoleInput extends BasicUserInput {
                 settings.protectBestRobots = getDouble("Protect best robots", settings.protectBestRobots);
                 settings.ignoreColumns = getInteger("Ignore columns for training", settings.ignoreColumns);
                 settings.randomSeed = getLong("Random seed", settings.randomSeed);
+                settings.profitReinvestFactor = getDouble("Profit reinvest factor", settings.profitReinvestFactor);
             }
             setMainSettings(settings);
         }
