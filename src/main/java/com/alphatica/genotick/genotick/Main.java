@@ -1,11 +1,6 @@
 package com.alphatica.genotick.genotick;
 
-import com.alphatica.genotick.chart.GenoChart;
-import com.alphatica.genotick.chart.GenoChartFactory;
-import com.alphatica.genotick.chart.GenoChartMode;
-import com.alphatica.genotick.data.Column;
 import com.alphatica.genotick.data.DataFactory;
-import com.alphatica.genotick.data.DataLines;
 import com.alphatica.genotick.data.DataLoader;
 import com.alphatica.genotick.data.DataSaver;
 import com.alphatica.genotick.data.DataSet;
@@ -97,21 +92,21 @@ public class Main {
             System.out.print("Displaying version: ");
             System.out.println("    java -jar genotick.jar showVersion");
             System.out.print("Reversing data: ");
-            System.out.println("    java -jar genotick.jar reverse=mydata");
+            System.out.println("    java -jar genotick.jar reverse=MY_DATA_DIR");
             System.out.print("Inputs from a file: ");
-            System.out.println("    java -jar genotick.jar input=file:path\\to\\file iterations=X (optional)");
+            System.out.println("    java -jar genotick.jar input=file:MY_CONFIG_FILE iterations=X (optional)");
             System.out.print("Output to a file: ");
             System.out.println("    java -jar genotick.jar output=csv");
             System.out.print("Custom output directory for generated files (log, charts, population): ");
-            System.out.println("    java -jar genotick.jar outdir=path\\of\\folders");
+            System.out.println("    java -jar genotick.jar outdir=MY_RESULT_DIR");
             System.out.print("Show population: ");
-            System.out.println("    java -jar genotick.jar showPopulation=directory_with_population");
+            System.out.println("    java -jar genotick.jar showPopulation=MY_POPULATION_DIR");
             System.out.print("Show robot info: ");
-            System.out.println("    java -jar genotick.jar showRobot=directory_with_population\\system name.prg");
+            System.out.println("    java -jar genotick.jar showRobot=MY_POPULATION_DIR\\ROBOT_ID.prg");
             System.out.print("Merge robots: ");
-            System.out.println("    java -jar genotick.jar mergeRobots=directory_for_merged_robots candidateRobots=base_directory_of_Population_folders");
+            System.out.println("    java -jar genotick.jar mergeRobots=MY_TARGET_POPULATION_DIR candidateRobots=MY_SOURCE_POPULATIONS_DIR");
             System.out.print("Draw price curves for asset data ");
-            System.out.println("    java -jar genotick.jar drawData=mydata");
+            System.out.println("    java -jar genotick.jar drawData=MY_DATA_DIR begin=TIMEPOINT end=TIMEPOINT");
             System.out.println("contact:        lukasz.wojtow@gmail.com");
             System.out.println("more info:      genotick.com");
 
@@ -142,21 +137,9 @@ public class Main {
     private void initDrawData(Parameters parameters) {
         String dataDirectory = parameters.getValue("drawData");
         if (dataDirectory != null) {
-            DataLoader loader = new FileSystemDataLoader(output);
-            MainAppData data = loader.loadAll(dataDirectory);
-            GenoChart chart = GenoChartFactory.create(GenoChartMode.JFREECHART_DRAW, output);
-            for (DataSet set : data.getDataSets()) {
-                DataLines dataLines = set.getDataLinesCopy();
-                int lineCount = dataLines.lineCount();
-                String chartName = set.getName().getName();
-                for (int line = 0; line < lineCount; ++line) {
-                    for (int column : Column.Array.OHLC) {
-                        double value = dataLines.getOhlcValue(line, column);
-                        chart.addXYLineChart(chartName, "bar", "price", Column.Names.OHLC[column], line, value);
-                    }
-                }
-            }
-            chart.plotAll();
+            String beginString = parameters.getValue("begin");
+            String endString = parameters.getValue("end");
+            DataPrinter.DrawData(output, dataDirectory, beginString, endString);
             setError(ErrorCode.NO_ERROR);
         }
     }

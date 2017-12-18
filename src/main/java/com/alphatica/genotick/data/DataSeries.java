@@ -26,6 +26,14 @@ public class DataSeries {
         copy(other);
     }
     
+    public DataSeries createCopy() {
+        return new DataSeries(this);
+    }
+    
+    public DataSeries createReversedCopy() {
+        return new DataSeries(this, !firstBarIsNewest);
+    }
+    
     private void copy(DataSeries other) {
         if (firstBarIsNewest == other.firstBarIsNewest) {
             copyStraight(other);

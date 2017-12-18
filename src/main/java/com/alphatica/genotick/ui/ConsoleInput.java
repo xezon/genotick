@@ -1,5 +1,6 @@
 package com.alphatica.genotick.ui;
 
+import com.alphatica.genotick.data.FilterOption;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
@@ -65,6 +66,7 @@ class ConsoleInput extends BasicUserInput {
                 settings.ignoreColumns = getInteger("Ignore columns for training", settings.ignoreColumns);
                 settings.randomSeed = getLong("Random seed", settings.randomSeed);
                 settings.profitReinvestFactor = getDouble("Profit reinvest factor", settings.profitReinvestFactor);
+                settings.filterOption = getEnumValue(FilterOption.class, "Filter option", settings.filterOption);
             }
             setMainSettings(settings);
         }

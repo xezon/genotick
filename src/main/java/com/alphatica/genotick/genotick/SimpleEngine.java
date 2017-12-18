@@ -50,6 +50,7 @@ public class SimpleEngine implements Engine {
     public void start() {
         changeThreadName();
         initPopulation();
+        initDataSetFilters();
         final Stream<TimePoint> filteredTimePoints = data.getTimePoints(
                 settings.startTimePoint,
                 settings.endTimePoint);
@@ -58,7 +59,7 @@ public class SimpleEngine implements Engine {
             savePopulation();
         }
         account.closeAccount();
-        profitRecorder.onFinish();
+        profitRecorder.finish();
     }
 
     @Override
@@ -100,6 +101,12 @@ public class SimpleEngine implements Engine {
             breeder.breedPopulation(population, Collections.emptyList());
         }
     }
+    
+    private void initDataSetFilters() {
+        TimePoint timeBegin = new TimePoint(0);
+        TimePoint timeEnd = settings.startTimePoint;
+        robotDataManager.initDataSetFilters(settings.filterSettings, timeBegin, timeEnd);
+    }
 
     private void savePopulation() {
         if (!population.saveOnDisk()) {
@@ -125,7 +132,7 @@ public class SimpleEngine implements Engine {
             performTraining(robotInfoList);
             output.reportFinishedTimePoint(timePoint, account.getEquity());
         }
-        profitRecorder.onUpdate(bar);
+        profitRecorder.update(timePoint);
     }
     
     private void processDataSetResult(TimePoint timePoint, DataSetResult dataSetResult) {

@@ -1,6 +1,7 @@
 package com.alphatica.genotick.account;
 
 import com.alphatica.genotick.data.DataSetName;
+import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.ui.UserOutput;
 import com.alphatica.genotick.chart.GenoChart;
 import com.alphatica.genotick.chart.GenoChartFactory;
@@ -32,11 +33,11 @@ public class ProfitRecorder {
         this.output = output;
     }
     
-    public void onUpdate(final int bar) {
-        chart.addXYLineChart(PROFIT_CHART_NAME, "Bar", "Profit", "Total", (double)bar, accumulatedProfit);
+    public void update(final TimePoint timePoint) {
+        chart.addTimeSeriesChart(PROFIT_CHART_NAME, "profit", timePoint.asDate(), accumulatedProfit);
     }
     
-    public void onFinish() {
+    public void finish() {
         chart.plot(PROFIT_CHART_NAME);
     }
     

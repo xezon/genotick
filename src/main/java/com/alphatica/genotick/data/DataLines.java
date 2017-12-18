@@ -45,10 +45,37 @@ public class DataLines {
     }
     
     DataLines(DataLines other) {
+        this(other, other.firstLineIsNewest);
+    }
+    
+    DataLines(DataLines other, boolean firstLineIsNewest) {
         final int lineCount = other.lineCount();
         final int columnCount = other.tohlcColumnCount();
         this.data = new Number[lineCount][columnCount];
-        this.firstLineIsNewest = other.firstLineIsNewest;
+        this.firstLineIsNewest = firstLineIsNewest;
+        copy(other);
+    }
+    
+    DataLines createCopy() {
+        return new DataLines(this);
+    }
+    
+    DataLines createReversedCopy() {
+        return new DataLines(this, !firstLineIsNewest);
+    }
+    
+    private void copy(DataLines other) {
+        if (firstLineIsNewest == other.firstLineIsNewest) {
+            copyStraight(other);
+        }
+        else {
+            copyReversed(other);
+        }
+    }
+    
+    private void copyStraight(DataLines other) {
+        final int lineCount = other.lineCount();
+        final int columnCount = other.tohlcColumnCount();
         for (int line = 0; line < lineCount; ++line) {
             for (int column = 0; column < columnCount; ++column) {
                 this.data[line][column] = other.data[line][column];
@@ -56,8 +83,14 @@ public class DataLines {
         }
     }
     
-    DataLines createCopy() {
-        return new DataLines(this);
+    private void copyReversed(DataLines other) {
+        final int lineCount = other.lineCount();
+        final int columnCount = other.tohlcColumnCount();
+        for (int line = 0; line < lineCount; ++line) {
+            for (int column = 0; column < columnCount; ++column) {
+                this.data[line][column] = other.data[lineCount-line-1][column];
+            }
+        }
     }
     
     Number[] getColumnsCopy(int line) {
@@ -166,6 +199,24 @@ public class DataLines {
         for (int line = 0; line < lineCount; ++line) {
             for (int column = 0; column < columnCount; ++column) {
                 dataSeries.set(column, line, getOhlcValue(line, column));
+            }
+        }
+        return dataSeries;
+    }
+    
+    DataSeries createDataSeries(int... ohlcColumns) {
+        final int availableColumnCount = ohlcColumnCount();
+        for (int column : ohlcColumns) {
+            if (column < 0 || column >= availableColumnCount) {
+                throw new DataException("Column " + column + " does not exist");
+            }
+        }
+        final int lineCount = lineCount();
+        final int columnCount = ohlcColumns.length;
+        final DataSeries dataSeries = new DataSeries(columnCount, lineCount, firstLineIsNewest);
+        for (int line = 0; line < lineCount; ++line) {
+            for (int column = 0; column < columnCount; ++column) {
+                dataSeries.set(column, line, getOhlcValue(line, ohlcColumns[column]));
             }
         }
         return dataSeries;
