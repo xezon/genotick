@@ -135,7 +135,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     private void prepare(RobotData robotData, Robot robot) {
         this.data = robotData;
-        dataColumns = data.getColumnCount();
+        dataColumns = data.getTrainingColumnCount();
         robotResult = 0.0;
         finished = false;
         instructionList = robot.getMainFunction();
@@ -332,7 +332,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int offset = fixOffset(ins.getDataOffsetIndex());
         int column = fixColumn(ins.getDataColumnIndex());
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
-        registers[reg] = data.getPriceData(column, offset);
+        registers[reg] = data.getTrainingPriceData(column, offset);
     }
 
 
@@ -341,7 +341,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int offset = fixOffset(ins.getDataOffsetIndex());
         int column = fixColumn(ins.getDataColumnIndex());
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
-        double value = data.getPriceData(column, offset);
+        double value = data.getTrainingPriceData(column, offset);
         instructionList.setVariable(ins.getVariableArgument(),value);
     }
 
@@ -351,7 +351,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int varOffset = getRelativeOffset(ins);
         int column = fixColumn(ins.getDataColumnIndex());
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
-        registers[reg] = data.getPriceData(column, varOffset);
+        registers[reg] = data.getTrainingPriceData(column, varOffset);
     }
 
     @Override
@@ -359,7 +359,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int varOffset = getRelativeOffset(ins);
         int column = fixColumn(ins.getDataColumnIndex());
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
-        double value = data.getPriceData(column, varOffset);
+        double value = data.getTrainingPriceData(column, varOffset);
         instructionList.setVariable(ins.getVariableArgument(), value);
     }
 
@@ -608,7 +608,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int column = fixColumn(ins.getDataColumnIndex());
         int offset = fixOffset(ins.getDataOffsetIndex());
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
-        double value = Math.log(data.getPriceData(column,offset));
+        double value = Math.log(data.getTrainingPriceData(column,offset));
         registers[ins.getRegister()] = value;
     }
 
@@ -656,7 +656,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         double sum = 0;
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         for(int i = 0; i < length; i++) {
-            sum += data.getPriceData(column,i);
+            sum += data.getTrainingPriceData(column,i);
         }
         return sum;
     }
@@ -671,7 +671,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         double[] priceDataList = new double[length];
         for(int i = 0; i < length; i++) {
-            priceDataList[i] = data.getPriceData(column,i);
+            priceDataList[i] = data.getTrainingPriceData(column,i);
         }
         Arrays.sort(priceDataList);
         int percentileIndex = (int)Math.ceil(((double)ins.getPercentile() / (double)100) * (double)priceDataList.length);
@@ -794,9 +794,9 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int column = fixColumn(ins.getRegister1());
         int length = fixOffset(registers[ins.getRegister2()]);
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
-        double highest = data.getPriceData(column,0);
+        double highest = data.getTrainingPriceData(column,0);
         for(int i = 1; i < length; i++) {
-            double check = data.getPriceData(column,i);
+            double check = data.getTrainingPriceData(column,i);
             if(check > highest) {
                 highest = check;
             }
@@ -809,9 +809,9 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int column = fixColumn(ins.getRegister1());
         int length = fixOffset(registers[ins.getRegister2()]);
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
-        double lowest = data.getPriceData(column,0);
+        double lowest = data.getTrainingPriceData(column,0);
         for(int i = 1; i < length; i++) {
-            double check = data.getPriceData(column,i);
+            double check = data.getTrainingPriceData(column,i);
             if(check < lowest) {
                 lowest = check;
             }

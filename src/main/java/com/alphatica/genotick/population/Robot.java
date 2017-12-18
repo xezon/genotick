@@ -128,7 +128,7 @@ public class Robot implements Serializable {
 
     private void recordMarketChange(RobotData robotData) {
         ofNullable(current.remove(robotData.getName())).ifPresent(prediction -> {
-            final double priceChange = robotData.getLastPriceChange();
+            final double priceChange = robotData.getLastTrainingPriceChange();
             final Outcome outcome = Outcome.getOutcome(prediction, priceChange);
             totalOutcomes++;
             if (outcome == Outcome.CORRECT) {

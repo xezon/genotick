@@ -14,16 +14,10 @@ public class RobotDataManager {
 
     private final MainAppData data;
     private final int maxBars;
-    private final List<RobotDataPair> robotDataList;
 
     RobotDataManager(MainAppData data, int maxBars) {
         this.data = data;
         this.maxBars = maxBars;
-        this.robotDataList = Collections.synchronizedList(new ArrayList<>());
-    }
-    
-    List<RobotDataPair> getUpdatedRobotDataList() {
-        return robotDataList;
     }
     
     void initDataSetFilters(FilterSettings filterSettings, TimePoint timeBegin, TimePoint timeEnd) {
@@ -35,8 +29,8 @@ public class RobotDataManager {
         });
     }
     
-    void update(TimePoint timePoint) {
-        robotDataList.clear();
+    List<RobotDataPair> getRobotDataList(TimePoint timePoint) {
+        final List<RobotDataPair> robotDataList = Collections.synchronizedList(new ArrayList<>());
         data.getOriginalDataSets().parallelStream().forEach(dataSet -> {
             int bar = dataSet.getBar(timePoint);
             if (bar >= 0) {
@@ -46,13 +40,15 @@ public class RobotDataManager {
                 robotDataList.add(new RobotDataPair(originalData, reversedData));
             }
         });
+        return robotDataList;
     }
     
     private RobotData createRobotData(DataSet dataSet, int bar) {
         boolean firstBarIsNewest = true;
         boolean useFiltered = true;
         dataSet.updateFilteredOhlcData(bar, bar + 1);
-        DataSeries series = dataSet.createOhlcDataSection(bar, maxBars, firstBarIsNewest, useFiltered);
-        return RobotData.create(dataSet.getName(), series);
+        DataSeries trainingData = dataSet.createOhlcDataSection(bar, maxBars, firstBarIsNewest, useFiltered);
+        DataSeries assetData = dataSet.createOhlcDataSection(bar, 1, firstBarIsNewest, false);
+        return RobotData.create(dataSet.getName(), trainingData, assetData);
     }
 }

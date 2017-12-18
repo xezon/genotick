@@ -118,8 +118,7 @@ public class SimpleEngine implements Engine {
     private void executeTimePoint(final TimePoint timePoint) {
         final int bar = data.getBar(timePoint);
         gassert(bar >= 0);
-        robotDataManager.update(timePoint);
-        final List<RobotDataPair> robotDataList = robotDataManager.getUpdatedRobotDataList();
+        final List<RobotDataPair> robotDataList = robotDataManager.getRobotDataList(timePoint);
         if (!robotDataList.isEmpty()) {
             output.reportStartedTimePoint(timePoint);
             updateAccount(robotDataList);
@@ -166,7 +165,7 @@ public class SimpleEngine implements Engine {
     private void updateAccount(List<RobotDataPair> robotDataList) {
         Map<DataSetName, Double> map = new HashMap<>();
         for (RobotDataPair robotDataPair : robotDataList) {
-            robotDataPair.forEach(robotData -> map.put(robotData.getName(), robotData.getLastPriceOpen()));
+            robotDataPair.forEach(robotData -> map.put(robotData.getName(), robotData.getLastAssetPriceOpen()));
         }
         account.closeTrades(map);
         account.openTrades(map);
