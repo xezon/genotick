@@ -21,6 +21,8 @@ public class MainSettings {
     public String dataDirectory = Main.DEFAULT_DATA_DIR;
     public int minimumRobotInstructions = 16;
     public int maximumRobotInstructions = 1024;
+    public int minimumRobotVariables = 1;
+    public int maximumRobotVariables = 1024;
     public int maximumProcessorInstructionFactor = 256;
     public double maximumDeathByAge = 0.01;
     public double maximumDeathByWeight = 0.01;
@@ -75,6 +77,8 @@ public class MainSettings {
         ensure(maximumDataOffset > 0, greaterThanZeroString("Maximum Data Offset"));
         ensure(minimumRobotInstructions > 0, greaterThanZeroString("Minimum robot instructions"));
         ensure(maximumRobotInstructions > minimumRobotInstructions, greaterThanIntegerString("Maximum robot instructions", minimumRobotInstructions));
+        ensure(minimumRobotVariables > 0, greaterThanZeroString("Minimum robot variables"));
+        ensure(maximumRobotVariables > minimumRobotVariables, greaterThanIntegerString("Maximum robot variables", minimumRobotVariables));
         ensure(maximumProcessorInstructionFactor > 0, greaterThanZeroString("Maximum processor instruction factor"));
         ensure(checkZeroToOne(maximumDeathByAge), zeroToOneString("Maximum Death by Age"));
         ensure(checkZeroToOne(maximumDeathByWeight), zeroToOneString("Maximum Death by Weight"));
