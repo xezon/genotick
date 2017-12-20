@@ -159,3 +159,8 @@ chartMode NONE
 
 # The factor of profit to be reinvested for the simulated trade profit
 profitReinvestFactor 1.0
+
+# [filterOption NONE] Do not apply any filter to asset data for robot training.
+# [filterOption EMA] Apply Exponential Moving Average to asset data for robot training.
+# [filterOption EMA_ZEROLAG] Apply Moving Average Zero Lag (John Ehlers) to asset data for robot training.
+filterOption EMA_ZEROLAG

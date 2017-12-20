@@ -1,6 +1,7 @@
 package com.alphatica.genotick.genotick;
 
 import com.alphatica.genotick.chart.GenoChartMode;
+import com.alphatica.genotick.data.FilterSettings;
 import com.alphatica.genotick.timepoint.TimePoint;
 
 public class EngineSettings {
@@ -13,6 +14,7 @@ public class EngineSettings {
     public final double resultThreshold;
     public final GenoChartMode chartMode;
     public final double profitReinvestFactor;
+    public final FilterSettings filterSettings;
     
     public EngineSettings(final MainSettings settings) {
         this.startTimePoint = settings.startTimePoint;
@@ -24,5 +26,6 @@ public class EngineSettings {
         this.resultThreshold = settings.resultThreshold;
         this.chartMode = settings.chartMode;
         this.profitReinvestFactor = settings.profitReinvestFactor;
+        this.filterSettings = new FilterSettings(settings);
     }
 }

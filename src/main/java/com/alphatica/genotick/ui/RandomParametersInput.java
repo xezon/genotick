@@ -1,5 +1,6 @@
 package com.alphatica.genotick.ui;
 
+import com.alphatica.genotick.data.FilterOption;
 import com.alphatica.genotick.data.MainAppData;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.genotick.RandomGenerator;
@@ -76,6 +77,7 @@ class RandomParametersInput extends BasicUserInput {
         settings.minimumOutcomesBetweenBreeding = random.nextInt(50);
         settings.randomRobotsAtEachUpdate = random.nextDouble();
         settings.resultThreshold = 1 + (random.nextDouble() * 9);
+        settings.filterOption = nextEnum(FilterOption.class);
         return settings;
     }
 }
