@@ -11,18 +11,21 @@ abstract class VarVarJumpInstruction extends VarVarInstruction implements JumpIn
     VarVarJumpInstruction() {
         address = 0;
     }
+
     @Override
     public int getAddress() {
         return address;
     }
 
+    void setAddress(int address) {
+        this.address = address;
+    }
+
     @Override
     public void mutate(Mutator mutator) {
         super.mutate(mutator);
-        address = mutator.getNextInt();
-    }
-
-    void setAddress(int address) {
-        this.address = address;
+        int minJump = mutator.getMinJumpSize();
+        int jumpRange = mutator.getMaxJumpSize() - minJump;
+        address = minJump + (mutator.getNextInt() % jumpRange);
     }
 }

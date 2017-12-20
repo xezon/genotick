@@ -11,6 +11,7 @@ abstract class RegDoubleJumpInstruction extends RegDoubleInstruction implements 
     RegDoubleJumpInstruction() {
         address = 0;
     }
+    
     @Override
     public int getAddress() {
         return address;
@@ -23,7 +24,9 @@ abstract class RegDoubleJumpInstruction extends RegDoubleInstruction implements 
     @Override
     public void mutate(Mutator mutator) {
         super.mutate(mutator);
-        address = mutator.getNextInt();
+        int minJump = mutator.getMinJumpSize();
+        int jumpRange = mutator.getMaxJumpSize() - minJump;
+        address = minJump + (mutator.getNextInt() % jumpRange);
     }
 
 }

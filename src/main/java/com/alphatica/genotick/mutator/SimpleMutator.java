@@ -12,16 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 class SimpleMutator implements Mutator {
+    
+    private static final int MIN_JUMP_SIZE = 4;
+    private static final int MAX_JUMP_SIZE = 64;
     private MutatorSettings settings;
     private RandomGenerator random;
     private ColumnAccess columnAccess;
     private final List<Constructor<? super Instruction>> instructionConstructorList;
-    
-    final private int totalInstructions;
 
     private SimpleMutator() throws ClassNotFoundException {
         instructionConstructorList = buildInstructionList();
-        totalInstructions = instructionConstructorList.size();
     }
 
     @SuppressWarnings("unchecked")
@@ -55,7 +55,7 @@ class SimpleMutator implements Mutator {
 
     @Override
     public Instruction getRandomInstruction() {
-        int index = random.nextInt(totalInstructions);
+        int index = random.nextInt(instructionConstructorList.size());
         return createNewInstruction(index);
     }
 
@@ -94,6 +94,16 @@ class SimpleMutator implements Mutator {
     @Override
     public byte getNextByte() {
         return (byte)random.nextInt();
+    }
+
+    @Override
+    public int getMinJumpSize() {
+        return MIN_JUMP_SIZE;
+    }
+
+    @Override
+    public int getMaxJumpSize() {
+        return MAX_JUMP_SIZE;
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.mutator.Mutator;
 
-abstract class RegRegJumpInstruction extends  RegRegInstruction implements JumpInstruction {
+abstract class RegRegJumpInstruction extends RegRegInstruction implements JumpInstruction {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 714019783545690635L;
 
@@ -11,6 +11,7 @@ abstract class RegRegJumpInstruction extends  RegRegInstruction implements JumpI
     RegRegJumpInstruction() {
         address = 0;
     }
+
     @Override
     public int getAddress() {
         return address;
@@ -23,6 +24,8 @@ abstract class RegRegJumpInstruction extends  RegRegInstruction implements JumpI
     @Override
     public void mutate(Mutator mutator) {
         super.mutate(mutator);
-        address = mutator.getNextInt();
+        int minJump = mutator.getMinJumpSize();
+        int jumpRange = mutator.getMaxJumpSize() - minJump;
+        address = minJump + (mutator.getNextInt() % jumpRange);
     }
 }
