@@ -81,7 +81,6 @@ abstract public class Processor {
 
     abstract public void execute(ReturnVariableAsResult ins);
 
-    @SuppressWarnings("UnusedParameters")
     abstract public void execute(TerminateInstructionList ins);
 
     abstract public void execute(MoveDataToRegister ins);
@@ -92,19 +91,9 @@ abstract public class Processor {
 
     abstract public void execute(MoveRelativeDataToVariable ins);
 
-    abstract public void execute(JumpTo ins);
-
     abstract public void execute(JumpIfVariableGreaterThanRegister ins);
 
     abstract public void execute(JumpIfVariableLessThanRegister ins);
-
-    abstract public void execute(JumpIfVariableEqualRegister ins);
-
-    abstract public void execute(JumpIfVariableNotEqualRegister ins);
-
-    abstract public void execute(JumpIfRegisterEqualRegister ins);
-
-    abstract public void execute(JumpIfRegisterNotEqualRegister ins);
 
     abstract public void execute(JumpIfRegisterGreaterThanRegister ins);
 
@@ -114,37 +103,17 @@ abstract public class Processor {
 
     abstract public void execute(JumpIfVariableLessThanVariable ins);
 
-    abstract public void execute(JumpIfVariableEqualVariable ins);
-
-    abstract public void execute(JumpIfVariableNotEqualVariable ins);
-
     abstract public void execute(JumpIfVariableGreaterThanDouble ins);
 
     abstract public void execute(JumpIfVariableLessThanDouble ins);
-
-    abstract public void execute(JumpIfVariableEqualDouble ins);
-
-    abstract public void execute(JumpIfVariableNotEqualDouble ins);
 
     abstract public void execute(JumpIfRegisterGreaterThanDouble ins);
 
     abstract public void execute(JumpIfRegisterLessThanDouble ins);
 
-    abstract public void execute(JumpIfRegisterEqualDouble ins);
-
-    abstract public void execute(JumpIfRegisterNotEqualDouble ins);
-
-    abstract public void execute(JumpIfRegisterEqualZero ins);
-
-    abstract public void execute(JumpIfRegisterNotEqualZero ins);
-
     abstract public void execute(JumpIfRegisterGreaterThanZero ins);
 
     abstract public void execute(JumpIfRegisterLessThanZero ins);
-
-    abstract public void execute(JumpIfVariableEqualZero ins);
-
-    abstract public void execute(JumpIfVariableNotEqualZero ins);
 
     abstract public void execute(JumpIfVariableGreaterThanZero ins);
 

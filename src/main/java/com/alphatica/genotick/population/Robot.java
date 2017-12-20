@@ -29,7 +29,7 @@ public class Robot implements Serializable {
 
     private RobotName name;
     private final RobotSettings settings;
-    private InstructionList mainFunction;
+    private InstructionList instructionList;
     private int totalChildren = 0;
     private int correctPredictions = 0;
     private int incorrectPredictions = 0;
@@ -49,8 +49,12 @@ public class Robot implements Serializable {
         return new Robot(settings, columnAccessMergeStrategy, random);
     }
 
-    public int getLength() {
-        return mainFunction.getInstructionCount();
+    public InstructionList getInstructionList() {
+        return instructionList;
+    }
+
+    public int getInstructionCount() {
+        return instructionList.getInstructionCount();
     }
 
     public RobotName getName() {
@@ -65,10 +69,6 @@ public class Robot implements Serializable {
         this.inheritedWeight = inheritedWeight;
     }
 
-    public InstructionList getMainFunction() {
-        return mainFunction;
-    }
-    
     public int getTotalPredictions() {
         return correctPredictions + incorrectPredictions;
     }
@@ -110,7 +110,7 @@ public class Robot implements Serializable {
     }
 
     public void setMainInstructionList(InstructionList newMainFunction) {
-        mainFunction = newMainFunction;
+        instructionList = newMainFunction;
     }
 
     public void increaseChildren() {
@@ -168,7 +168,7 @@ public class Robot implements Serializable {
 
     @Override
     public String toString() {
-        int length = mainFunction.getInstructionCount();
+        int length = instructionList.getInstructionCount();
         return "Name: " + this.name.toString()
                 + " Outcomes: " + String.valueOf(totalOutcomes)
                 + " Weight: " + weightFormat.format(getWeight())
@@ -218,14 +218,14 @@ public class Robot implements Serializable {
     private Robot(RobotSettings settings, ColumnAccessMergeStrategy columnAccessMergeStrategy, RandomGenerator random) {
         this.settings = settings;
         this.columnAccess = new ColumnAccess(settings.columnCount, settings.ignoreColumns, columnAccessMergeStrategy, random);
-        this.mainFunction = InstructionList.create(random);
+        this.instructionList = InstructionList.create(random);
     }
 
     private void addMainFunction(StringBuilder sb) throws IllegalAccessException {
         sb.append("MainFunction:").append("\n");
-        sb.append("VariableCount: ").append(mainFunction.getVariableCount()).append("\n");
-        for(int i = 0; i < mainFunction.getInstructionCount(); i++) {
-            Instruction instruction = mainFunction.getInstruction(i);
+        sb.append("VariableCount: ").append(instructionList.getVariableCount()).append("\n");
+        for(int i = 0; i < instructionList.getInstructionCount(); i++) {
+            Instruction instruction = instructionList.getInstruction(i);
             sb.append(instruction.instructionString()).append("\n");
         }
     }

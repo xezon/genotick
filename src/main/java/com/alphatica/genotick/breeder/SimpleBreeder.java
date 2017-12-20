@@ -93,17 +93,17 @@ public class SimpleBreeder implements RobotBreeder {
         mutator.setColumnAccess(robot.getColumnAccess());
         final int maximumRobotInstructionCount = settings.maximumRobotInstructions - settings.minimumRobotInstructions;
         int instructionCount = settings.minimumRobotInstructions + Math.abs(mutator.getNextInt() % maximumRobotInstructionCount);
-        final InstructionList main = robot.getMainFunction();
+        final InstructionList instructionList = robot.getInstructionList();
         while (--instructionCount >= 0) {
-            addInstructionToMain(main);
+            addRandomInstruction(instructionList);
         }
         population.saveRobot(robot);
     }
 
-    private void addInstructionToMain(InstructionList main) {
+    private void addRandomInstruction(InstructionList instructions) {
         Instruction instruction = mutator.getRandomInstruction();
         instruction.mutate(mutator);
-        main.addInstruction(instruction);
+        instructions.addInstruction(instruction);
     }
 
     private void breedPopulationFromParents(Population population, List<RobotInfo> originalList) {
@@ -167,8 +167,8 @@ public class SimpleBreeder implements RobotBreeder {
     }
 
     private InstructionList mixMainInstructionLists(Robot parent1, Robot parent2) {
-        InstructionList source1 = parent1.getMainFunction();
-        InstructionList source2 = parent2.getMainFunction();
+        InstructionList source1 = parent1.getInstructionList();
+        InstructionList source2 = parent2.getInstructionList();
         return blendInstructionLists(source1, source2);
     }
 
@@ -204,11 +204,11 @@ public class SimpleBreeder implements RobotBreeder {
             if(instruction instanceof TerminateInstructionList) {
                 break;
             }
-            addInstructionToInstructionList(instruction, destination);
+            addInstruction(instruction, destination);
         }
     }
 
-    private void addInstructionToInstructionList(Instruction instruction, InstructionList instructionList) {
+    private void addInstruction(Instruction instruction, InstructionList instructionList) {
         if (mutator.skipNextInstruction()) {
             return;
         }

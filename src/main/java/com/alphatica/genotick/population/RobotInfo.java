@@ -11,7 +11,7 @@ public class RobotInfo {
     private final double weight;
     private final int lastChildOutcomes;
     private final int totalChildren;
-    private final int length;
+    private final int instructionCount;
     private final int totalPredictions;
     private final int totalOutcomes;
     private final int bias;
@@ -22,7 +22,7 @@ public class RobotInfo {
         weight = robot.getWeight();
         lastChildOutcomes = robot.getOutcomesAtLastChild();
         totalChildren = robot.getTotalChildren();
-        length = robot.getLength();
+        instructionCount = robot.getInstructionCount();
         totalPredictions = robot.getTotalPredictions();
         totalOutcomes = robot.getTotalOutcomes();
         bias = robot.getBias();
@@ -32,7 +32,7 @@ public class RobotInfo {
     @Override
     public String toString() {
         return name.toString() + ": Outcomes: " + String.valueOf(totalPredictions) + " weight: " + format.format(weight) +
-                " bias: " + String.valueOf(bias) + " length: " + String.valueOf(length) +
+                " bias: " + String.valueOf(bias) + " instructionCount: " + String.valueOf(instructionCount) +
                 " totalChildren: " + String.valueOf(totalChildren);
     }
 
