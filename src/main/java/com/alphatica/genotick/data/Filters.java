@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import static com.alphatica.genotick.utility.Assert.gassert;
 
 public class Filters {
-    static private class Pos {
+    static private class Index {
         int column;
         int bar;
     }
@@ -14,16 +14,16 @@ public class Filters {
         return Math.max(maxLookbackBars, barBegin);
     }
     
-    static private void forEachBarAndColumn(DataSeries series, int barBegin, int barEnd, Consumer<Pos> action) {
+    static private void forEachBarAndColumn(DataSeries series, int barBegin, int barEnd, Consumer<Index> action) {
         // For simplicity sake all filters assume asset data with ascending time points
         gassert(series.firstBarIsNewest() == false);
         barEnd = Math.min(series.barCount(), barEnd);
-        final Pos pos = new Pos();
-        pos.column = series.columnCount();
-        while (--pos.column >= 0) {
-            pos.bar = barBegin - 1;
-            while (++pos.bar < barEnd) {
-                action.accept(pos);
+        final Index idx = new Index();
+        idx.column = series.columnCount();
+        while (--idx.column >= 0) {
+            idx.bar = barBegin - 1;
+            while (++idx.bar < barEnd) {
+                action.accept(idx);
             }
         }
     }
@@ -35,11 +35,11 @@ public class Filters {
     static public void applyEMA(DataSeries series, int barBegin, int barEnd, int length) {
         final double alpha = 2.0 / (length + 1);
         barBegin = normalizeBarBegin(barBegin, 1);
-        forEachBarAndColumn(series, barBegin, barEnd, pos -> {
-            double price0 = series.get(pos.column, pos.bar);
-            double price1 = series.get(pos.column, pos.bar - 1);
+        forEachBarAndColumn(series, barBegin, barEnd, idx -> {
+            double price0 = series.get(idx.column, idx.bar);
+            double price1 = series.get(idx.column, idx.bar - 1);
             double ema = alpha * price0 + (1.0 - alpha) * price1;
-            series.set(pos.column, pos.bar, ema);
+            series.set(idx.column, idx.bar, ema);
         });
     }
     
@@ -50,9 +50,9 @@ public class Filters {
     static public void applyEMAZeroLag(DataSeries series, int barBegin, int barEnd, int length, int gainLimit) {
         final double alpha = 2.0 / (length + 1);
         barBegin = normalizeBarBegin(barBegin, 1);
-        forEachBarAndColumn(series, barBegin, barEnd, pos -> {
-            double price0 = series.get(pos.column, pos.bar);
-            double price1 = series.get(pos.column, pos.bar - 1);
+        forEachBarAndColumn(series, barBegin, barEnd, idx -> {
+            double price0 = series.get(idx.column, idx.bar);
+            double price1 = series.get(idx.column, idx.bar - 1);
             double ema = alpha * price0 + (1.0 - alpha) * price1;
             double leastError = Double.MAX_VALUE;
             double bestGain = 0.0;
@@ -66,7 +66,7 @@ public class Filters {
                 }
             }
             double ec = alpha * (ema + bestGain * (price0 - price1)) + (1 - alpha) * price1;
-            series.set(pos.column, pos.bar, ec);
+            series.set(idx.column, idx.bar, ec);
         });
     }
 }

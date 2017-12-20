@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static java.lang.String.format;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static com.alphatica.genotick.utility.Assert.gassert;
 
@@ -73,8 +74,8 @@ class GenoJFreeChart implements GenoChart {
 
     @Override
     public void addXYLineChart(
-            final String chartTitle, final String xLabel, final String yLabel,
-            final String seriesTitle, final double xValue, final double yValue) {
+            String chartTitle, String xLabel, String yLabel,
+            String seriesTitle, double xValue, double yValue) {
         XYChartDefinition definition = getOrCreateXYChartDefinition(chartTitle, xLabel, yLabel);
         XYSeries series = definition.xySeriesMap.computeIfAbsent(seriesTitle, XYSeries::new);
         series.add(xValue, yValue);
@@ -95,7 +96,7 @@ class GenoJFreeChart implements GenoChart {
     }
 
     @Override
-    public void plot(final String chartTitle) {
+    public void plot(String chartTitle) {
         plotXYChart(chartTitle);
         plotTimeChart(chartTitle);
     }
@@ -107,7 +108,7 @@ class GenoJFreeChart implements GenoChart {
 
     private XYChartDefinition getOrCreateXYChartDefinition(String chartTitle, String xLabel, String yLabel) {
         XYChartDefinition definition = xyChartMap.get(chartTitle);
-        if (null == definition) {
+        if (isNull(definition)) {
             definition = new XYChartDefinition();
             definition.xLabel = xLabel;
             definition.yLabel = yLabel;
@@ -118,22 +119,22 @@ class GenoJFreeChart implements GenoChart {
     
     private TimeChartDefinition getOrCreateTimeChartDefinition(String chartTitle) {
         TimeChartDefinition definition = timeChartMap.get(chartTitle);
-        if (null == definition) {
+        if (isNull(definition)) {
             definition = new TimeChartDefinition();
             timeChartMap.put(chartTitle, definition);
         }
         return definition;
     }
     
-    private void plotXYChart(final String title) {
-        final XYChartDefinition definition = xyChartMap.remove(title);
+    private void plotXYChart(String title) {
+        XYChartDefinition definition = xyChartMap.remove(title);
         if (nonNull(definition)) {
             plotChart(title, definition);
         }
     }
     
-    private void plotTimeChart(final String title) {
-        final TimeChartDefinition definition = timeChartMap.remove(title);
+    private void plotTimeChart(String title) {
+        TimeChartDefinition definition = timeChartMap.remove(title);
         if (nonNull(definition)) {
             plotChart(title, definition);
         }
@@ -146,56 +147,56 @@ class GenoJFreeChart implements GenoChart {
         timeChartMap.clear();
     }
 
-    private void plotChart(final String title, final XYChartDefinition definition) {
+    private void plotChart(String title, XYChartDefinition definition) {
         // A JFreeChart object cannot be reused for drawing and saving
         // Thus individual objects must be created for each operation to avoid a memory corruption
         if (drawChart) {
-            final JFreeChart chartObject = createChartObject(title, definition);
+            JFreeChart chartObject = createChartObject(title, definition);
             drawChart(title, chartObject);
         }
         if (saveChart) {
-            final JFreeChart chartObject = createChartObject(title, definition);
+            JFreeChart chartObject = createChartObject(title, definition);
             saveChart(title, chartObject);
         }
     }
 
-    private void plotChart(final String title, final TimeChartDefinition definition) {
+    private void plotChart(String title, TimeChartDefinition definition) {
         if (drawChart) {
-            final JFreeChart chartObject = createChartObject(title, definition);
+            JFreeChart chartObject = createChartObject(title, definition);
             drawChart(title, chartObject);
         }
         if (saveChart) {
-            final JFreeChart chartObject = createChartObject(title, definition);
+            JFreeChart chartObject = createChartObject(title, definition);
             saveChart(title, chartObject);
         }
     }
 
-    private JFreeChart createChartObject(final String title, final XYChartDefinition definition) {
-        final boolean legend = true;
-        final boolean tooltips = true;
-        final boolean urls = false;
-        final XYSeriesCollection collection = new XYSeriesCollection();
+    private JFreeChart createChartObject(String title, XYChartDefinition definition) {
+        boolean legend = true;
+        boolean tooltips = true;
+        boolean urls = false;
+        XYSeriesCollection collection = new XYSeriesCollection();
         definition.xySeriesMap.forEach((seriesTitle, series) -> collection.addSeries(series));
-        final JFreeChart chartObject = ChartFactory.createXYLineChart(
+        JFreeChart chartObject = ChartFactory.createXYLineChart(
                 title, definition.xLabel, definition.yLabel, collection,
                 PlotOrientation.VERTICAL, legend, tooltips, urls);
-        final XYPlot xyPlot = chartObject.getXYPlot();
-        final NumberAxis numberAxis = (NumberAxis)xyPlot.getRangeAxis();
+        XYPlot xyPlot = chartObject.getXYPlot();
+        NumberAxis numberAxis = (NumberAxis)xyPlot.getRangeAxis();
         numberAxis.setAutoRangeIncludesZero(false);
         return chartObject;
     }
     
-    private JFreeChart createChartObject(final String title, final TimeChartDefinition definition) {
-        final boolean legend = true;
-        final OHLCSeriesCollection ohlcSeriesCollection = new OHLCSeriesCollection();
-        final TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
+    private JFreeChart createChartObject(String title, TimeChartDefinition definition) {
+        boolean legend = true;
+        OHLCSeriesCollection ohlcSeriesCollection = new OHLCSeriesCollection();
+        TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
         definition.ohlcSeries.forEach((seriesTitle, series) -> ohlcSeriesCollection.addSeries(series));
         definition.timeSeries.forEach((seriesTitle, series) -> timeSeriesCollection.addSeries(series));
-        final JFreeChart chartObject = ChartFactory.createCandlestickChart(
+        JFreeChart chartObject = ChartFactory.createCandlestickChart(
                 title, "time", "price", ohlcSeriesCollection, legend);
-        final XYPlot xyPlot = chartObject.getXYPlot();
-        final NumberAxis numberAxis = (NumberAxis)xyPlot.getRangeAxis();
-        final DateAxis dateAxis = (DateAxis)xyPlot.getDomainAxis();
+        XYPlot xyPlot = chartObject.getXYPlot();
+        NumberAxis numberAxis = (NumberAxis)xyPlot.getRangeAxis();
+        DateAxis dateAxis = (DateAxis)xyPlot.getDomainAxis();
         dateAxis.setDateFormatOverride(new SimpleDateFormat("dd-LLL-yy hh:mm", Locale.ENGLISH));
         CandlestickRenderer renderer = (CandlestickRenderer)xyPlot.getRenderer();
         renderer.setAutoWidthMethod(CandlestickRenderer.WIDTHMETHOD_SMALLEST);
@@ -207,9 +208,9 @@ class GenoJFreeChart implements GenoChart {
         return chartObject;
     }
     
-    private void addDatasetToPlot(final XYPlot xyPlot, final XYDataset xyDataset) {
-        final int index = xyPlot.getDatasetCount();
-        final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+    private void addDatasetToPlot(XYPlot xyPlot, XYDataset xyDataset) {
+        int index = xyPlot.getDatasetCount();
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         for (int i = 0, size = xyDataset.getSeriesCount(); i < size; ++i) {
             renderer.setSeriesShapesVisible(i, false);
             renderer.setSeriesStroke(i, new BasicStroke(1.5f));
@@ -220,9 +221,9 @@ class GenoJFreeChart implements GenoChart {
         xyPlot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
     }
 
-    private void drawChart(final String title, final JFreeChart chartObject) {
-        final ChartFrame frame = new ChartFrame(title, chartObject);
-        final ChartPanel chartPanel = frame.getChartPanel();
+    private void drawChart(String title, JFreeChart chartObject) {
+        ChartFrame frame = new ChartFrame(title, chartObject);
+        ChartPanel chartPanel = frame.getChartPanel();
         chartPanel.setMouseZoomable(true);
         chartPanel.setMouseWheelEnabled(true);
         frame.pack();
@@ -232,9 +233,9 @@ class GenoJFreeChart implements GenoChart {
         numOpenedChartFrames++;
     }
 
-    private void saveChart(final String title, final JFreeChart chartObject) {
-        final String filename = makeFileName(title);
-        final File file = new File(output.getOutDir(), filename);
+    private void saveChart(String title, JFreeChart chartObject) {
+        String filename = makeFileName(title);
+        File file = new File(output.getOutDir(), filename);
         try {
             ChartUtilities.saveChartAsPNG(file, chartObject, 512, 512);
         }
@@ -243,17 +244,17 @@ class GenoJFreeChart implements GenoChart {
         }
     }
 
-    private String makeFileName(final String title) {
+    private String makeFileName(String title) {
         String chartName = title.toLowerCase().replace(" ", "_");
         String identifier = output.getIdentifier();
         return String.format("chart_%s_%s.png", chartName, identifier);
     }
 
-    private void alignChartFrame(final ChartFrame frame) {
-        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        final double pixels = 40.0 * numOpenedChartFrames;
-        final double widthPercent = pixels / screenSize.getWidth();
-        final double heightPercent = pixels / screenSize.getHeight();
+    private void alignChartFrame(ChartFrame frame) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        double pixels = 40.0 * numOpenedChartFrames;
+        double widthPercent = pixels / screenSize.getWidth();
+        double heightPercent = pixels / screenSize.getHeight();
         RefineryUtilities.positionFrameOnScreen(frame, widthPercent, heightPercent);
     }
 }
