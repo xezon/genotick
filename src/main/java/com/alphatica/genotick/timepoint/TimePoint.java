@@ -1,12 +1,17 @@
 package com.alphatica.genotick.timepoint;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class TimePoint implements Comparable<TimePoint>, Serializable {
 
     private static final long serialVersionUID = -6541300869299964665L;
     private final long value;
-    
+        
     public TimePoint(long value) {
         this.value = value;
     }
@@ -14,11 +19,43 @@ public class TimePoint implements Comparable<TimePoint>, Serializable {
     public TimePoint(TimePoint timePoint) {
         this(timePoint.value);
     }
+    
+    public TimePoint(String string) {
+        this.value = Long.parseLong(string);
+    }
 
     public long getValue() {
         return value;
     }
-
+    
+    private LocalDateTime parseDateTime(String timeString, String format) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        return LocalDateTime.from(formatter.parse(timeString));
+    }
+    
+    private LocalDateTime parseDate(String timeString, String format) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        LocalDate date = LocalDate.from(formatter.parse(timeString));
+        return date.atStartOfDay();
+    }
+    
+    public LocalDateTime asLocalDateTime() {       
+        String timeString = Long.toString(value);
+        int length = timeString.length();
+        switch (length) {
+            case 8:  return parseDate(timeString, "yyyyMMdd");
+            case 10: return parseDateTime(timeString, "yyyyMMddkk");
+            case 12: return parseDateTime(timeString, "yyyyMMddkkmm");
+            case 14: return parseDateTime(timeString, "yyyyMMddkkmmss");
+            default: throw new RuntimeException("Unknown time point format");
+        }
+    }
+    
+    public Date asDate() {
+        LocalDateTime ldt = asLocalDateTime();
+        return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+    
     public boolean isLessThan(TimePoint other) {
         return this.compareTo(other) < 0;
     }

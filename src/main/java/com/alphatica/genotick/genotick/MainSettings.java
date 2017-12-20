@@ -3,6 +3,7 @@ package com.alphatica.genotick.genotick;
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.breeder.InheritedWeightMode;
 import com.alphatica.genotick.chart.GenoChartMode;
+import com.alphatica.genotick.data.FilterOption;
 
 import java.lang.reflect.Field;
 
@@ -49,6 +50,7 @@ public class MainSettings {
     public long randomSeed = DEFAULT_RANDOM_SEED;
     public GenoChartMode chartMode = GenoChartMode.NONE;
     public double profitReinvestFactor = 1.0;
+    public FilterOption filterOption = FilterOption.EMA_ZEROLAG;
 
     private MainSettings() {
         String minimumScoreString = System.getenv("GENOTICK_MINIMUM_SCORE");

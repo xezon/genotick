@@ -23,7 +23,7 @@ class FileInput extends BasicUserInput {
     FileInput(String input, UserOutput output) {
         super(output);
         if(!input.contains(delimiter))
-            throw new RuntimeException(String.format("Config file input format is: '%s'","input=file:/path/to/file"));
+            throw new RuntimeException(String.format("Config file input format is: '%s'","input=file:MY_CONFIG_FILE"));
         int pos = input.indexOf(delimiter);
         fileName = input.substring(pos+1);
     }
@@ -53,9 +53,9 @@ class FileInput extends BasicUserInput {
     }
 
     private void checkAllSettingsParsed(Map<String, String> map, Set<String> parsedKeys) {
-        if(map.size() == parsedKeys.size())
-            return;
-        throw new RuntimeException("Unable to match setting from config file: " + map.keySet().toArray()[0]);
+        if (map.size() != parsedKeys.size()) {
+            throw new RuntimeException("Unable to match setting from config file: " + map.keySet().toArray()[0]);
+        }
     }
 
     private void applySettingsFromMap(MainSettings settings, Map<String, String> map, Set<String> parsedKeys) throws IllegalAccessException {

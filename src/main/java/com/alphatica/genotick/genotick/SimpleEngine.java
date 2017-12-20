@@ -50,6 +50,7 @@ public class SimpleEngine implements Engine {
     public void start() {
         changeThreadName();
         initPopulation();
+        initDataSetFilters();
         final Stream<TimePoint> filteredTimePoints = data.getTimePoints(
                 settings.startTimePoint,
                 settings.endTimePoint);
@@ -58,7 +59,7 @@ public class SimpleEngine implements Engine {
             savePopulation();
         }
         account.closeAccount();
-        profitRecorder.onFinish();
+        profitRecorder.finish();
     }
 
     @Override
@@ -100,6 +101,12 @@ public class SimpleEngine implements Engine {
             breeder.breedPopulation(population, Collections.emptyList());
         }
     }
+    
+    private void initDataSetFilters() {
+        TimePoint timeBegin = new TimePoint(0);
+        TimePoint timeEnd = settings.startTimePoint;
+        robotDataManager.initDataSetFilters(settings.filterSettings, timeBegin, timeEnd);
+    }
 
     private void savePopulation() {
         if (!population.saveOnDisk()) {
@@ -111,8 +118,7 @@ public class SimpleEngine implements Engine {
     private void executeTimePoint(final TimePoint timePoint) {
         final int bar = data.getBar(timePoint);
         gassert(bar >= 0);
-        robotDataManager.update(timePoint);
-        final List<RobotDataPair> robotDataList = robotDataManager.getUpdatedRobotDataList();
+        final List<RobotDataPair> robotDataList = robotDataManager.getRobotDataList(timePoint);
         if (!robotDataList.isEmpty()) {
             output.reportStartedTimePoint(timePoint);
             updateAccount(robotDataList);
@@ -125,7 +131,7 @@ public class SimpleEngine implements Engine {
             performTraining(robotInfoList);
             output.reportFinishedTimePoint(timePoint, account.getEquity());
         }
-        profitRecorder.onUpdate(bar);
+        profitRecorder.update(timePoint);
     }
     
     private void processDataSetResult(TimePoint timePoint, DataSetResult dataSetResult) {
@@ -159,7 +165,7 @@ public class SimpleEngine implements Engine {
     private void updateAccount(List<RobotDataPair> robotDataList) {
         Map<DataSetName, Double> map = new HashMap<>();
         for (RobotDataPair robotDataPair : robotDataList) {
-            robotDataPair.forEach(robotData -> map.put(robotData.getName(), robotData.getLastPriceOpen()));
+            robotDataPair.forEach(robotData -> map.put(robotData.getName(), robotData.getLastAssetPriceOpen()));
         }
         account.closeTrades(map);
         account.openTrades(map);
