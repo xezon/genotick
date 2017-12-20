@@ -218,7 +218,7 @@ public class Robot implements Serializable {
     private Robot(RobotSettings settings, ColumnAccessMergeStrategy columnAccessMergeStrategy, RandomGenerator random) {
         this.settings = settings;
         this.columnAccess = new ColumnAccess(settings.columnCount, settings.ignoreColumns, columnAccessMergeStrategy, random);
-        this.mainFunction = InstructionList.create(random);
+        this.mainFunction = InstructionList.create(random, settings.minimumRobotVariables, settings.maximumRobotVariables);
     }
 
     private void addMainFunction(StringBuilder sb) throws IllegalAccessException {
