@@ -12,7 +12,7 @@ public class DataSet {
     private final TimePoints timePoints;
     private final DataSeries ohlcData;
     private Optional<DataSeries> filteredOhlcData;
-    private Optional<FilterSettings> filter;
+    private FilterSettings filter;
     
     public DataSet(String name, DataLines tohlcLines) {
         this(new DataSetName(name), tohlcLines);
@@ -24,7 +24,7 @@ public class DataSet {
         this.timePoints = this.tohlcLines.createTimePoints();
         this.ohlcData = this.tohlcLines.createDataSeries();
         this.filteredOhlcData = Optional.empty();
-        this.filter = Optional.empty();
+        this.filter = new FilterSettings();
     }
 
     public DataSetName getName() {
@@ -68,12 +68,12 @@ public class DataSet {
     
     public void setFilterSettings(FilterSettings filter) {
         boolean useFilter = filter.filterOption != FilterOption.NONE;
-        this.filteredOhlcData = Optional.ofNullable(useFilter ? ohlcData.createCopy() : null);
-        this.filter = Optional.of(filter);
+        this.filteredOhlcData = useFilter ? Optional.of(ohlcData.createCopy()) : Optional.empty();
+        this.filter = filter;
     }
     
     public void updateFilteredOhlcData(int barBegin, int barEnd) {
-        switch (filter.get().filterOption) {
+        switch (filter.filterOption) {
             case NONE: break;
             case EMA: Filters.applyEMA(filteredOhlcData.get(), barBegin, barEnd, 20); break;
             case EMA_ZEROLAG: Filters.applyEMAZeroLag(filteredOhlcData.get(), barBegin, barEnd, 20, 50); break;
