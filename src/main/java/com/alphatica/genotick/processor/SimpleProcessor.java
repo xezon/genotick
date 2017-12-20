@@ -81,7 +81,6 @@ import java.util.Arrays;
 
 public class SimpleProcessor extends Processor implements RobotExecutor {
 
-    private static final int MAX_JUMP = 255;
     private final double[] registers = new double[totalRegisters];
     private final int processorInstructionLimit;
 
@@ -92,7 +91,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     private InstructionList instructionList;
     private int instructionLimit;
     private boolean terminateInstructionList;
-    private int changeInstructionPointer;
+    private int jumpAddress;
     private int totalInstructionExecuted;
     private int maximumDataOffset;
     private int ignoreColumns;
@@ -127,7 +126,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         instructionList.zeroOutVariables();
         instructionLimit = robot.getInstructionCount() * processorInstructionLimit;
         terminateInstructionList = false;
-        changeInstructionPointer = 0;
+        jumpAddress = 0;
         totalInstructionExecuted = 0;
         maximumDataOffset = robot.getMaximumDataOffset();
         ignoreColumns = robot.getIgnoreColumns();
@@ -161,12 +160,12 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
             if(totalInstructionExecuted > instructionLimit) {
                 break;
             }
-            if (changeInstructionPointer != 0) {
-                instructionPointer += changeInstructionPointer;
+            if (jumpAddress != 0) {
+                instructionPointer += jumpAddress;
                 int min = 0;
                 int max = instructionList.getInstructionCount() - 1;
                 instructionPointer = clamp(instructionPointer, min, max);
-                changeInstructionPointer = 0;
+                jumpAddress = 0;
             }
         } while (!terminateInstructionList && !finished);
     }
@@ -358,7 +357,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     }
 
     private void jumpTo(int jumpAddress) {
-        changeInstructionPointer = (jumpAddress % MAX_JUMP);
+        this.jumpAddress = jumpAddress;
     }
 
     @Override

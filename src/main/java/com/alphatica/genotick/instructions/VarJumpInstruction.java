@@ -7,21 +7,23 @@ abstract class VarJumpInstruction extends VarInstruction implements JumpInstruct
     private static final long serialVersionUID = -7018453916150975326L;
 
     private int address;
+
     VarJumpInstruction() {
         address = 0;
     }
+
     @Override
     public int getAddress() {
         return address;
     }
 
+    void setAddress(int address) {
+        this.address = address;
+    }
+
     @Override
     public void mutate(Mutator mutator) {
         super.mutate(mutator);
-        address = mutator.getNextInt();
-    }
-
-    void setAddress(int address) {
-        this.address = address;
+        address = MIN_JUMP + (mutator.getNextInt() % (MAX_JUMP - MIN_JUMP));
     }
 }

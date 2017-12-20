@@ -24,8 +24,7 @@ abstract class RegVarJumpInstruction extends RegVarInstruction implements JumpIn
     @Override
     public void mutate(Mutator mutator) {
         super.mutate(mutator);
-        address = mutator.getNextInt();
+        address = MIN_JUMP + (mutator.getNextInt() % (MAX_JUMP - MIN_JUMP));
     }
-
 
 }

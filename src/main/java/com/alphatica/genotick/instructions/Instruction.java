@@ -12,6 +12,8 @@ import java.util.List;
 public abstract class Instruction implements Serializable {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 6038774498356414583L;
+    protected static final int MIN_JUMP = 4;
+    protected static final int MAX_JUMP = 64;
 
     abstract public void executeOn(Processor processor);
 

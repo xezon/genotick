@@ -11,6 +11,7 @@ abstract class VarDoubleJumpInstruction extends  VarDoubleInstruction implements
     VarDoubleJumpInstruction() {
         address = 0;
     }
+
     @Override
     public int getAddress() {
         return address;
@@ -19,9 +20,10 @@ abstract class VarDoubleJumpInstruction extends  VarDoubleInstruction implements
     void setAddress(int address) {
         this.address = address;
     }
+
     @Override
     public void mutate(Mutator mutator) {
         super.mutate(mutator);
-        address = mutator.getNextInt();
+        address = MIN_JUMP + (mutator.getNextInt() % (MAX_JUMP - MIN_JUMP));
     }
 }

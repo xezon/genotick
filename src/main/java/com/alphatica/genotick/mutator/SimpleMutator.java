@@ -16,12 +16,9 @@ class SimpleMutator implements Mutator {
     private RandomGenerator random;
     private ColumnAccess columnAccess;
     private final List<Constructor<? super Instruction>> instructionConstructorList;
-    
-    final private int totalInstructions;
 
     private SimpleMutator() throws ClassNotFoundException {
         instructionConstructorList = buildInstructionList();
-        totalInstructions = instructionConstructorList.size();
     }
 
     @SuppressWarnings("unchecked")
@@ -55,7 +52,7 @@ class SimpleMutator implements Mutator {
 
     @Override
     public Instruction getRandomInstruction() {
-        int index = random.nextInt(totalInstructions);
+        int index = random.nextInt(instructionConstructorList.size());
         return createNewInstruction(index);
     }
 
