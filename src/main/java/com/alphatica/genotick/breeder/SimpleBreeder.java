@@ -181,7 +181,7 @@ public class SimpleBreeder implements RobotBreeder {
     For higher numbers this change isn't so dramatic but may add up after many populations.
      */
     private InstructionList blendInstructionLists(InstructionList list1, InstructionList list2) {
-        InstructionList instructionList = InstructionList.create(random);
+        InstructionList instructionList = InstructionList.create(random, settings.minimumRobotVariables, settings.maximumRobotVariables);
         int break1 = getBreakPoint(list1);
         int break2 = getBreakPoint(list2);
         copyBlock(instructionList, list1, 0, break1);

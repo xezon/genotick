@@ -14,15 +14,16 @@ public class InstructionList implements Serializable {
     private final List<Instruction> list;
     private final double[] variables;
 
-    private InstructionList(RandomGenerator random) {
+    private InstructionList(RandomGenerator random, int minVariables, int maxVariables) {
+        int variablesRange = maxVariables - minVariables;
+        int variablesCount = minVariables + Math.abs(random.nextInt() % variablesRange);
         this.random = random;
         this.list = new ArrayList<>();
-        int variablesCount = 1 + Math.abs(random.nextInt() % 1024);
         this.variables = new double[variablesCount];
     }
 
-    public static InstructionList create(RandomGenerator random) {
-        return new InstructionList(random);
+    public static InstructionList create(RandomGenerator random, int minVariables, int maxVariables) {
+        return new InstructionList(random, minVariables, maxVariables);
     }
 
     public Instruction getInstruction(int index) {

@@ -16,6 +16,8 @@ public class BreederSettings {
     public final int columnCount;
     public final int maximumRobotInstructions;
     public final int minimumRobotInstructions;
+    public final int minimumRobotVariables;
+    public final int maximumRobotVariables;
     public final long randomSeed;
 
     public BreederSettings(final MainSettings settings, final int columnCount) {
@@ -31,6 +33,8 @@ public class BreederSettings {
         this.columnCount = columnCount;
         this.maximumRobotInstructions = settings.maximumRobotInstructions;
         this.minimumRobotInstructions = settings.minimumRobotInstructions;
+        this.minimumRobotVariables = settings.minimumRobotVariables;
+        this.maximumRobotVariables = settings.maximumRobotVariables;
         this.randomSeed = settings.randomSeed;
     }
 }
