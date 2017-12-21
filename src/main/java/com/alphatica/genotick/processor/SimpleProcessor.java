@@ -146,10 +146,10 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
             return Prediction.getPrediction(registers[0]);
         }
     }
-    
-    private static int clamp(int val, int min, int max) {
-        return Math.max(min, Math.min(max, val));
-    }
+
+//    private static int clamp(int val, int min, int max) {
+//        return Math.max(min, Math.min(max, val));
+//    }
 
     private void executeInstructionList()  {
         int instructionPointer = 0;
@@ -160,13 +160,13 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
             if(totalInstructionExecuted > instructionLimit) {
                 break;
             }
-            if (jumpAddress != 0) {
-                instructionPointer += jumpAddress;
-                int min = 0;
-                int max = instructionList.getInstructionCount() - 1;
-                instructionPointer = clamp(instructionPointer, min, max);
-                jumpAddress = 0;
-            }
+//            if (jumpAddress != 0) {
+//                instructionPointer += jumpAddress;
+//                int min = 0;
+//                int max = instructionList.getInstructionCount() - 1;
+//                instructionPointer = clamp(instructionPointer, min, max);
+//                jumpAddress = 0;
+//            }
         } while (!terminateInstructionList && !finished);
     }
 

@@ -109,8 +109,8 @@ public class Robot implements Serializable {
         return Math.abs(getWeight());
     }
 
-    public void setMainInstructionList(InstructionList newMainFunction) {
-        instructionList = newMainFunction;
+    public void setMainInstructionList(InstructionList instructionList) {
+        this.instructionList = instructionList;
     }
 
     public void increaseChildren() {

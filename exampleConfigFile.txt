@@ -50,7 +50,7 @@ maximumRobotInstructions 1024
 minimumRobotVariables 1
 
 # The maximum amount of instructions that are generated for each robot.
-maximumRobotVariables 1024
+maximumRobotVariables 16
 
 # The maximum amount of instructions that can be executed on each timepoint for each robot for each data file.
 # Jumps can cause long loops, or even infinite loops. The final limit is: maximumProcessorInstructionFactor * robotInstructionCount

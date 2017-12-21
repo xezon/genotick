@@ -22,7 +22,7 @@ public class MainSettings {
     public int minimumRobotInstructions = 16;
     public int maximumRobotInstructions = 1024;
     public int minimumRobotVariables = 1;
-    public int maximumRobotVariables = 1024;
+    public int maximumRobotVariables = 16;
     public int maximumProcessorInstructionFactor = 256;
     public double maximumDeathByAge = 0.01;
     public double maximumDeathByWeight = 0.01;

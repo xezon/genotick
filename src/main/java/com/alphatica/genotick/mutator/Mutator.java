@@ -17,6 +17,10 @@ public interface Mutator {
     double getNextDouble();
 
     byte getNextByte();
+    
+    int getMinJumpSize();
+    
+    int getMaxJumpSize();
 
     void setSettings(MutatorSettings mutatorSettings);
     

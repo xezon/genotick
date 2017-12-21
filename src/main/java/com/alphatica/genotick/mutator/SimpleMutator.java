@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 class SimpleMutator implements Mutator {
+    
+    private static final int MIN_JUMP_SIZE = 4;
+    private static final int MAX_JUMP_SIZE = 64;
     private MutatorSettings settings;
     private RandomGenerator random;
     private ColumnAccess columnAccess;
@@ -91,6 +94,16 @@ class SimpleMutator implements Mutator {
     @Override
     public byte getNextByte() {
         return (byte)random.nextInt();
+    }
+
+    @Override
+    public int getMinJumpSize() {
+        return MIN_JUMP_SIZE;
+    }
+
+    @Override
+    public int getMaxJumpSize() {
+        return MAX_JUMP_SIZE;
     }
 
     @Override
