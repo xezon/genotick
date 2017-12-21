@@ -2,12 +2,12 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class ZeroOutVariable extends VarInstruction {
+public class ZeroOutVariable extends IntInstruction {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -7513892893024990050L;
 
     private ZeroOutVariable(ZeroOutVariable i) {
-        this.setVariableArgument(i.getVariableArgument());
+        this.setInt(i.getInt());
     }
 
     @SuppressWarnings("unused")

@@ -3,13 +3,13 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class SwapVariables extends VarVarInstruction {
+public class SwapVariables extends IntIntInstruction {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -6328103475159894381L;
 
     private SwapVariables(SwapVariables i) {
-        this.setVariable1Argument(i.getVariable1Argument());
-        this.setVariable2Argument(i.getVariable2Argument());
+        this.setInt1(i.getInt1());
+        this.setInt2(i.getInt2());
     }
 
     @SuppressWarnings("unused")

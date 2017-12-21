@@ -2,7 +2,7 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class LowestOfColumn extends VarVarInstruction {
+public class LowestOfColumn extends IntIntInstruction {
 
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -6945803435707758563L;
@@ -12,8 +12,8 @@ public class LowestOfColumn extends VarVarInstruction {
     }
 
     private LowestOfColumn(LowestOfColumn lowestOfColumn) {
-        this.setVariable1Argument(lowestOfColumn.getVariable1Argument());
-        this.setVariable2Argument(lowestOfColumn.getVariable2Argument());
+        this.setInt1(lowestOfColumn.getInt1());
+        this.setInt2(lowestOfColumn.getInt2());
     }
 
     @Override

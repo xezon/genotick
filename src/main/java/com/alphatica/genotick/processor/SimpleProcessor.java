@@ -136,26 +136,26 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     @Override
     public void execute(MultiplyVariableByVariable ins) {
-        double var1 = instructionList.getVariable(ins.getVariable1Argument());
-        double var2 = instructionList.getVariable(ins.getVariable2Argument());
-        instructionList.setVariable(ins.getVariable1Argument(), var1 * var2);
+        double var1 = instructionList.getVariable(ins.getInt1());
+        double var2 = instructionList.getVariable(ins.getInt2());
+        instructionList.setVariable(ins.getInt1(), var1 * var2);
     }
 
     @Override
     public void execute(MoveDoubleToVariable ins) {
-        instructionList.setVariable(ins.getVariableArgument(), ins.getDoubleArgument());
+        instructionList.setVariable(ins.getInt(), ins.getDouble());
     }
 
     @Override
     public void execute(DivideVariableByVariable ins) {
-        double var1 = instructionList.getVariable(ins.getVariable1Argument());
-        double var2 = instructionList.getVariable(ins.getVariable2Argument());
-        instructionList.setVariable(ins.getVariable1Argument(), var1 / var2);
+        double var1 = instructionList.getVariable(ins.getInt1());
+        double var2 = instructionList.getVariable(ins.getInt2());
+        instructionList.setVariable(ins.getInt1(), var1 / var2);
     }
 
     @Override
     public void execute(ReturnVariableAsResult ins) {
-        robotResult = instructionList.getVariable(ins.getVariableArgument());
+        robotResult = instructionList.getVariable(ins.getInt());
         finished = true;
     }
 
@@ -165,7 +165,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int column = fixColumn(ins.getDataColumnIndex());
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         double value = data.getTrainingPriceData(column, offset);
-        instructionList.setVariable(ins.getVariableArgument(),value);
+        instructionList.setVariable(ins.getInt(),value);
     }
 
     @Override
@@ -174,7 +174,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int column = fixColumn(ins.getDataColumnIndex());
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         double value = data.getTrainingPriceData(column, varOffset);
-        instructionList.setVariable(ins.getVariableArgument(), value);
+        instructionList.setVariable(ins.getInt(), value);
     }
 
     private void jumpTo(int jumpAddress) {
@@ -183,8 +183,8 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     @Override
     public void execute(JumpIfVariableGreaterThanVariable ins) {
-        double variable1 = instructionList.getVariable(ins.getVariable1Argument());
-        double variable2 = instructionList.getVariable(ins.getVariable2Argument());
+        double variable1 = instructionList.getVariable(ins.getInt1());
+        double variable2 = instructionList.getVariable(ins.getInt2());
         if(Double.compare(variable1, variable2) > 0) {
             jumpTo(ins.getAddress());
         }
@@ -192,8 +192,8 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     @Override
     public void execute(JumpIfVariableLessThanVariable ins) {
-        double variable1 = instructionList.getVariable(ins.getVariable1Argument());
-        double variable2 = instructionList.getVariable(ins.getVariable2Argument());
+        double variable1 = instructionList.getVariable(ins.getInt1());
+        double variable2 = instructionList.getVariable(ins.getInt2());
         if(Double.compare(variable1, variable2) < 0) {
             jumpTo(ins.getAddress());
         }
@@ -201,23 +201,23 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     @Override
     public void execute(JumpIfVariableGreaterThanDouble ins) {
-        double variable = instructionList.getVariable(ins.getVariableArgument());
-        if(Double.compare(variable, ins.getDoubleArgument()) > 0) {
+        double variable = instructionList.getVariable(ins.getInt());
+        if(Double.compare(variable, ins.getDouble()) > 0) {
             jumpTo(ins.getAddress());
         }
     }
 
     @Override
     public void execute(JumpIfVariableLessThanDouble ins) {
-        double variable = instructionList.getVariable(ins.getVariableArgument());
-        if(Double.compare(variable, ins.getDoubleArgument()) < 0) {
+        double variable = instructionList.getVariable(ins.getInt());
+        if(Double.compare(variable, ins.getDouble()) < 0) {
             jumpTo(ins.getAddress());
         }
     }
 
     @Override
     public void execute(JumpIfVariableGreaterThanZero ins) {
-        double variable = instructionList.getVariable(ins.getVariableArgument());
+        double variable = instructionList.getVariable(ins.getInt());
         if(variable > 0.0) {
             jumpTo(ins.getAddress());
         }
@@ -225,7 +225,7 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     @Override
     public void execute(JumpIfVariableLessThanZero ins) {
-        double variable = instructionList.getVariable(ins.getVariableArgument());
+        double variable = instructionList.getVariable(ins.getInt());
         if(variable < 0.0) {
             jumpTo(ins.getAddress());
         }
@@ -237,96 +237,96 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         int offset = fixOffset(ins.getDataOffsetIndex());
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         double value = Math.log(data.getTrainingPriceData(column,offset));
-        instructionList.setVariable(ins.getVariableArgument(), value);
+        instructionList.setVariable(ins.getInt(), value);
     }
 
     @Override
     public void execute(NaturalLogarithmOfVariable ins) {
-        double value = Math.log(instructionList.getVariable(ins.getVariable2Argument()));
-        instructionList.setVariable(ins.getVariable1Argument(),value);
+        double value = Math.log(instructionList.getVariable(ins.getInt2()));
+        instructionList.setVariable(ins.getInt1(),value);
     }
 
     @Override
     public void execute(SqRootOfVariable ins) {
-        double value = Math.pow(instructionList.getVariable(ins.getVariable2Argument()), 0.5);
-        instructionList.setVariable(ins.getVariable1Argument(),value);
+        double value = Math.pow(instructionList.getVariable(ins.getInt2()), 0.5);
+        instructionList.setVariable(ins.getInt1(),value);
     }
  
     @Override
     public void execute(SwapVariables ins) {
-        double var1 = instructionList.getVariable(ins.getVariable1Argument());
-        double var2 = instructionList.getVariable(ins.getVariable2Argument());
-        instructionList.setVariable(ins.getVariable1Argument(), var2);
-        instructionList.setVariable(ins.getVariable2Argument(), var1);
+        double var1 = instructionList.getVariable(ins.getInt1());
+        double var2 = instructionList.getVariable(ins.getInt2());
+        instructionList.setVariable(ins.getInt1(), var2);
+        instructionList.setVariable(ins.getInt2(), var1);
     }
 
     @Override
     public void execute(DivideVariableByDouble ins) {
-        double var = instructionList.getVariable(ins.getVariableArgument());
-        double result = var / ins.getDoubleArgument();
-        instructionList.setVariable(ins.getVariableArgument(), result);
+        double var = instructionList.getVariable(ins.getInt());
+        double result = var / ins.getDouble();
+        instructionList.setVariable(ins.getInt(), result);
     }
 
     @Override
     public void execute(MultiplyVariableByDouble ins) {
-        double var = instructionList.getVariable(ins.getVariableArgument());
-        double result = var * ins.getDoubleArgument();
-        instructionList.setVariable(ins.getVariableArgument(), result);
+        double var = instructionList.getVariable(ins.getInt());
+        double result = var * ins.getDouble();
+        instructionList.setVariable(ins.getInt(), result);
     }
 
     @Override
     public void execute(ZeroOutVariable ins) {
-        instructionList.setVariable(ins.getVariableArgument(), 0.0);
+        instructionList.setVariable(ins.getInt(), 0.0);
     }
 
     @Override
     public void execute(IncrementVariable ins) {
-        double var = instructionList.getVariable(ins.getVariableArgument());
+        double var = instructionList.getVariable(ins.getInt());
         var++;
-        instructionList.setVariable(ins.getVariableArgument(), var);
+        instructionList.setVariable(ins.getInt(), var);
     }
 
     @Override
     public void execute(DecrementVariable ins) {
-        double var = instructionList.getVariable(ins.getVariableArgument());
+        double var = instructionList.getVariable(ins.getInt());
         var--;
-        instructionList.setVariable(ins.getVariableArgument(), var);
+        instructionList.setVariable(ins.getInt(), var);
     }
 
     @Override
     public void execute(AddDoubleToVariable ins) {
-        double var = instructionList.getVariable(ins.getVariableArgument());
-        double result = var + ins.getDoubleArgument();
-        instructionList.setVariable(ins.getVariableArgument(), result);
+        double var = instructionList.getVariable(ins.getInt());
+        double result = var + ins.getDouble();
+        instructionList.setVariable(ins.getInt(), result);
     }
 
     @Override
     public void execute(SubtractDoubleFromVariable ins) {
-        double var = instructionList.getVariable(ins.getVariableArgument());
-        double result = var - ins.getDoubleArgument();
-        instructionList.setVariable(ins.getVariableArgument(), result);
+        double var = instructionList.getVariable(ins.getInt());
+        double result = var - ins.getDouble();
+        instructionList.setVariable(ins.getInt(), result);
     }
 
     @Override
     public void execute(AddVariableToVariable ins) {
-        double var1 = instructionList.getVariable(ins.getVariable1Argument());
-        double var2 = instructionList.getVariable(ins.getVariable2Argument());
+        double var1 = instructionList.getVariable(ins.getInt1());
+        double var2 = instructionList.getVariable(ins.getInt2());
         double result = var1 + var2;
-        instructionList.setVariable(ins.getVariable1Argument(), result);
+        instructionList.setVariable(ins.getInt1(), result);
     }
 
     @Override
     public void execute(SubtractVariableFromVariable ins) {
-        double var1 = instructionList.getVariable(ins.getVariable1Argument());
-        double var2 = instructionList.getVariable(ins.getVariable2Argument());
+        double var1 = instructionList.getVariable(ins.getInt1());
+        double var2 = instructionList.getVariable(ins.getInt2());
         double result = var1 - var2;
-        instructionList.setVariable(ins.getVariable1Argument(),result);
+        instructionList.setVariable(ins.getInt1(),result);
     }
 
     @Override
     public void execute(MoveVariableToVariable ins) {
-        double var = instructionList.getVariable(ins.getVariable2Argument());
-        instructionList.setVariable(ins.getVariable1Argument(),var);
+        double var = instructionList.getVariable(ins.getInt2());
+        instructionList.setVariable(ins.getInt1(),var);
     }
 
     private double getSum(int column, int length) {
@@ -340,23 +340,23 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     
     @Override
     public void execute(SumOfColumn ins) {
-        int column = fixColumn(ins.getVariable1Argument());
-        int length = fixOffset(instructionList.getVariable(ins.getVariable2Argument()));
+        int column = fixColumn(ins.getInt1());
+        int length = fixOffset(instructionList.getVariable(ins.getInt2()));
         instructionList.setVariable(0, getSum(column,length));
     }
 
     @Override
     public void execute(AverageOfColumn ins) {
-        int column = fixColumn(ins.getVariable1Argument());
-        int length = fixOffset(instructionList.getVariable(ins.getVariable2Argument()));
+        int column = fixColumn(ins.getInt1());
+        int length = fixOffset(instructionList.getVariable(ins.getInt2()));
         double sum = getSum(column, length);
         instructionList.setVariable(0, sum / length);
     }
 
     @Override
     public void execute(PercentileOfColumn ins) {
-        int column = fixColumn(ins.getVariable1Argument());
-        int length = fixOffset(instructionList.getVariable(ins.getVariable2Argument()));
+        int column = fixColumn(ins.getInt1());
+        int length = fixOffset(instructionList.getVariable(ins.getInt2()));
         if(length == 0) {
             return;
         }
@@ -372,8 +372,8 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     
     @Override
     public void execute(HighestOfColumn ins) {
-        int column = fixColumn(ins.getVariable1Argument());
-        int length = fixOffset(instructionList.getVariable(ins.getVariable2Argument()));
+        int column = fixColumn(ins.getInt1());
+        int length = fixOffset(instructionList.getVariable(ins.getInt2()));
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         double highest = data.getTrainingPriceData(column,0);
         for(int i = 1; i < length; i++) {
@@ -387,8 +387,8 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
 
     @Override
     public void execute(LowestOfColumn ins) {
-        int column = fixColumn(ins.getVariable1Argument());
-        int length = fixOffset(instructionList.getVariable(ins.getVariable2Argument()));
+        int column = fixColumn(ins.getInt1());
+        int length = fixOffset(instructionList.getVariable(ins.getInt2()));
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
         double lowest = data.getTrainingPriceData(column,0);
         for(int i = 1; i < length; i++) {

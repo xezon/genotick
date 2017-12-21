@@ -2,13 +2,13 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.mutator.Mutator;
 
-abstract class VarVarJumpInstruction extends VarVarInstruction implements JumpInstruction {
+abstract class IntJumpInstruction extends IntInstruction implements JumpInstruction {
     @SuppressWarnings("unused")
-    private static final long serialVersionUID = 6418593915852218659L;
+    private static final long serialVersionUID = -7018453916150975326L;
 
     private int address;
 
-    VarVarJumpInstruction() {
+    IntJumpInstruction() {
         address = 0;
     }
 

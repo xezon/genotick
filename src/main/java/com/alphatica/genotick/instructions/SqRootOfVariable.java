@@ -2,13 +2,13 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class SqRootOfVariable extends VarVarInstruction {
+public class SqRootOfVariable extends IntIntInstruction {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -6025395017177611705L;
 
     private SqRootOfVariable(SqRootOfVariable i) {
-        this.setVariable1Argument(i.getVariable1Argument());
-        this.setVariable2Argument(i.getVariable2Argument());
+        this.setInt1(i.getInt1());
+        this.setInt2(i.getInt2());
     }
 
     @SuppressWarnings("unused")

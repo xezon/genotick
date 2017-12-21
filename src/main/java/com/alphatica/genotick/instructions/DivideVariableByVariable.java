@@ -2,13 +2,13 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class DivideVariableByVariable extends VarVarInstruction {
+public class DivideVariableByVariable extends IntIntInstruction {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 2684230146996510206L;
 
     private DivideVariableByVariable(DivideVariableByVariable i) {
-        this.setVariable2Argument(i.getVariable2Argument());
-        this.setVariable1Argument(i.getVariable1Argument());
+        this.setInt2(i.getInt2());
+        this.setInt1(i.getInt1());
     }
 
     @SuppressWarnings("unused")

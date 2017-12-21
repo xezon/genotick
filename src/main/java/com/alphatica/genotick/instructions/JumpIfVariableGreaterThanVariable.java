@@ -2,13 +2,13 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class JumpIfVariableGreaterThanVariable extends VarVarJumpInstruction {
+public class JumpIfVariableGreaterThanVariable extends IntIntJumpInstruction {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 6092048224711211254L;
 
     private JumpIfVariableGreaterThanVariable(JumpIfVariableGreaterThanVariable i) {
-        this.setVariable1Argument(i.getVariable1Argument());
-        this.setVariable2Argument(i.getVariable2Argument());
+        this.setInt1(i.getInt1());
+        this.setInt2(i.getInt2());
         this.setAddress(i.getAddress());
     }
 

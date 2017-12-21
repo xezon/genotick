@@ -3,12 +3,12 @@ package com.alphatica.genotick.instructions;
 import com.alphatica.genotick.processor.NotEnoughDataException;
 import com.alphatica.genotick.processor.Processor;
 
-public class DecrementVariable extends VarInstruction {
+public class DecrementVariable extends IntInstruction {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -3260981819622564798L;
 
     private DecrementVariable(DecrementVariable i) {
-        this.setVariableArgument(i.getVariableArgument());
+        this.setInt(i.getInt());
     }
 
     @SuppressWarnings("unused")

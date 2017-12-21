@@ -2,13 +2,13 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class MoveVariableToVariable extends VarVarInstruction {
+public class MoveVariableToVariable extends IntIntInstruction {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -8962949754876920077L;
 
     private MoveVariableToVariable(MoveVariableToVariable i) {
-        this.setVariable1Argument(i.getVariable1Argument());
-        this.setVariable2Argument(i.getVariable2Argument());
+        this.setInt1(i.getInt1());
+        this.setInt2(i.getInt2());
     }
 
     @SuppressWarnings("unused")

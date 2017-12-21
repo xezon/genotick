@@ -3,7 +3,7 @@ package com.alphatica.genotick.instructions;
 import com.alphatica.genotick.mutator.Mutator;
 import com.alphatica.genotick.processor.Processor;
 
-public class PercentileOfColumn extends VarVarInstruction {
+public class PercentileOfColumn extends IntIntInstruction {
 
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -329518949586814597L;
@@ -16,8 +16,8 @@ public class PercentileOfColumn extends VarVarInstruction {
     }
 
     private PercentileOfColumn(PercentileOfColumn ins) {
-        this.setVariable1Argument(ins.getVariable1Argument());
-        this.setVariable2Argument(ins.getVariable2Argument());
+        this.setInt1(ins.getInt1());
+        this.setInt2(ins.getInt2());
         this.percentile = ins.percentile;
     }
 

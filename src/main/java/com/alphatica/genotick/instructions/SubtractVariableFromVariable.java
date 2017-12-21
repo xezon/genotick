@@ -2,13 +2,13 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class SubtractVariableFromVariable extends VarVarInstruction {
+public class SubtractVariableFromVariable extends IntIntInstruction {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -5692114758846719358L;
 
     private SubtractVariableFromVariable(SubtractVariableFromVariable i) {
-        this.setVariable1Argument(i.getVariable1Argument());
-        this.setVariable2Argument(i.getVariable2Argument());
+        this.setInt1(i.getInt1());
+        this.setInt2(i.getInt2());
     }
 
     @SuppressWarnings("unused")

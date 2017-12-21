@@ -2,14 +2,14 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class MoveRelativeDataToVariable extends DataVarInstruction {
+public class MoveRelativeDataToVariable extends DataIntInstruction {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 1308815201295846632L;
 
     private MoveRelativeDataToVariable(MoveRelativeDataToVariable i) {
         this.setDataOffsetIndex(i.getDataOffsetIndex());
         this.setDataTableIndex(i.getDataColumnIndex());
-        this.setVariableArgument(i.getVariableArgument());
+        this.setInt(i.getInt());
     }
 
     @SuppressWarnings("unused")
