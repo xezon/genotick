@@ -18,7 +18,7 @@ abstract class DataIntInstruction extends DataInstruction {
     @Override
     public void mutate(Mutator mutator) {
         super.mutate(mutator);
-        int1 = mutator.getNextInt();
+        int1 = mutateExpInt(mutator, int1);
     }
 
 }

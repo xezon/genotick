@@ -18,6 +18,6 @@ abstract class IntInstruction extends Instruction {
 
     @Override
     public void mutate(Mutator mutator) {
-        int1 = mutator.getNextInt();
+        int1 = mutateExpInt(mutator, int1);
     }
 }

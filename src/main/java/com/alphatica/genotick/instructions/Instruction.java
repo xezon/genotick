@@ -47,5 +47,32 @@ public abstract class Instruction implements Serializable {
         }
         return fields;
     }
+    
+    protected static double mutateExpDouble(Mutator mutator, double value) {
+        if (value == 0) {
+            value = mutator.getNextDouble();
+            value = 1_000_000
+                    * value * value * value
+                    * value * value * value;
+        }
+        else {
+            value += value * mutator.getNextDouble();
+        }
+        return value;
+    }
+    
+    protected static int mutateExpInt(Mutator mutator, int value) {
+        if (value == 0) {
+            double d = mutator.getNextDouble();
+            d = 1_000_000
+                    * value * value
+                    * value * value;
+            return (int)d;
+        }
+        else {
+            value += value * mutator.getNextDouble();
+        }
+        return value;
+    }
 }
 

@@ -19,10 +19,6 @@ abstract class IntDoubleInstruction extends IntInstruction {
     @Override
     public void mutate(Mutator mutator) {
         super.mutate(mutator);
-        if(double1 == 0) {
-            double1 = Tools.mutateDouble(1_000_000 * mutator.getNextDouble(), mutator);
-        }
-        double1 = Tools.mutateDouble(double1, mutator);
-     }
+        double1 = mutateExpDouble(mutator, double1);
+    }
 }
-
