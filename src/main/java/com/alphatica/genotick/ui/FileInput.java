@@ -1,7 +1,6 @@
 package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.MainAppData;
-import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.timepoint.TimePoint;
 
@@ -142,7 +141,7 @@ class FileInput extends BasicUserInput {
     }
 
     private String getDataDir(Map<String, String> map, Set<String> parsedKeys) {
-        String dataDir = Main.DEFAULT_DATA_DIR;
+        String dataDir = MainSettings.DEFAULT_DATA_DIR;
         if(map.containsKey(DATA_DIRECTORY_KEY)) {
             dataDir = map.get(DATA_DIRECTORY_KEY);
             parsedKeys.add(DATA_DIRECTORY_KEY);

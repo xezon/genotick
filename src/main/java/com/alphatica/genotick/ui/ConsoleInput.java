@@ -2,7 +2,6 @@ package com.alphatica.genotick.ui;
 
 import com.alphatica.genotick.data.FilterOption;
 import com.alphatica.genotick.data.MainAppData;
-import com.alphatica.genotick.genotick.Main;
 import com.alphatica.genotick.genotick.MainSettings;
 import com.alphatica.genotick.genotick.WeightMode;
 import com.alphatica.genotick.timepoint.TimePoint;
@@ -26,7 +25,7 @@ class ConsoleInput extends BasicUserInput {
     public MainSettings getSettings() {
         MainSettings settings = getMainSettings();
         if (settings == null) {
-            String dataDirectory = getString("Data directory", Main.DEFAULT_DATA_DIR);
+            String dataDirectory = getString("Data directory", MainSettings.DEFAULT_DATA_DIR);
             MainAppData data = getData(dataDirectory);
             settings = MainSettings.getSettings();
             settings.dataDirectory = dataDirectory;

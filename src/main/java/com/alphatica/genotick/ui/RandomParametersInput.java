@@ -55,10 +55,10 @@ class RandomParametersInput extends BasicUserInput {
 
     private MainSettings assignRandom(MainSettings settings) {
         settings.maximumDataOffset = random.nextInt(256) + 1;
-        settings.minimumRobotInstructions = random.nextInt(256) + 16;
-        settings.maximumRobotInstructions = random.nextInt(1024) + settings.minimumRobotInstructions;
-        settings.minimumRobotVariables = random.nextInt(4) + 1;
-        settings.maximumRobotVariables = random.nextInt(16 - settings.minimumRobotVariables) + settings.minimumRobotVariables;
+        settings.minimumRobotInstructions = random.nextInt(256) + MainSettings.DEFAULT_MINIMUM_ROBOT_INSTRUCTIONS;
+        settings.maximumRobotInstructions = random.nextInt(MainSettings.DEFAULT_MAXIMUM_ROBOT_INSTRUCTIONS - settings.minimumRobotInstructions) + settings.minimumRobotInstructions;
+        settings.minimumRobotVariables = random.nextInt(4) + MainSettings.DEFAULT_MINIMUM_ROBOT_VARIABLES;
+        settings.maximumRobotVariables = random.nextInt(MainSettings.DEFAULT_MAXIMUM_ROBOT_VARIABLES - settings.minimumRobotVariables) + settings.minimumRobotVariables;
         settings.maximumProcessorInstructionFactor = random.nextInt(256) + 1;
         settings.maximumDeathByAge = random.nextDouble();
         settings.maximumDeathByWeight = random.nextDouble();

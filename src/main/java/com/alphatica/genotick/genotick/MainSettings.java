@@ -8,22 +8,28 @@ import com.alphatica.genotick.data.FilterOption;
 import java.lang.reflect.Field;
 
 public class MainSettings {
+    
     public static final int DEFAULT_DESIRED_SIZE = 1_000;
     public static final String DEFAULT_DATA_ACCESS = "";
-    public static final long DEFAULT_RANDOM_SEED = 0;
+    public static final String DEFAULT_DATA_DIR = "data";
+    public static final int DEFAULT_MINIMUM_ROBOT_INSTRUCTIONS = 16;
+    public static final int DEFAULT_MAXIMUM_ROBOT_INSTRUCTIONS = 1024;
+    public static final int DEFAULT_MINIMUM_ROBOT_VARIABLES = 1;
+    public static final int DEFAULT_MAXIMUM_ROBOT_VARIABLES = 16;
     public static final boolean DEFAULT_KILL_NON_PREDICTING_ROBOTS = true;
     public static final double DEFAULT_MINIMUM_SCORE_TO_SAVE_TO_DISK = 0.0;
+    public static final long DEFAULT_RANDOM_SEED = 0;
 
     public TimePoint startTimePoint = new TimePoint(0);
     public TimePoint endTimePoint = new TimePoint(Long.MAX_VALUE);
     public int populationDesiredSize = DEFAULT_DESIRED_SIZE;
     public String populationDAO = DEFAULT_DATA_ACCESS;
     public boolean performTraining = true;
-    public String dataDirectory = Main.DEFAULT_DATA_DIR;
-    public int minimumRobotInstructions = 16;
-    public int maximumRobotInstructions = 1024;
-    public int minimumRobotVariables = 1;
-    public int maximumRobotVariables = 16;
+    public String dataDirectory = DEFAULT_DATA_DIR;
+    public int minimumRobotInstructions = DEFAULT_MINIMUM_ROBOT_INSTRUCTIONS;
+    public int maximumRobotInstructions = DEFAULT_MAXIMUM_ROBOT_INSTRUCTIONS;
+    public int minimumRobotVariables = DEFAULT_MINIMUM_ROBOT_VARIABLES;
+    public int maximumRobotVariables = DEFAULT_MAXIMUM_ROBOT_VARIABLES;
     public int maximumProcessorInstructionFactor = 256;
     public double maximumDeathByAge = 0.01;
     public double maximumDeathByWeight = 0.01;
