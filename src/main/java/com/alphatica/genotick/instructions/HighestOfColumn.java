@@ -2,7 +2,7 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class HighestOfColumn extends RegRegInstruction {
+public class HighestOfColumn extends VarVarInstruction {
 
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -7922049215420858405L;
@@ -12,9 +12,9 @@ public class HighestOfColumn extends RegRegInstruction {
 
     }
 
-    private HighestOfColumn(HighestOfColumn highestOfColumn) {
-        this.setRegister1(highestOfColumn.getRegister1());
-        this.setRegister2(highestOfColumn.getRegister2());
+    private HighestOfColumn(HighestOfColumn ins) {
+        this.setVariable1Argument(ins.getVariable1Argument());
+        this.setVariable2Argument(ins.getVariable2Argument());
     }
 
     @Override

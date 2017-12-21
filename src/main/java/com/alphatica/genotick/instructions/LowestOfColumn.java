@@ -2,7 +2,7 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class LowestOfColumn extends RegRegInstruction {
+public class LowestOfColumn extends VarVarInstruction {
 
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -6945803435707758563L;
@@ -12,8 +12,8 @@ public class LowestOfColumn extends RegRegInstruction {
     }
 
     private LowestOfColumn(LowestOfColumn lowestOfColumn) {
-        this.setRegister1(lowestOfColumn.getRegister1());
-        this.setRegister2(lowestOfColumn.getRegister2());
+        this.setVariable1Argument(lowestOfColumn.getVariable1Argument());
+        this.setVariable2Argument(lowestOfColumn.getVariable2Argument());
     }
 
     @Override

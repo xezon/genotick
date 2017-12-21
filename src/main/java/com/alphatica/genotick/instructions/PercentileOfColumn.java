@@ -3,7 +3,7 @@ package com.alphatica.genotick.instructions;
 import com.alphatica.genotick.mutator.Mutator;
 import com.alphatica.genotick.processor.Processor;
 
-public class PercentileOfColumn extends RegRegInstruction {
+public class PercentileOfColumn extends VarVarInstruction {
 
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -329518949586814597L;
@@ -15,10 +15,10 @@ public class PercentileOfColumn extends RegRegInstruction {
     public PercentileOfColumn() {
     }
 
-    private PercentileOfColumn(PercentileOfColumn percentileOfColumn) {
-        this.setRegister1(percentileOfColumn.getRegister1());
-        this.setRegister2(percentileOfColumn.getRegister2());
-        this.percentile = percentileOfColumn.percentile;
+    private PercentileOfColumn(PercentileOfColumn ins) {
+        this.setVariable1Argument(ins.getVariable1Argument());
+        this.setVariable2Argument(ins.getVariable2Argument());
+        this.percentile = ins.percentile;
     }
 
     @Override

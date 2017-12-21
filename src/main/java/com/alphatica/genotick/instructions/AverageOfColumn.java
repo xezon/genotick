@@ -2,7 +2,7 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class AverageOfColumn extends RegRegInstruction {
+public class AverageOfColumn extends VarVarInstruction {
 
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -329518949586814597L;
@@ -11,9 +11,9 @@ public class AverageOfColumn extends RegRegInstruction {
     public AverageOfColumn() {
     }
 
-    private AverageOfColumn(AverageOfColumn averageOfColumn) {
-        this.setRegister1(averageOfColumn.getRegister1());
-        this.setRegister2(averageOfColumn.getRegister2());
+    private AverageOfColumn(AverageOfColumn ins) {
+        this.setVariable1Argument(ins.getVariable1Argument());
+        this.setVariable2Argument(ins.getVariable2Argument());
     }
 
     @Override

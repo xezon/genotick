@@ -2,7 +2,7 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.processor.Processor;
 
-public class SumOfColumn extends RegRegInstruction {
+public class SumOfColumn extends VarVarInstruction {
 
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -4448791341243829694L;
@@ -12,8 +12,8 @@ public class SumOfColumn extends RegRegInstruction {
     }
 
     private SumOfColumn(SumOfColumn ins) {
-        this.setRegister1(ins.getRegister1());
-        this.setRegister2(ins.getRegister2());
+        this.setVariable1Argument(ins.getVariable1Argument());
+        this.setVariable2Argument(ins.getVariable2Argument());
     }
     @Override
     public void executeOn(Processor processor) {
