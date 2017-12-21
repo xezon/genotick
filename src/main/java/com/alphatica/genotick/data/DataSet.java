@@ -1,6 +1,6 @@
 package com.alphatica.genotick.data;
 
-import static java.util.Objects.nonNull;
+import java.util.Optional;
 
 import com.alphatica.genotick.timepoint.TimePoint;
 import com.alphatica.genotick.timepoint.TimePoints;
@@ -11,7 +11,7 @@ public class DataSet {
     private final DataLines tohlcLines;
     private final TimePoints timePoints;
     private final DataSeries ohlcData;
-    private DataSeries filteredOhlcData;
+    private Optional<DataSeries> filteredOhlcData;
     private FilterSettings filter;
     
     public DataSet(String name, DataLines tohlcLines) {
@@ -23,8 +23,8 @@ public class DataSet {
         this.tohlcLines = new DataLines(tohlcLines, false);
         this.timePoints = this.tohlcLines.createTimePoints();
         this.ohlcData = this.tohlcLines.createDataSeries();
-        this.filteredOhlcData = null;
-        this.filter = null;
+        this.filteredOhlcData = Optional.empty();
+        this.filter = new FilterSettings();
     }
 
     public DataSetName getName() {
@@ -68,17 +68,15 @@ public class DataSet {
     
     public void setFilterSettings(FilterSettings filter) {
         boolean useFilter = filter.filterOption != FilterOption.NONE;
-        this.filteredOhlcData = useFilter ? ohlcData.createCopy() : null;
+        this.filteredOhlcData = useFilter ? Optional.of(ohlcData.createCopy()) : Optional.empty();
         this.filter = filter;
     }
     
     public void updateFilteredOhlcData(int barBegin, int barEnd) {
-        if (nonNull(filter)) {
-            switch (filter.filterOption) {
-                case NONE: break;
-                case EMA: Filters.applyEMA(filteredOhlcData, barBegin, barEnd, 20); break;
-                case EMA_ZEROLAG: Filters.applyEMAZeroLag(filteredOhlcData, barBegin, barEnd, 20, 50); break;
-            }
+        switch (filter.filterOption) {
+            case NONE: break;
+            case EMA: Filters.applyEMA(filteredOhlcData.get(), barBegin, barEnd, 20); break;
+            case EMA_ZEROLAG: Filters.applyEMAZeroLag(filteredOhlcData.get(), barBegin, barEnd, 20, 50); break;
         }
     }
     
@@ -102,6 +100,6 @@ public class DataSet {
     }
     
     private DataSeries getOhlcData(boolean useFiltered) {
-        return (nonNull(filteredOhlcData) && useFiltered) ? filteredOhlcData : ohlcData;
+        return (filteredOhlcData.isPresent() && useFiltered) ? filteredOhlcData.get() : ohlcData;
     }
 }
