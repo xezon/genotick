@@ -2,6 +2,7 @@ package com.alphatica.genotick.instructions;
 
 import com.alphatica.genotick.mutator.Mutator;
 import com.alphatica.genotick.processor.Processor;
+import com.alphatica.genotick.utility.FastMath;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -51,9 +52,7 @@ public abstract class Instruction implements Serializable {
     protected static double mutateExpDouble(Mutator mutator, double value) {
         if (value == 0) {
             value = mutator.getNextDouble();
-            value = 1_000_000
-                    * value * value * value
-                    * value * value * value;
+            value = FastMath.pow6(value) * 1_000_000;
         }
         else {
             value += value * mutator.getNextDouble();
@@ -64,9 +63,7 @@ public abstract class Instruction implements Serializable {
     protected static int mutateExpInt(Mutator mutator, int value) {
         if (value == 0) {
             double d = mutator.getNextDouble();
-            d = 1_000_000
-                    * value * value
-                    * value * value;
+            d = FastMath.pow4(value) * 1_000_000;
             return (int)d;
         }
         else {
@@ -75,4 +72,3 @@ public abstract class Instruction implements Serializable {
         return value;
     }
 }
-
