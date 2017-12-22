@@ -3,6 +3,7 @@ package com.alphatica.genotick.instructions;
 import com.alphatica.genotick.processor.Processor;
 
 public class AddVariableToVariable extends IntIntInstruction {
+
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 232466498704321646L;
 

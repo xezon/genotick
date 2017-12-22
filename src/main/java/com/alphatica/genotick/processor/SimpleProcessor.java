@@ -169,11 +169,11 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     }
 
     @Override
-    public void execute(MoveRelativeDataToVariable ins) {
-        int varOffset = getRelativeOffset(ins);
+    public void execute(MoveRelativeDataToVariable ins) {        
+        int offset = fixOffset(instructionList.getVariable(ins.getDataOffsetIndex()));
         int column = fixColumn(ins.getDataColumnIndex());
         if(!columnAccess.setAccessedColumn(column)) throw new NotEnoughDataException();
-        double value = data.getTrainingPriceData(column, varOffset);
+        double value = data.getTrainingPriceData(column, offset);
         instructionList.setVariable(ins.getInt(), value);
     }
 
@@ -342,7 +342,8 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
     public void execute(SumOfColumn ins) {
         int column = fixColumn(ins.getInt1());
         int length = fixOffset(instructionList.getVariable(ins.getInt2()));
-        instructionList.setVariable(0, getSum(column,length));
+        double sum = getSum(column, length);
+        instructionList.setVariable(0, sum);
     }
 
     @Override
@@ -400,14 +401,10 @@ public class SimpleProcessor extends Processor implements RobotExecutor {
         instructionList.setVariable(0, lowest);
     }
 
-    private int getRelativeOffset(DataInstruction ins) {
-        double value = instructionList.getVariable(ins.getDataOffsetIndex());
-        return fixOffset(value);
-    }
-
     private int fixOffset(double value) {
         return Math.abs((int)value % maximumDataOffset);
     }
+    
     private int fixColumn(int value) {
         return ignoreColumns + Math.abs(value % (dataColumns - ignoreColumns));
     }

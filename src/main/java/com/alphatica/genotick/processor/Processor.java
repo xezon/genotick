@@ -68,5 +68,4 @@ abstract public class Processor {
     abstract public void execute(HighestOfColumn ins);
 
     abstract public void execute(LowestOfColumn ins);
-
 }

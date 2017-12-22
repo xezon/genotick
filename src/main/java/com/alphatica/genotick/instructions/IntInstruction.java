@@ -6,18 +6,18 @@ abstract class IntInstruction extends Instruction {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 5052271226112971349L;
 
-    private int int1;
+    private int value;
 
     public int getInt() {
-        return int1;
+        return value;
     }
 
     void setInt(int value) {
-        this.int1 = value;
+        this.value = value;
     }
 
     @Override
     public void mutate(Mutator mutator) {
-        int1 = mutateExpInt(mutator, int1);
+        value = mutateExpInt(mutator, value);
     }
 }
