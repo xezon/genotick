@@ -50,7 +50,7 @@ public class MainSettings {
     public long randomSeed = DEFAULT_RANDOM_SEED;
     public GenoChartMode chartMode = GenoChartMode.NONE;
     public double profitReinvestFactor = 1.0;
-    public FilterOption filterOption = FilterOption.EMA_ZEROLAG;
+    public FilterOption filterOption = FilterOption.NONE;
 
     private MainSettings() {
         String minimumScoreString = System.getenv("GENOTICK_MINIMUM_SCORE");
